@@ -2,6 +2,7 @@ import { Inter } from '@next/font/google'
 import { Wrapper, Container, Button } from '3oilerplate'
 import { useFetch } from 'usehooks-ts'
 import { useState } from 'react'
+import Link from 'next/link'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -15,7 +16,7 @@ export default function Home() {
         <Container>
           {/* login to share your spotify data */}
           {/* <Button onClick={() => setOpenLogin(true)}>Login</Button> */}
-          <a href="/api/login">Login</a>
+          <Link href="/api/login">Login</Link>
         </Container>
         <Container>
           {/* title of your playlist */}
