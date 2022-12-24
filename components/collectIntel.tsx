@@ -1,19 +1,14 @@
 import { useEffect, useState } from 'react'
 import { Spacer, Container, Wrapper, Title, Input, List, ListItem } from '3oilerplate'
-import SpotifyApi from 'spotify-web-api-node'
-import useAuth from '../hooks/useAuth'
-
-const spotifyApi: any = new SpotifyApi({
-  clientId: process.env.NEXT_PUBLIC_SPOTIFY_API_CLIENT_ID
-})
+import useSpotifyApi from '../hooks/useSpotifyApi'
 
 const searchHandlers: { [key: string]: string } = {
   artists: 'searchArtists',
   tracks: 'searchTracks',
 }
 
-export default function Dashboard({ code }: any) {
-  const accessToken: string = useAuth(code)
+export default function CollectIntel({ code }: any) {
+  const { spotifyApi }: any = useSpotifyApi(code)
   const [searchText, setSearchText] = useState<any>({
     artists: '',
     tracks: '',
@@ -22,30 +17,21 @@ export default function Dashboard({ code }: any) {
   const [searchType, setSearchType] = useState('artists')
   const [results, setResults] = useState([])
 
-
   const setSearch = (value: string, type: string) => {
     setSearchText((current: any) => ({ ...current, [type]: value }))
     setSearchType(type)
   }
 
   useEffect(() => {
-    if (!accessToken) return
-
-    spotifyApi.setAccessToken(accessToken)
-  }, [accessToken])
-
-  useEffect(() => {
-    console.log(searchType)
+    if (!spotifyApi) return
     if (!searchType || !searchText[searchType]) return setResults([])
-    if (!accessToken) return
 
     spotifyApi[searchHandlers[searchType]](searchText[searchType])
       .then((data: any) => {
-        console.log(data);
         setResults(data?.body[searchType]?.items.map(({ name }: any) => ({ name })))
       })
 
-  }, [searchType, searchText, accessToken])
+  }, [searchType, searchText, spotifyApi])
 
   return (
     <>

@@ -1,10 +1,29 @@
-import { darken, brighten, mix } from '3oilerplate'
+import { darken } from '3oilerplate'
+
+export const fonts = {
+  base: "'Cabin', sans-serif",
+}
+
+const PRIMARY = '#D61C4E'
+const SECONDARY = '#D61C4E'
 
 export const THEME = {
   colors: {
-    primary: '#8D9EFF',
-    primaryDark: darken('#8D9EFF', 0.5),
-    secondary: '',
-    secondaryDark: darken('#494786', 0.5),
-  }
+    primary: PRIMARY,
+    primaryDark: darken(PRIMARY, 0.5),
+    secondary: '#000',
+    secondaryDark: darken('#000', 0.5),
+    background: '#293462'
+  },
+  components: {
+    Label: {
+      default: {
+        border: '2px solid primary',
+        background: 'transparent',
+        color: 'primary',
+        borderRadius: '20px'
+      }
+    }
+  },
+  fonts
 }

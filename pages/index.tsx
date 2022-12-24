@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router'
 import { Wrapper } from '3oilerplate'
-import Dashboard from '../components/dashboard'
 import Login from '../components/login'
+import CollectIntelAuthenticated from '../components/collectIntelAuthenticated'
 
 export default function Home() {
   const router = useRouter()
@@ -10,7 +10,7 @@ export default function Home() {
   return (
     <>
       <Wrapper>
-        { code ? <Dashboard code={code} /> : <Login />}
+        { code ? <CollectIntelAuthenticated code={code} /> : <Login />}
       </Wrapper>
     </>
   )

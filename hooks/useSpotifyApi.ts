@@ -1,12 +1,22 @@
 import React, { useEffect, useState } from "react";
 import axios from 'axios';
 import { useHistory } from "react-router";
+import SpotifyWebApi from "spotify-web-api-node";
 
-export default function useAuth(code: string): string {
-  const history = useHistory()
+const spotifyApi: any = new SpotifyWebApi({
+  clientId: process.env.NEXT_PUBLIC_SPOTIFY_API_CLIENT_ID
+})
+
+export default function useSpotifyApi(code: string): { accessToken: string, spotifyApi: SpotifyWebApi } {
   const [accessToken, setAccessToken] = useState('')
   const [refreshToken, setRefreshToken] = useState('')
   const [expiresIn, setExpiresIn] = useState()
+
+  useEffect(() => {
+    if (!accessToken) return
+
+    spotifyApi.setAccessToken(accessToken)
+  }, [accessToken])
 
   useEffect(() => {
     if (!code || accessToken) return
@@ -45,5 +55,8 @@ export default function useAuth(code: string): string {
     return () => clearInterval(interval)
   }, [refreshToken, expiresIn])
 
-  return accessToken
+  return {
+    spotifyApi: !!accessToken && spotifyApi,
+    accessToken
+  }
 }
