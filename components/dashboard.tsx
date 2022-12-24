@@ -1,28 +1,30 @@
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/router'
-import { Box, Wrapper, Title, Input, List, ListItem } from '3oilerplate'
+import { Spacer, Container, Wrapper, Title, Input, List, ListItem } from '3oilerplate'
 import SpotifyApi from 'spotify-web-api-node'
 import useAuth from '../hooks/useAuth'
 
-const spotifyApi = new SpotifyApi({
+const spotifyApi: any = new SpotifyApi({
   clientId: process.env.NEXT_PUBLIC_SPOTIFY_API_CLIENT_ID
 })
 
-const search: { [key: string]: any } = {
-  artists: spotifyApi.searchArtists,
-  albums: spotifyApi.searchAlbums,
-  tracks: spotifyApi.searchTracks,
+const searchHandlers: { [key: string]: string } = {
+  artists: 'searchArtists',
+  tracks: 'searchTracks',
 }
 
 export default function Dashboard({ code }: any) {
   const accessToken: string = useAuth(code)
-  const router = useRouter()
-  const [searchText, setSearchText] = useState('')
+  const [searchText, setSearchText] = useState<any>({
+    artists: '',
+    tracks: '',
+  })
+
   const [searchType, setSearchType] = useState('artists')
   const [results, setResults] = useState([])
 
+
   const setSearch = (value: string, type: string) => {
-    setSearchText(value)
+    setSearchText((current: any) => ({ ...current, [type]: value }))
     setSearchType(type)
   }
 
@@ -33,39 +35,45 @@ export default function Dashboard({ code }: any) {
   }, [accessToken])
 
   useEffect(() => {
-    if (!searchText && searchText.length > 2) return setResults([])
+    console.log(searchType)
+    if (!searchType || !searchText[searchType]) return setResults([])
     if (!accessToken) return
 
-    search[searchType](searchText)
+    spotifyApi[searchHandlers[searchType]](searchText[searchType])
       .then((data: any) => {
-        console.log('data: ', data)
+        console.log(data);
+        setResults(data?.body[searchType]?.items.map(({ name }: any) => ({ name })))
       })
-  }, [searchText, accessToken])
+
+  }, [searchType, searchText, accessToken])
 
   return (
     <>
       <Wrapper>
-        <Box s={{ mb: 'm' }}>
-          <Title>Artists</Title>
-          <Input type="search" value={searchText} onChange={(value: string) => setSearch(value, 'artists')}></Input>
-          <List>
-            <ListItem></ListItem>
-          </List>
-        </Box>
-        <Box s={{ mb: 'm' }}>
-          <Title>Albums</Title>
-          <Input type="search" value={searchText} onChange={(value: string) => setSearch(value, 'albums')}></Input>
-          <List>
-            <ListItem></ListItem>
-          </List>
-        </Box>
-        <Box s={{ mb: 'm' }}>
-          <Title>Songs</Title>
-          <Input type="search" value={searchText} onChange={(value: string) => setSearch(value, 'songs')}></Input>
-          <List>
-            <ListItem></ListItem>
-          </List>
-        </Box>
+        <Container>
+          <Spacer s={{ mb: 'm' }}>
+            <Title>Artists</Title>
+            <Input type="search" value={searchText.artists} onChange={(value: string) => setSearch(value, 'artists')}></Input>
+            { searchType === 'artists' && results.length ? (
+              <List>
+                { results.map(({ name }, index) => (
+                  <ListItem key={`artist-${index}`}>{ name }</ListItem>
+                )) }
+              </List>
+            ) : null }
+          </Spacer>
+          <Spacer s={{ mb: 'm' }}>
+            <Title>Songs</Title>
+            <Input type="search" value={searchText.tracks} onChange={(value: string) => setSearch(value, 'tracks')}></Input>
+            { searchType === 'tracks' && results.length ? (
+              <List>
+                { results.map(({ name }, index) => (
+                  <ListItem key={`track-${index}`}>{ name }</ListItem>
+                )) }
+              </List>
+            ) : null }
+          </Spacer>
+        </Container>
       </Wrapper>
     </>
   )
