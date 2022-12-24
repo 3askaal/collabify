@@ -7,20 +7,20 @@ type Data = {
   name: string
 }
 
-export default function handler(
+export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Data>
+  res: NextApiResponse<any>
 ) {
   const state = randomString(16);
 
   res.redirect(
-    "https://accounts.spotify.com/authorize?" +
+    'https://accounts.spotify.com/authorize?' +
     querystring.stringify({
       response_type: "code",
       client_id: process.env.SPOTIFY_API_CLIENT_ID,
       scope: 'user-read-private user-read-email user-top-read',
-      redirect_uri: '',
+      redirect_uri: `${process.env.BASE_URL}/callback`,
       state: state,
     })
-  );
+  )
 }
