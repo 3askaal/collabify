@@ -1,35 +1,20 @@
 import { Inter } from '@next/font/google'
-import { Wrapper, Container, Button } from '3oilerplate'
-import { useFetch } from 'usehooks-ts'
-import { useState } from 'react'
+import { Wrapper, Container } from '3oilerplate'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
+import Dashboard from '../components/dashboard'
+import Login from '../components/login'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
-  const [openLogin, setOpenLogin] = useState(false)
-  const { data, error } = useFetch<any[]>(openLogin ? '/api/login' : '')
+  const router = useRouter()
+  const code = router.query.code
 
   return (
     <>
       <Wrapper>
-        <Container>
-          {/* login to share your spotify data */}
-          {/* <Button onClick={() => setOpenLogin(true)}>Login</Button> */}
-          <Link href="/api/login">Login</Link>
-        </Container>
-        <Container>
-          {/* title of your playlist */}
-        </Container>
-        <Container>
-          {/* is your friend/crush willing to share their spotify data? */}
-        </Container>
-        <Container>
-          {/* if yes, create document in db and generate shareable link */}
-        </Container>
-        <Container>
-          {/* if no, show page with song/artist/album/genre inputs */}
-        </Container>
+        { code ? <Dashboard code={code} /> : <Login />}
       </Wrapper>
     </>
   )

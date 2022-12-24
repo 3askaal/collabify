@@ -17,9 +17,9 @@ export default async function handler(
     'https://accounts.spotify.com/authorize?' +
     generateQueryString({
       response_type: "code",
-      client_id: process.env.SPOTIFY_API_CLIENT_ID,
-      scope: 'user-read-private user-read-email user-top-read',
-      redirect_uri: `${process.env.BASE_URL}/callback`,
+      client_id: process.env.NEXT_PUBLIC_SPOTIFY_API_CLIENT_ID,
+      scope: 'streaming user-read-private user-read-email user-top-read user-library-read user-library-modify user-read-playback-state user-modify-playback-state',
+      redirect_uri: process.env.NEXT_PUBLIC_PROD_URL,
       state: state,
     })
   )
