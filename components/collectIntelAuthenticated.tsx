@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Spacer, Box, Container, Wrapper, Title, Label } from '3oilerplate'
 import useSpotifyApi from '../hooks/useSpotifyApi'
-import { capitalize, flatten, startCase, uniq } from 'lodash'
+import { flatten, startCase, uniq } from 'lodash'
 
 export default function CollectIntelAuthenticated() {
   const { spotifyApi, accessToken } = useSpotifyApi()

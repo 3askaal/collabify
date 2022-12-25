@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Box, Input, CheckboxGroup, Spacer, Button, Row, Col } from '3oilerplate'
+import { Box, Input, RadioGroup, Spacer, Button, Row, Col } from '3oilerplate'
 import CollectIntelAuthenticated from './collectIntelAuthenticated';
 
 export default function Steps({ currentStep }: any) {
@@ -16,7 +16,7 @@ export default function Steps({ currentStep }: any) {
       return (
         <Spacer>
           <p>For who is this playlist?</p>
-          <CheckboxGroup options={[
+          <RadioGroup options={[
             { label: 'Friend', value: 'friend' },
             { label: 'Crush', value: 'crush' },
           ]} />
