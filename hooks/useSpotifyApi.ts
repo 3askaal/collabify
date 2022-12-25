@@ -50,7 +50,7 @@ export default function useSpotifyApi(code?: string): { accessToken: string, spo
           // history.push('/')
         })
 
-    }, (expiresIn - 60) * 1000)
+    }, (Number(expiresIn) - 60) * 1000)
 
     return () => clearInterval(interval)
   }, [refreshToken, expiresIn])

@@ -18,6 +18,11 @@ export const THEME = {
     color: darken('#fff', 0.75)
   },
   components: {
+    Button: {
+      default: {
+        background: 'transparent'
+      }
+    },
     Label: {
       default: {
         border: '2px solid primary',
