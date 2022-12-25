@@ -5,7 +5,7 @@ export const fonts = {
   logo: "'Courgette', sans-serif",
 }
 
-const PRIMARY = '#6D67E4'
+const PRIMARY = '#FB2576'
 const SECONDARY = '#D61C4E'
 
 export const THEME = {
@@ -14,7 +14,7 @@ export const THEME = {
     primaryDark: darken(PRIMARY, 0.5),
     secondary: '#000',
     secondaryDark: darken('#000', 0.5),
-    background: '#453C67',
+    background: '#212121',
     color: darken('#fff', 0.75)
   },
   components: {
@@ -22,8 +22,8 @@ export const THEME = {
       default: {
         border: '2px solid primary',
         background: 'transparent',
-        color: 'primary',
         borderRadius: '20px',
+        borderWidth: '2px',
         padding: 's'
       }
     }
