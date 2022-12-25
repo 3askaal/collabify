@@ -1,13 +1,10 @@
 import { useRouter } from 'next/router'
 import { Wrapper, Container, Row, Col, Button } from '3oilerplate'
-import useSpotifyApi from '../../hooks/useSpotifyApi'
 import Logo from '../../components/logo'
 import Steps from '../../components/steps'
 import { useState } from 'react'
 
 export default function Home() {
-  const router = useRouter()
-  const code = router.query.code
   const [step, setStep] = useState(0);
 
   const onPrev = () => {
