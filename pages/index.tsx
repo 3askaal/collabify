@@ -1,22 +1,21 @@
 import { useRouter } from 'next/router'
-import { Box, Wrapper, Spacer, Title } from '3oilerplate'
+import { Wrapper, Spacer } from '3oilerplate'
 import Login from '../components/login'
 import Logo from '../components/logo'
-import CollectIntelAuthenticated from '../components/collectIntelAuthenticated'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import useSpotifyApi from '../hooks/useSpotifyApi'
+import Steps from '../components/steps'
 
 export default function Home() {
   const router = useRouter()
   const code = router.query.code
   const { accessToken } = useSpotifyApi(code?.toString())
-  const [step, setStep] = useState(0);
 
   useEffect(() => {
-    if (accessToken) {
-      router.replace('/', undefined, { shallow: true });
+    if (code) {
+      router.replace('/playlist/new', undefined, { shallow: true });
     }
-  }, [accessToken])
+  }, [code])
 
   return (
     <>
@@ -26,7 +25,7 @@ export default function Home() {
             <Logo />
             <p>Create smarter collaborative playlists.</p>
           </Spacer>
-          { accessToken ? <CollectIntelAuthenticated /> : <Login /> }
+          { accessToken ? null : <Login /> }
         </Spacer>
       </Wrapper>
     </>

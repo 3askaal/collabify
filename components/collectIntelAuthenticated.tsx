@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react'
 import { Spacer, Box, Container, Wrapper, Title, Input, Label, Row, Col } from '3oilerplate'
 import useSpotifyApi from '../hooks/useSpotifyApi'
 
-export default function CollectIntelAuthenticated({ code }: any) {
-  const { spotifyApi, accessToken } = useSpotifyApi(code)
+export default function CollectIntelAuthenticated() {
+  const { spotifyApi, accessToken } = useSpotifyApi()
 
   const [topArtists, setTopArtists] = useState([])
   const [topTracks, setTopTracks] = useState([])

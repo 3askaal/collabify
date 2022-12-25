@@ -26,6 +26,16 @@ export const THEME = {
         borderWidth: '2px',
         padding: 's'
       }
+    },
+    Input: {
+      default: {
+        borderTop: 0,
+        borderLeft: 0,
+        borderRight: 0,
+        borderRadius: 0,
+        minWidth: '100%',
+        px: 0,
+      }
     }
   },
   fonts
