@@ -5,6 +5,7 @@ import { THEME, LocalGlobalStyle } from '../style'
 
 import 'reset-css/reset.css'
 import '../fonts.css'
+import dynamic from 'next/dynamic'
 
 export const SApp = s.div(() => ({
   fontFamily: 'base',
@@ -22,14 +23,24 @@ function mergeTheme (baseTheme: any, theme: any) {
   )
 }
 
+const NonSSRWrapper = ({ children }: any) => (
+  <>{children}</>
+)
+
+const DynamicWrapper = dynamic(() => Promise.resolve(NonSSRWrapper), {
+  ssr: false
+})
+
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <ThemeProvider theme={mergeTheme(DEFAULT_THEME, THEME)}>
-      <SApp>
-        <GlobalStyle />
-        <LocalGlobalStyle />
-        <Component {...pageProps} />
-      </SApp>
+      <DynamicWrapper>
+        <SApp>
+          <GlobalStyle />
+          <LocalGlobalStyle />
+          <Component {...pageProps} />
+        </SApp>
+      </DynamicWrapper>
     </ThemeProvider>
   )
 }
