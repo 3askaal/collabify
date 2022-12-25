@@ -3,20 +3,20 @@ import { Box, Wrapper, Spacer, Title } from '3oilerplate'
 import Login from '../components/login'
 import Logo from '../components/logo'
 import CollectIntelAuthenticated from '../components/collectIntelAuthenticated'
-import { useLocalStorage } from 'usehooks-ts'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import useSpotifyApi from '../hooks/useSpotifyApi'
 
 export default function Home() {
   const router = useRouter()
   const code = router.query.code
-  const { spotifyApi, accessToken } = useSpotifyApi(code?.toString())
+  const { accessToken } = useSpotifyApi(code?.toString())
+  const [step, setStep] = useState(0);
 
   useEffect(() => {
-    if (code) {
+    if (accessToken) {
       router.replace('/', undefined, { shallow: true });
     }
-  }, [code])
+  }, [accessToken])
 
   return (
     <>
