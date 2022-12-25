@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "3oilerplate": "^0.2.43",
+    "3oilerplate": "^0.2.45",
     "@next/font": "13.1.1",
     "@types/axios": "^0.14.0",
     "@types/node": "18.11.17",

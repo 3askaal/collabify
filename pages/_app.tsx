@@ -1,18 +1,18 @@
 import type { AppProps } from 'next/app'
 import { s, ThemeProvider, GlobalStyle, theme as DEFAULT_THEME } from '3oilerplate'
 import deepmerge from 'deepmerge'
-import { THEME, LocalGlobalStyle } from '../style'
+import dynamic from 'next/dynamic'
 
 import 'reset-css/reset.css'
 import '../fonts.css'
-import dynamic from 'next/dynamic'
+import { THEME, LocalGlobalStyle } from '../style'
 
 export const SApp = s.div(() => ({
   fontFamily: 'base',
   backgroundColor: 'background',
   width: '100%',
-  height: '100%',
-  flexGrow: 1,
+  color: 'color'
+  // height: '100%',
 }))
 
 function mergeTheme (baseTheme: any, theme: any) {

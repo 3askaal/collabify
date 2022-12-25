@@ -39,28 +39,24 @@ export default function CollectIntelAuthenticated({ code }: any) {
         <Container>
           <Spacer>
             { !!topArtists.length && (
-              <Box>
+              <Spacer>
                 <Title>Your Top Artists</Title>
-                <Row>
-                { topArtists.map(({ name }, index) => (
-                  <Col s={{ flexGrow: 0 }} key={`artist-${index}`}>
-                    <Label sRef="Label">{ name }</Label>
-                  </Col>
-                )) }
-                </Row>
-              </Box>
+                <Box df fdr fww>
+                  { topArtists.map(({ name }, index) => (
+                    <Label sRef="Label" key={`artist-${index}`} s={{ mb: 's', mr: 's' }}>{ name }</Label>
+                  )) }
+                </Box>
+              </Spacer>
             )}
             { !!topArtists.length && (
-              <Box>
+              <Spacer>
                 <Title>Your Top Tracks</Title>
-                <Row>
+                <Box>
                   { topTracks.map(({ artist, name }, index) => (
-                    <Col s={{ flexGrow: 0 }} key={`track-${index}`}>
-                      <Label sRef="Label">{ artist } - { name }</Label>
-                    </Col>
+                    <Label sRef="Label" key={`track-${index}`} s={{ mb: 's' }}>{ artist } - { name }</Label>
                   )) }
-                </Row>
-              </Box>
+                </Box>
+              </Spacer>
             )}
           </Spacer>
         </Container>
