@@ -8,7 +8,7 @@ const searchHandlers: { [key: string]: string } = {
 }
 
 export default function CollectIntelAuthenticated({ code }: any) {
-  const { spotifyApi } = useSpotifyApi(code)
+  const { spotifyApi, accessToken } = useSpotifyApi(code)
 
   const [topArtists, setTopArtists] = useState([])
   const [topTracks, setTopTracks] = useState([])
@@ -22,6 +22,9 @@ export default function CollectIntelAuthenticated({ code }: any) {
           name
         })))
       })
+      .catch((err) => {
+        console.log('ERR: ', err);
+      })
 
     spotifyApi.getMyTopTracks({ time_range: 'long_term', limit: 100 })
       .then((data: any) => {
@@ -30,8 +33,11 @@ export default function CollectIntelAuthenticated({ code }: any) {
           name
         })))
       })
+      .catch((err) => {
+        console.log('ERR: ', err);
+      })
 
-  }, [spotifyApi])
+  }, [spotifyApi, accessToken])
 
   return (
     <>
@@ -43,7 +49,7 @@ export default function CollectIntelAuthenticated({ code }: any) {
                 <Title>Your Top Artists</Title>
                 <Box df fdr fww>
                   { topArtists.map(({ name }, index) => (
-                    <Label sRef="Label" key={`artist-${index}`} s={{ mb: 's', mr: 's' }}>{ name }</Label>
+                    <Label sRef="Label" key={`artist-${index}`} s={{ mb: 's', mr: 's' }}>#{ index + 1 } { name }</Label>
                   )) }
                 </Box>
               </Spacer>
@@ -53,7 +59,7 @@ export default function CollectIntelAuthenticated({ code }: any) {
                 <Title>Your Top Tracks</Title>
                 <Box>
                   { topTracks.map(({ artist, name }, index) => (
-                    <Label sRef="Label" key={`track-${index}`} s={{ mb: 's' }}>{ artist } - { name }</Label>
+                    <Label sRef="Label" key={`track-${index}`} s={{ mb: 's' }}>#{ index + 1 } { artist } - { name }</Label>
                   )) }
                 </Box>
               </Spacer>
