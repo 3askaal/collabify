@@ -12,10 +12,10 @@ export default function Home() {
   const { accessToken } = useSpotifyApi(code?.toString())
 
   useEffect(() => {
-    if (code) {
+    if (code || accessToken) {
       router.replace('/playlist/new', undefined, { shallow: true });
     }
-  }, [code])
+  }, [code, accessToken])
 
   return (
     <>
@@ -23,9 +23,9 @@ export default function Home() {
         <Spacer size="xl" s={{ alignItems: 'center', justifyContent: 'center' }}>
           <Spacer s={{ alignItems: 'center', justifyContent: 'center' }}>
             <Logo />
-            <p>Create smarter collaborative playlists.</p>
+            <p>Generate Smart Collaborative Playlists</p>
           </Spacer>
-          { accessToken ? null : <Login /> }
+          <Login />
         </Spacer>
       </Wrapper>
     </>
