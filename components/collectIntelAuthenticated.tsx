@@ -18,14 +18,17 @@ export default function CollectIntelAuthenticated({ code }: any) {
 
     spotifyApi.getMyTopArtists({ time_range: 'long_term', limit: 100 })
       .then((data: any) => {
-        console.log('getMyTopArtists: ', data)
-        setTopArtists(data?.body?.items.map(({ name }: any) => ({ name })))
+        setTopArtists(data?.body?.items.map(({ name }: any) => ({
+          name
+        })))
       })
 
     spotifyApi.getMyTopTracks({ time_range: 'long_term', limit: 100 })
       .then((data: any) => {
-        console.log('getMyTopTracks: ', data)
-        setTopTracks(data?.body?.items.map(({ artists, name }: any) => ({ artist: artists[0].name, name })))
+        setTopTracks(data?.body?.items.map(({ artists, name }: any) => ({
+          artist: artists.map(({ name }: any) => name).join(', '),
+          name
+        })))
       })
 
   }, [spotifyApi])
