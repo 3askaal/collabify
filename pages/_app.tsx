@@ -8,7 +8,6 @@ import '../fonts.css'
 
 export const SApp = s.div(() => ({
   fontFamily: 'base',
-  // color: 'white',
   backgroundColor: 'background',
   width: '100%',
   height: '100%',
