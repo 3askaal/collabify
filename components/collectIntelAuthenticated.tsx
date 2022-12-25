@@ -24,7 +24,7 @@ export default function CollectIntelAuthenticated() {
         // filter out subgenres
         const mainGenres = uniqueGenres.filter((genre1) => uniqueGenres.some((genre2) => genre1 !== genre2 && genre2.includes(genre1)))
 
-        setTopGenres(uniqueGenres)
+        setTopGenres(mainGenres)
       })
       .catch((err) => {
         console.log('ERR: ', err);
