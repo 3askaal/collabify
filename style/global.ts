@@ -6,12 +6,9 @@ export const LocalGlobalStyle = createGlobalStyle({
     '-moz-osx-font-smoothing': 'grayscale',
   },
 
-  html: {
-    height: '100%',
-  },
-
   body: {
     height: '100%',
+    minHeight: '100vh',
   },
 
   // svg: {
