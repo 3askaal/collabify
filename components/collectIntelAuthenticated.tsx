@@ -1,26 +1,30 @@
 import { useEffect, useState } from 'react'
 import { Spacer, Box, Container, Wrapper, Title, Label } from '3oilerplate'
 import useSpotifyApi from '../hooks/useSpotifyApi'
-import { capitalize, flatten, uniq } from 'lodash'
+import { capitalize, flatten, startCase, uniq } from 'lodash'
 
 export default function CollectIntelAuthenticated() {
   const { spotifyApi, accessToken } = useSpotifyApi()
 
-  const [topArtists, setTopArtists] = useState([])
-  const [topGenres, setTopGenres] = useState([])
-  const [topTracks, setTopTracks] = useState([])
+  const [topGenres, setTopGenres] = useState<string[]>([])
+  const [topArtists, setTopArtists] = useState<any[]>([])
+  const [topTracks, setTopTracks] = useState<any[]>([])
 
   useEffect(() => {
     if (!spotifyApi) return
 
     spotifyApi.getMyTopArtists({ time_range: 'medium_term', limit: 50 })
       .then((data: any) => {
-        console.log(data?.body?.items)
-        setTopArtists(data?.body?.items.map(({ name }: any) => ({
-          name
-        })))
+        const artists = data?.body?.items.map(({ name }: any) => ({ name }))
+        setTopArtists(artists)
 
-        setTopGenres(uniq(flatten(data?.body?.items.map(({genres}: any) => genres))))
+        // includes alot of subgenres
+        const uniqueGenres: string[] = uniq(flatten(data?.body?.items.map(({ genres }: any) => genres)))
+
+        // filter out subgenres
+        const mainGenres = uniqueGenres.filter((genre1) => uniqueGenres.some((genre2) => genre1 !== genre2 && genre2.includes(genre1)))
+
+        setTopGenres(mainGenres)
       })
       .catch((err) => {
         console.log('ERR: ', err);
@@ -49,7 +53,7 @@ export default function CollectIntelAuthenticated() {
                 <Title>Your Top Genres</Title>
                 <Box df fdr fww>
                   { topGenres.map((genre, index) => (
-                    <Label sRef="Label" key={`artist-${index}`} s={{ mb: 's', mr: 's' }}>#{ index + 1 } { capitalize(genre) }</Label>
+                    <Label sRef="Label" key={`artist-${index}`} s={{ mb: 's', mr: 's' }}>#{ index + 1 } { startCase(genre) }</Label>
                   )) }
                 </Box>
               </Spacer>
