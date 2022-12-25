@@ -2,15 +2,16 @@ import React, { useEffect, useState } from "react";
 import axios from 'axios';
 import { useHistory } from "react-router";
 import SpotifyWebApi from "spotify-web-api-node";
+import { useLocalStorage } from "usehooks-ts";
 
 const spotifyApi: any = new SpotifyWebApi({
   clientId: process.env.NEXT_PUBLIC_SPOTIFY_API_CLIENT_ID
 })
 
-export default function useSpotifyApi(code: string): { accessToken: string, spotifyApi: SpotifyWebApi } {
-  const [accessToken, setAccessToken] = useState('')
-  const [refreshToken, setRefreshToken] = useState('')
-  const [expiresIn, setExpiresIn] = useState()
+export default function useSpotifyApi(code?: string): { accessToken: string, spotifyApi: SpotifyWebApi } {
+  const [accessToken, setAccessToken] = useLocalStorage('accessToken', '')
+  const [refreshToken, setRefreshToken] = useLocalStorage('refreshToken', '')
+  const [expiresIn, setExpiresIn] = useLocalStorage('expiresIn', '')
 
   useEffect(() => {
     if (!accessToken) return
@@ -30,7 +31,6 @@ export default function useSpotifyApi(code: string): { accessToken: string, spot
       })
       .catch((err) => {
         console.log('ERR: ', err)
-        // history.push('/')
       })
   }, [code, accessToken])
 
