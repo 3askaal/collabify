@@ -35,26 +35,30 @@ export default function CollectIntelAuthenticated({ code }: any) {
       <Wrapper>
         <Container>
           <Spacer>
-            <Box>
-              <Title>Your Top Artists</Title>
-              <Row>
-              { topArtists.map(({ name }, index) => (
-                <Col s={{ flexGrow: 0 }} key={`artist-${index}`}>
-                  <Label sRef="Label">{ name }</Label>
-                </Col>
-              )) }
-              </Row>
-            </Box>
-            <Box>
-              <Title>Your Top Tracks</Title>
-              <Row>
-                { topTracks.map(({ artist, name }, index) => (
-                  <Col s={{ flexGrow: 0 }} key={`track-${index}`}>
-                    <Label sRef="Label">{ artist } - { name }</Label>
+            { !!topArtists.length && (
+              <Box>
+                <Title>Your Top Artists</Title>
+                <Row>
+                { topArtists.map(({ name }, index) => (
+                  <Col s={{ flexGrow: 0 }} key={`artist-${index}`}>
+                    <Label sRef="Label">{ name }</Label>
                   </Col>
                 )) }
-              </Row>
-            </Box>
+                </Row>
+              </Box>
+            )}
+            { !!topArtists.length && (
+              <Box>
+                <Title>Your Top Tracks</Title>
+                <Row>
+                  { topTracks.map(({ artist, name }, index) => (
+                    <Col s={{ flexGrow: 0 }} key={`track-${index}`}>
+                      <Label sRef="Label">{ artist } - { name }</Label>
+                    </Col>
+                  )) }
+                </Row>
+              </Box>
+            )}
           </Spacer>
         </Container>
       </Wrapper>
