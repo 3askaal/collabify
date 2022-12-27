@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Input, RadioGroup, Spacer, Title } from '3oilerplate'
 import CollectIntelAuthenticated from './collectIntelAuthenticated';
 

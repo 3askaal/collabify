@@ -41,13 +41,11 @@ const DynamicWrapper = dynamic(() => Promise.resolve(NonSSRWrapper), {
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter()
   const code = router.query.code
-  const { accessToken, spotifyApi } = useSpotifyApi(code?.toString())
+  const { accessToken } = useSpotifyApi(code?.toString())
 
   useEffect(() => {
     if (accessToken) {
       router.push('/playlist/new');
-    } else {
-      // router.push('/');
     }
   }, [accessToken, code])
 
