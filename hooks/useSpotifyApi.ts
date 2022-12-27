@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import axios from 'axios';
-import { useHistory } from "react-router";
 import SpotifyWebApi from "spotify-web-api-node";
 import { useLocalStorage } from "usehooks-ts";
 
@@ -8,10 +7,10 @@ const spotifyApi: any = new SpotifyWebApi({
   clientId: process.env.NEXT_PUBLIC_SPOTIFY_API_CLIENT_ID
 })
 
-export default function useSpotifyApi(code?: string): { accessToken: string, spotifyApi: SpotifyWebApi } {
-  const [accessToken, setAccessToken] = useLocalStorage('accessToken', '')
-  const [refreshToken, setRefreshToken] = useLocalStorage('refreshToken', '')
-  const [expiresIn, setExpiresIn] = useLocalStorage('expiresIn', '')
+export default function useSpotifyApi(code?: string): { accessToken: string | null, spotifyApi: SpotifyWebApi, logout: Function } {
+  const [accessToken, setAccessToken] = useLocalStorage<string | null>('accessToken', '')
+  const [refreshToken, setRefreshToken] = useLocalStorage<string | null>('refreshToken', '')
+  const [expiresIn, setExpiresIn] = useLocalStorage<string | null>('expiresIn', '')
 
   useEffect(() => {
     if (!accessToken) return
@@ -20,7 +19,8 @@ export default function useSpotifyApi(code?: string): { accessToken: string, spo
   }, [accessToken])
 
   useEffect(() => {
-    if (!code || accessToken) return
+    if (accessToken) return
+    if (!code) return
 
     axios
       .post(`${process.env.NEXT_PUBLIC_PROD_URL}/api/auth`, { code })
@@ -36,7 +36,8 @@ export default function useSpotifyApi(code?: string): { accessToken: string, spo
 
 
   useEffect(() => {
-    if (!refreshToken || !expiresIn) return
+    if (!refreshToken) return
+    if (!expiresIn) return
 
     const interval = setInterval(() => {
       axios
@@ -55,8 +56,15 @@ export default function useSpotifyApi(code?: string): { accessToken: string, spo
     return () => clearInterval(interval)
   }, [refreshToken, expiresIn])
 
+  const logout = () => {
+    setAccessToken(null)
+    setRefreshToken(null)
+    setExpiresIn(null)
+  }
+
   return {
     spotifyApi: !!accessToken && spotifyApi,
-    accessToken
+    accessToken,
+    logout,
   }
 }

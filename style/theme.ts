@@ -2,6 +2,7 @@ import { darken } from '3oilerplate'
 
 export const fonts = {
   base: "'Cabin', sans-serif",
+  title: "'Cabin', sans-serif",
   logo: "'Courgette', sans-serif",
 }
 

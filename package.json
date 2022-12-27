@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "3oilerplate": "^0.2.46",
+    "3oilerplate": "^0.2.47",
     "@next/font": "13.1.1",
     "@types/axios": "^0.14.0",
     "@types/node": "18.11.17",
@@ -30,6 +30,7 @@
     "randomstring": "^1.2.3",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-feather": "^2.0.10",
     "react-ga4": "^1.4.1",
     "reset-css": "^5.0.1",
     "spotify-web-api-node": "^5.0.2",

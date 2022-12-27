@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"3oilerplate@^0.2.46":
-  version "0.2.46"
-  resolved "https://registry.yarnpkg.com/3oilerplate/-/3oilerplate-0.2.46.tgz#024eae59663d90190215310932288290a35d45a5"
-  integrity sha512-oR2NSzLvCOgFHkRBxfEM8ARS8TmIe4b4TEnNA6uzufKrBftT40kLfKheoZzOwNYgxkUfA65mR0oKAQZF+mM2Rw==
+"3oilerplate@^0.2.47":
+  version "0.2.47"
+  resolved "https://registry.yarnpkg.com/3oilerplate/-/3oilerplate-0.2.47.tgz#358d0f7797e2ded34b29088f4825e1c6daed2a6e"
+  integrity sha512-wm2kaALcFJ9+k2j6A6GXT/e3h3CKbOeqkcI4Nji+2T5RRySWnAo/jbCwnQ2uEtF+OUVgl6XlYnYiIwnSA8ykzQ==
   dependencies:
     "@mdx-js/react" "^1.6.16"
     "@styled-system/css" "^5.1.5"
@@ -4304,7 +4304,7 @@ react-error-boundary@^3.1.0:
   dependencies:
     "@babel/runtime" "^7.12.5"
 
-react-feather@^2.0.8:
+react-feather@^2.0.10, react-feather@^2.0.8:
   version "2.0.10"
   resolved "https://registry.yarnpkg.com/react-feather/-/react-feather-2.0.10.tgz#0e9abf05a66754f7b7bb71757ac4da7fb6be3b68"
   integrity sha512-BLhukwJ+Z92Nmdcs+EMw6dy1Z/VLiJTzEQACDUEnWMClhYnFykJCGWQx+NmwP/qQHGX/5CzQ+TGi8ofg2+HzVQ==
