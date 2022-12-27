@@ -28,9 +28,10 @@ export const THEME = {
       default: {
         border: '2px solid primary',
         background: 'transparent',
-        borderRadius: '20px',
+        borderRadius: '30px',
         borderWidth: '2px',
-        padding: 's'
+        padding: 's',
+        cursor: 'pointer'
       }
     },
     Input: {
@@ -41,6 +42,11 @@ export const THEME = {
         borderRadius: 0,
         minWidth: '100%',
         px: 0,
+      }
+    },
+    Radio: {
+      default: {
+        color: 'white'
       }
     }
   },

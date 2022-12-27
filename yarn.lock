@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"3oilerplate@^0.2.47":
-  version "0.2.47"
-  resolved "https://registry.yarnpkg.com/3oilerplate/-/3oilerplate-0.2.47.tgz#358d0f7797e2ded34b29088f4825e1c6daed2a6e"
-  integrity sha512-wm2kaALcFJ9+k2j6A6GXT/e3h3CKbOeqkcI4Nji+2T5RRySWnAo/jbCwnQ2uEtF+OUVgl6XlYnYiIwnSA8ykzQ==
+"3oilerplate@^0.2.49":
+  version "0.2.49"
+  resolved "https://registry.yarnpkg.com/3oilerplate/-/3oilerplate-0.2.49.tgz#5daac98c44d5ed6cbc12356e2e15c0133c0ab3b5"
+  integrity sha512-XwJ5rfjwe+vo+WHvfD+IJOemKmw7GACvp7eXCj8jmwZBzsL0/hvIz0VTJxyczblYfZ1DLDA/Pokzl+r/Oq+5Bg==
   dependencies:
     "@mdx-js/react" "^1.6.16"
     "@styled-system/css" "^5.1.5"
@@ -4709,6 +4709,11 @@ slash@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/slash/-/slash-4.0.0.tgz#2422372176c4c6c5addb5e2ada885af984b396a7"
   integrity sha512-3dOsAHXXUkQTpOYcoAxLIorMTp4gIQr5IW3iVb7A7lFIp0VHhnynm9izx6TssdrIcVIESAlVjtnO2K8bg+Coew==
+
+slugify@^1.6.5:
+  version "1.6.5"
+  resolved "https://registry.yarnpkg.com/slugify/-/slugify-1.6.5.tgz#c8f5c072bf2135b80703589b39a3d41451fbe8c8"
+  integrity sha512-8mo9bslnBO3tr5PEVFzMPIWwWnipGS0xVbYf65zxDqfNwmzYn1LpiKNrR6DlClusuvo+hDHd1zKpmfAe83NQSQ==
 
 source-list-map@^2.0.0:
   version "2.0.1"
