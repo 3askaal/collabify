@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Box, Input, RadioGroup, Spacer, Button, Row, Col } from '3oilerplate'
+import { Input, RadioGroup, Spacer, Title } from '3oilerplate'
 import CollectIntelAuthenticated from './collectIntelAuthenticated';
 
 export default function Steps({ currentStep }: any) {
@@ -7,7 +7,7 @@ export default function Steps({ currentStep }: any) {
     case 0:
       return (
         <Spacer>
-          <p>Choose a name for your playlist</p>
+          <Title level="4">Choose a name for your playlist</Title>
           <Input />
         </Spacer>
       )
@@ -15,7 +15,7 @@ export default function Steps({ currentStep }: any) {
     case 1:
       return (
         <Spacer>
-          <p>For who is this playlist?</p>
+          <Title level="4">For who is this playlist?</Title>
           <RadioGroup options={[
             { label: 'Friend', value: 'friend' },
             { label: 'Crush', value: 'crush' },

@@ -9,6 +9,7 @@ import useSpotifyApi from '../hooks/useSpotifyApi'
 
 import 'reset-css/reset.css'
 import '../fonts.css'
+import { useEffect } from 'react'
 
 ReactGA.initialize('G-B4GVQFN1MH', {
   testMode: process?.env?.NODE_ENV !== 'production'
@@ -40,7 +41,15 @@ const DynamicWrapper = dynamic(() => Promise.resolve(NonSSRWrapper), {
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter()
   const code = router.query.code
-  const { accessToken } = useSpotifyApi(code?.toString())
+  const { accessToken, spotifyApi } = useSpotifyApi(code?.toString())
+
+  useEffect(() => {
+    if (accessToken) {
+      router.push('/playlist/new');
+    } else {
+      // router.push('/');
+    }
+  }, [accessToken, code])
 
   return (
     <ThemeProvider theme={mergeTheme(DEFAULT_THEME, THEME)}>
