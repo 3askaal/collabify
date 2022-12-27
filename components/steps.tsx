@@ -13,17 +13,6 @@ export default function Steps({ currentStep }: any) {
 
     case 1:
       return (
-        <Spacer>
-          <Title level="4">For who is this playlist?</Title>
-          <RadioGroup options={[
-            { label: 'Friend', value: 'friend' },
-            { label: 'Crush', value: 'crush' },
-          ]} />
-        </Spacer>
-      )
-
-    case 2:
-      return (
         <CollectIntelAuthenticated />
       )
 
