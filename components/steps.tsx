@@ -1,4 +1,4 @@
-import { Input, RadioGroup, Spacer, Title } from '3oilerplate'
+import { Input, Spacer, Title } from '3oilerplate'
 import CollectIntelAuthenticated from './collectIntelAuthenticated';
 
 export default function Steps({ currentStep }: any) {

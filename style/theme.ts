@@ -26,12 +26,24 @@ export const THEME = {
     },
     Label: {
       default: {
-        border: '2px solid primary',
+        border: '2px solid',
+        borderColor: 'grey20',
         background: 'transparent',
         borderRadius: '30px',
         borderWidth: '2px',
         padding: 's',
-        cursor: 'pointer'
+        cursor: 'pointer',
+        userSelect: 'none',
+
+        '> span': {
+          color: 'grey20',
+        }
+      },
+      variants: {
+        isSelected: {
+          borderColor: 'primary',
+          color: 'primary',
+        }
       }
     },
     Input: {
@@ -44,11 +56,11 @@ export const THEME = {
         px: 0,
       }
     },
-    Radio: {
-      default: {
-        color: 'white'
-      }
-    }
+    // Radio: {
+    //   default: {
+    //     color: 'white'
+    //   }
+    // }
   },
   fonts
 }
