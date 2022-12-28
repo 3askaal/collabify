@@ -33,6 +33,7 @@ export const THEME = {
         borderWidth: '2px',
         padding: 's',
         cursor: 'pointer',
+        userSelect: 'none',
 
         '> span': {
           color: 'grey20',
