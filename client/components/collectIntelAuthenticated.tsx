@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { Spacer, Box, Container, Wrapper, Title } from '3oilerplate'
-import { flatten, orderBy, remove, startCase, uniq } from 'lodash'
-import slugify from 'slugify';
+import { Spacer, Box, Container, Wrapper, ElementGroup, Button } from '3oilerplate'
+import { orderBy, remove, startCase } from 'lodash'
 import useSpotifyApi from '../hooks/useSpotifyApi'
 import SelectionLabel from './selectionLabel'
 
@@ -23,16 +22,19 @@ interface Intel {
 export default function CollectIntelAuthenticated() {
   const { spotifyApi, accessToken } = useSpotifyApi()
 
-  const [selectedTerm, setSelectedTerm] = useState<{ artists: TermTypes, tracks: TermTypes }>({ artists: 'short_term', tracks: 'short_term' })
+  const [selectedTerm, setSelectedTerm] = useState<{ artists: TermTypes, tracks: TermTypes, genres: TermTypes }>({ artists: 'short_term', tracks: 'short_term', genres: 'short_term' })
+  const [activePanel, setActivePanel] = useState<string>('artists')
 
   const [intel, setIntel] = useState<Intel>({
     artists: { short_term: [], medium_term: [], long_term: [] },
     tracks: { short_term: [], medium_term: [], long_term: [] },
+    genres: { short_term: [], medium_term: [], long_term: [] },
   })
 
   // const topGenres = (term: TermTypes) => intel.genres
   const topTracks = intel.tracks ? intel.tracks[selectedTerm.tracks] : []
   const topArtists = intel.artists ? intel.artists[selectedTerm.artists] : []
+  const topGenres = intel.genres ? intel.genres[selectedTerm.genres] : []
 
   const fetchers: {[key: string]: 'getMyTopArtists' | 'getMyTopTracks'} = {
     artists: 'getMyTopArtists',
@@ -159,60 +161,79 @@ export default function CollectIntelAuthenticated() {
 
   return (
     <>
-      <Wrapper>
-        <Container>
+      <ElementGroup>
+        <Button
+          isBlock
+          isOutline={activePanel !== 'artists'}
+          onClick={() => setActivePanel('artists')}
+        >
+          Artists
+        </Button>
+        <Button
+          isBlock
+          isOutline={activePanel !== 'tracks'}
+          onClick={() => setActivePanel('tracks')}
+        >
+          Tracks
+        </Button>
+        <Button
+          isBlock
+          isOutline={activePanel !== 'genres'}
+          onClick={() => setActivePanel('genres')}
+        >
+          Genres
+        </Button>
+      </ElementGroup>
+
+      <Box df fdc s={{ flexGrow: 1, overflowY: 'auto', paddingY: 'm' }}>
+        { activePanel === 'artists' ? (
           <Spacer>
-            {/* { !!topGenres.length && (
-              <Spacer>
-                <Title>Your Top Genres</Title>
-                <Box df fdr fww>
-                  { topGenres.map(({ id, index, name, selected }) => (
-                    <SelectionLabel
-                      onClick={() => toggleItem('genres', id)}
-                      key={`genre-${index}`}
-                      selected={selected}
-                    >
-                      { startCase(name) }
-                    </SelectionLabel>
-                  )) }
-                </Box>
-              </Spacer>
-            ) } */}
-            { !!topArtists.length && (
-              <Spacer>
-                <Title>Your Top Artists</Title>
-                <Box df fdr fww>
-                  { topArtists.map(({ id, index, name, selected }) => (
-                    <SelectionLabel
-                      onClick={() => toggleItem('artists', selectedTerm.artists, id)}
-                      key={`artist-${index}`}
-                      selected={selected}
-                    >
-                      { name }
-                    </SelectionLabel>
-                  )) }
-                </Box>
-              </Spacer>
-            )}
-            { !!topArtists.length && (
-              <Spacer>
-                <Title>Your Top Tracks</Title>
-                <Box>
-                  { topTracks.map(({ id, index, artist, name, selected }) => (
-                    <SelectionLabel
-                      onClick={() => toggleItem('tracks', selectedTerm.tracks, id)}
-                      key={`track-${index}`}
-                      selected={selected}
-                    >
-                      { artist } - { name }
-                    </SelectionLabel>
-                  )) }
-                </Box>
-              </Spacer>
-            )}
+            <Box df fdr fww>
+              { topArtists.map(({ id, index, name, selected }) => (
+                <SelectionLabel
+                  onClick={() => toggleItem('artists', selectedTerm.artists, id)}
+                  key={`artist-${index}`}
+                  selected={selected}
+                >
+                  { name }
+                </SelectionLabel>
+              )) }
+            </Box>
           </Spacer>
-        </Container>
-      </Wrapper>
+        ) : null }
+
+        { activePanel === 'tracks' ? (
+          <Spacer>
+            <Box>
+              { topTracks.map(({ id, index, artist, name, selected }) => (
+                <SelectionLabel
+                  onClick={() => toggleItem('tracks', selectedTerm.tracks, id)}
+                  key={`track-${index}`}
+                  selected={selected}
+                >
+                  { artist } - { name }
+                </SelectionLabel>
+              )) }
+            </Box>
+          </Spacer>
+        ) : null }
+
+        { activePanel === 'genres' ? (
+          <Spacer>
+            <Box df fdr fww>
+              { topGenres.map(({ id, index, name, selected }) => (
+                <SelectionLabel
+                  onClick={() => toggleItem('genres', selectedTerm.genres, id)}
+                  key={`genre-${index}`}
+                  selected={selected}
+                >
+                  { startCase(name) }
+                </SelectionLabel>
+              )) }
+            </Box>
+          </Spacer>
+        ) : null }
+      </Box>
     </>
   )
 }

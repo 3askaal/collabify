@@ -20,26 +20,18 @@ export default function Playlist() {
   return (
     <>
       <Wrapper s={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center', pt: 'm' }}>
+
         <Box df w100p jcc>
           <Logo small />
         </Box>
+
         <Box posa r='0' t='0' s={{ p: 'm' }}>
           <Button onClick={logout} s={{ p: 's', borderRadius: '100%' }}>
             <UserIcon size="14" />
           </Button>
         </Box>
-        {/* <Row s={{ width: '100%' }}>
-          <Col width={20} />
-          <Col width={60} s={{ display: 'flex', alignItems: 'center' }}>
-          </Col>
-          <Col width={20} s={{ display: 'flex', alignItems: 'flex-end' }}>
-            <Button onClick={logout} s={{ p: 's', borderRadius: '100%' }}>
-              <UserIcon />
-            </Button>
-          </Col>
-        </Row> */}
 
-        <Container s={{ maxWidth: '480px', justifyContent: 'center', flexGrow: 1, overflowY: 'auto' }}>
+        <Container s={{ maxWidth: '480px', justifyContent: 'center', flexGrow: 1, overflowY: 'hidden', mt: '1rem' }}>
           <Steps currentStep={step} />
         </Container>
 
@@ -51,6 +43,7 @@ export default function Playlist() {
             <ArrowRightIcon />
           </Button>
         </Spacer>
+
       </Wrapper>
     </>
   )
