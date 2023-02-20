@@ -22,8 +22,8 @@ interface Intel {
 export default function CollectIntelAuthenticated() {
   const { spotifyApi, accessToken } = useSpotifyApi()
 
-  const [selectedTerm, setSelectedTerm] = useState<{ artists: TermTypes, tracks: TermTypes, genres: TermTypes }>({ artists: 'short_term', tracks: 'short_term', genres: 'short_term' })
-  const [activePanel, setActivePanel] = useState<string>('artists')
+  const [activeTab, setActiveTab] = useState<string>('artists')
+  const [activeTerm, setActiveTerm] = useState<{ artists: TermTypes, tracks: TermTypes, genres: TermTypes }>({ artists: 'short_term', tracks: 'short_term', genres: 'short_term' })
 
   const [intel, setIntel] = useState<Intel>({
     artists: { short_term: [], medium_term: [], long_term: [] },
@@ -32,9 +32,9 @@ export default function CollectIntelAuthenticated() {
   })
 
   // const topGenres = (term: TermTypes) => intel.genres
-  const topTracks = intel.tracks ? intel.tracks[selectedTerm.tracks] : []
-  const topArtists = intel.artists ? intel.artists[selectedTerm.artists] : []
-  const topGenres = intel.genres ? intel.genres[selectedTerm.genres] : []
+  const topTracks = intel.tracks ? intel.tracks[activeTerm.tracks] : []
+  const topArtists = intel.artists ? intel.artists[activeTerm.artists] : []
+  const topGenres = intel.genres ? intel.genres[activeTerm.genres] : []
 
   const fetchers: {[key: string]: 'getMyTopArtists' | 'getMyTopTracks'} = {
     artists: 'getMyTopArtists',
@@ -160,38 +160,64 @@ export default function CollectIntelAuthenticated() {
   }
 
   return (
-    <>
+    <Spacer s={{ height: '100%' }}>
       <ElementGroup>
         <Button
           isBlock
-          isOutline={activePanel !== 'artists'}
-          onClick={() => setActivePanel('artists')}
+          isOutline={activeTab !== 'artists'}
+          onClick={() => setActiveTab('artists')}
         >
           Artists
         </Button>
         <Button
           isBlock
-          isOutline={activePanel !== 'tracks'}
-          onClick={() => setActivePanel('tracks')}
+          isOutline={activeTab !== 'tracks'}
+          onClick={() => setActiveTab('tracks')}
         >
           Tracks
         </Button>
         <Button
           isBlock
-          isOutline={activePanel !== 'genres'}
-          onClick={() => setActivePanel('genres')}
+          isOutline={activeTab !== 'genres'}
+          onClick={() => setActiveTab('genres')}
         >
           Genres
         </Button>
       </ElementGroup>
 
+      { (activeTab === 'artists' || activeTab === 'tracks' ) && (
+        <ElementGroup s={{ alignSelf: 'center' }}>
+          <Button
+            isTermSelector
+            isOutline={activeTerm[activeTab] !== 'short_term'}
+            onClick={() => setActiveTerm({...activeTerm, [activeTab]: 'short_term'})}
+          >
+            Short Term
+          </Button>
+          <Button
+            isTermSelector
+            isOutline={activeTerm[activeTab] !== 'medium_term'}
+            onClick={() => setActiveTerm({...activeTerm, [activeTab]: 'medium_term'})}
+          >
+            Medium Term
+          </Button>
+          <Button
+            isTermSelector
+            isOutline={activeTerm[activeTab] !== 'long_term'}
+            onClick={() => setActiveTerm({...activeTerm, [activeTab]: 'long_term'})}
+          >
+            Long Term
+          </Button>
+        </ElementGroup>
+      ) }
+
       <Box df fdc s={{ flexGrow: 1, overflowY: 'auto', paddingY: 'm' }}>
-        { activePanel === 'artists' ? (
+        { activeTab === 'artists' ? (
           <Spacer>
             <Box df fdr fww>
               { topArtists.map(({ id, index, name, selected }) => (
                 <SelectionLabel
-                  onClick={() => toggleItem('artists', selectedTerm.artists, id)}
+                  onClick={() => toggleItem('artists', activeTerm.artists, id)}
                   key={`artist-${index}`}
                   selected={selected}
                 >
@@ -202,12 +228,12 @@ export default function CollectIntelAuthenticated() {
           </Spacer>
         ) : null }
 
-        { activePanel === 'tracks' ? (
+        { activeTab === 'tracks' ? (
           <Spacer>
             <Box>
               { topTracks.map(({ id, index, artist, name, selected }) => (
                 <SelectionLabel
-                  onClick={() => toggleItem('tracks', selectedTerm.tracks, id)}
+                  onClick={() => toggleItem('tracks', activeTerm.tracks, id)}
                   key={`track-${index}`}
                   selected={selected}
                 >
@@ -218,12 +244,12 @@ export default function CollectIntelAuthenticated() {
           </Spacer>
         ) : null }
 
-        { activePanel === 'genres' ? (
+        { activeTab === 'genres' ? (
           <Spacer>
             <Box df fdr fww>
               { topGenres.map(({ id, index, name, selected }) => (
                 <SelectionLabel
-                  onClick={() => toggleItem('genres', selectedTerm.genres, id)}
+                  onClick={() => toggleItem('genres', activeTerm.genres, id)}
                   key={`genre-${index}`}
                   selected={selected}
                 >
@@ -234,6 +260,6 @@ export default function CollectIntelAuthenticated() {
           </Spacer>
         ) : null }
       </Box>
-    </>
+    </Spacer>
   )
 }
