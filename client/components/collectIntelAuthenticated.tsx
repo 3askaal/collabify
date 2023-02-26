@@ -45,7 +45,7 @@ export default function CollectIntelAuthenticated() {
   }
 
   return (
-    <Spacer size="l" s={{ height: '100%' }}>
+    <Spacer size="m" s={{ height: '100%' }}>
       <Spacer size="s">
         <ElementGroup>
           <Button
@@ -96,8 +96,7 @@ export default function CollectIntelAuthenticated() {
         </ElementGroup>
       </Spacer>
 
-
-      <Box df fdc s={{ flexGrow: 1, overflowY: 'auto', paddingY: 'm' }}>
+      <Box df fdc s={{ flexGrow: 1, overflowY: 'auto' }}>
         { activeTab === 'genres' ? (
           <Spacer>
             <Box df fdr fww jcc>

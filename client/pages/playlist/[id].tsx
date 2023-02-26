@@ -106,7 +106,7 @@ export default function Playlist() {
           </Button>
         </Box>
 
-        <Container s={{ maxWidth: '480px', justifyContent: 'center', flexGrow: 1, overflowY: 'hidden', mt: 'm' }}>
+        <Container s={{ maxWidth: '480px', justifyContent: 'center', flexGrow: 1, overflowY: 'hidden', my: 'm' }}>
           <Steps currentStep={step} />
         </Container>
 
