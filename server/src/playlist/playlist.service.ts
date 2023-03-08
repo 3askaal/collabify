@@ -1,33 +1,31 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Playlist } from './playlist.schema';
-import { IIntel, IPlaylist } from '../../../types/playlist';
+import { Playlist, PlaylistDocument } from './playlist.schema';
+import { IPlaylist, IPlaylistIntel } from '../../../types/playlist';
 
 @Injectable()
 export class PlaylistService {
   constructor(
-    @InjectModel(Playlist.name)
-    private readonly playlistModel: Model<Playlist>,
+    @InjectModel(Playlist.name) private playlistModel: Model<PlaylistDocument>,
   ) {}
 
-  async create(payload: IPlaylist): Promise<any> {
+  async create(payload: IPlaylist): Promise<Playlist> {
     return this.playlistModel.create(payload);
   }
 
-  async join(
-    playlistId: string,
-    userId: string,
-    data: IIntel['data'],
-  ): Promise<any> {
-    const newIntel: IIntel = {
-      userId,
-      data,
-      submittedAt: new Date(),
-    };
+  async get(playlistId: string): Promise<Playlist> {
+    return this.playlistModel.findById(playlistId);
+  }
 
+  async join(playlistId: string, intel: IPlaylistIntel): Promise<Playlist> {
     return this.playlistModel.findByIdAndUpdate(playlistId, {
-      $push: { intel: newIntel },
+      $push: {
+        intel: {
+          ...intel,
+          submittedAt: new Date(),
+        },
+      },
     });
   }
 }
