@@ -66,6 +66,7 @@ export const THEME = {
         borderRight: 0,
         borderRadius: 0,
         minWidth: '100%',
+        borderWidth: '1px',
         px: 0,
       }
     },
