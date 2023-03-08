@@ -1,7 +1,8 @@
-import { Input, Spacer, Title } from '3oilerplate'
+import { Input, Spacer, Title, Button } from '3oilerplate'
+import { useContext } from 'react';
 import CollectIntelAuthenticated from './collectIntelAuthenticated';
 
-export default function Steps({ currentStep }: any) {
+export default function Steps({ currentStep, onSubmit }: any) {
   switch (currentStep) {
     case 0:
       return (
@@ -18,7 +19,9 @@ export default function Steps({ currentStep }: any) {
 
     default:
       return (
-        <></>
+        <Spacer>
+          <Button onClick={onSubmit}>Submit</Button>
+        </Spacer>
       )
   }
 }
