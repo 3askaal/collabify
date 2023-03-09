@@ -1,8 +1,7 @@
 import { Input, Spacer, Title, Button } from '3oilerplate'
-import { useContext } from 'react';
-import CollectIntelAuthenticated from './collectIntelAuthenticated';
+import { CollectIntelAuthenticated } from './';
 
-export default function Steps({ currentStep, onSubmit }: any) {
+export function Steps({ currentStep, onSubmit }: any) {
   switch (currentStep) {
     case 0:
       return (

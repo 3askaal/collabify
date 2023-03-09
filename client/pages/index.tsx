@@ -1,6 +1,5 @@
 import { Wrapper, Spacer } from '3oilerplate'
-import Login from '../components/login'
-import Logo from '../components/logo'
+import { Login, Logo } from '../components'
 
 export default function Home() {
   return (
