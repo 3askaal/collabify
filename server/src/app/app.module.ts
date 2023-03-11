@@ -1,11 +1,18 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
-import { CONFIG } from 'src/config';
+import { CONFIG, NEST_CONFIG } from 'src/config';
 import { PlaylistModule } from 'src/playlist/playlist.module';
 
 @Module({
-  imports: [MongooseModule.forRoot(CONFIG.MONGODB_URI), PlaylistModule],
+  imports: [
+    ConfigModule.forRoot({
+      load: [NEST_CONFIG],
+    }),
+    MongooseModule.forRoot(CONFIG.MONGODB_URI),
+    PlaylistModule,
+  ],
   controllers: [AppController],
 })
 export class AppModule {}
