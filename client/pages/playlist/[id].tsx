@@ -4,11 +4,11 @@ import { User as UserIcon, ArrowLeft as ArrowLeftIcon, ArrowRight as ArrowRightI
 import { Logo, Steps } from '../../components';
 import useSpotifyApi from '../../hooks/useSpotifyApi'
 import { IntelContext } from '../../context/IntelContext'
-import { collectIntelData } from '../../helpers'
+import { collectData } from '../../helpers'
 
 export default function Playlist() {
   const { spotifyApi, accessToken, logout } = useSpotifyApi()
-  const { setIntel } = useContext(IntelContext)
+  const { setData } = useContext(IntelContext)
 
   const [step, setStep] = useState(0);
 
@@ -22,12 +22,12 @@ export default function Playlist() {
 
   useEffect(() => {
     if (!spotifyApi) return
-    if (!setIntel) return
+    if (!setData) return
 
-    collectIntelData(spotifyApi).then((data) => {
-      setIntel(data)
+    collectData(spotifyApi).then((data) => {
+      setData(data)
     })
-  }, [spotifyApi, accessToken, setIntel])
+  }, [spotifyApi, accessToken, setData])
 
   return (
     <>

@@ -1,29 +1,25 @@
 import React, { createContext, Dispatch, SetStateAction, useState } from 'react'
 import useAxios from "axios-hooks";
-import { IPlaylistIntelData } from '../../types/playlist'
+import { IData } from '../../types/playlist'
 import { API_URL } from '../config';
 import { useRouter } from 'next/router';
 
 export interface IntelContextType {
-  intel?: IPlaylistIntelData;
-  setIntel?: Dispatch<SetStateAction<IPlaylistIntelData>>;
+  data?: IData;
+  setData?: Dispatch<SetStateAction<IData>>;
   [key: string]: any;
 }
 
 export const IntelContext = createContext<IntelContextType>({
-  intel: {},
-  setIntel: () => null
+  data: {},
+  setData: () => null
 })
 
 export const IntelProvider = ({ children }: any) => {
   const { query: { id: playlistId } } = useRouter()
-  const [intel, setIntel] = useState<IPlaylistIntelData>({
-    artists: { short_term: [], medium_term: [], long_term: [] },
-    tracks: { short_term: [], medium_term: [], long_term: [] },
-    genres: { short_term: [], medium_term: [], long_term: [] },
-  })
+  const [data, setData] = useState<IData>({})
 
-  const [{ data }, submitIntelCallback] = useAxios(
+  const [{ data: res }, submitDataCallback] = useAxios(
     {
       url: `${API_URL}/${playlistId}`,
       method: 'PUT'
@@ -31,11 +27,11 @@ export const IntelProvider = ({ children }: any) => {
     { manual: true }
   )
 
-  const submitIntel = () => {
-    submitIntelCallback({
+  const submitData = () => {
+    submitDataCallback({
       data: {
         userId: '???',
-        data: intel
+        data: data
       }
     })
   }
@@ -43,8 +39,8 @@ export const IntelProvider = ({ children }: any) => {
   return (
     <IntelContext.Provider
       value={{
-        intel,
-        setIntel
+        data,
+        setData
       }}
     >
       {children}

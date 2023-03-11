@@ -1,22 +1,22 @@
 import { useContext, useState } from 'react'
 import { Spacer, Box, ElementGroup, Button } from '3oilerplate'
 import { orderBy, remove, startCase } from 'lodash'
-import { SelectionLabel } from './'
+import { SelectionLabel } from '.'
 import { IntelContext } from '../context/IntelContext'
-import { IPlaylistIntelData } from '../../types/playlist'
+import { IData } from '../../types/playlist'
 
 type DataTypes = 'artists' | 'tracks' | 'genres';
 type TermTypes = 'short_term' | 'medium_term' | 'long_term';
 
-export function CollectIntelAuthenticated() {
-  const { intel, setIntel } = useContext(IntelContext)
+export function FilterData() {
+  const { data, setData } = useContext(IntelContext)
 
   const [activeTab, setActiveTabState] = useState<DataTypes>('genres')
   const [activeTerm, setActiveTerm] = useState<{ artists: TermTypes, tracks: TermTypes, genres: TermTypes }>({ artists: 'short_term', tracks: 'short_term', genres: 'short_term' })
 
-  const topTracks = intel && intel.tracks ? intel.tracks[activeTerm.tracks] : []
-  const topArtists = intel && intel.artists ? intel.artists[activeTerm.artists] : []
-  const topGenres = intel && intel.genres ? intel.genres[activeTerm.genres] : []
+  const topTracks = data && data.tracks ? data.tracks[activeTerm.tracks] : []
+  const topArtists = data && data.artists ? data.artists[activeTerm.artists] : []
+  const topGenres = data && data.genres ? data.genres[activeTerm.genres] : []
 
   const setActiveTab = (activeTab: DataTypes) => {
     setActiveTabState(activeTab)
@@ -24,7 +24,7 @@ export function CollectIntelAuthenticated() {
   }
 
   const toggleItem = (type: DataTypes, term: TermTypes, id: string) => {
-    const currentTypeData = intel![type]
+    const currentTypeData = data![type]
     const currentTermData = currentTypeData ? currentTypeData[term] : []
 
     const currentItem = remove(currentTermData, { id })[0];
@@ -36,7 +36,7 @@ export function CollectIntelAuthenticated() {
       ['desc', 'asc']
     );
 
-    setIntel && setIntel((currentIntel: IPlaylistIntelData) => ({
+    setData && setData((currentIntel: IData) => ({
       ...currentIntel,
       [type]: {
         ...currentIntel[type],

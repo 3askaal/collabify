@@ -28,6 +28,7 @@ export default async function handler(
       })
     })
     .catch((err) => {
+      console.log('ERR:', err);
       res.send(400)
     })
 }

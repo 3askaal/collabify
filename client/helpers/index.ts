@@ -1,1 +1,1 @@
-export * from './intel'
+export * from './data'

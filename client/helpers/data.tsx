@@ -1,24 +1,8 @@
 import { flatten, uniq } from "lodash";
 import slugify from "slugify";
-import { IPlaylistIntelData, ITerms } from "../../types/playlist";
+import { IData, ITerms } from "../../types/playlist";
 
-type Genre = string;
-
-interface Artist {
-  uri: string;
-  name: string;
-}
-
-interface Track {
-  uri: string;
-  name: string;
-  artists: Artist[];
-  genres: Genre[];
-}
-
-type Object = Genre | Artist | Track;
-
-export const collectIntelData = async (spotifyApi: any): Promise<IPlaylistIntelData> => await ['tracks', 'artists'].reduce(async (accumulatorPromise, instance): Promise<ITerms> => {
+export const collectData = async (spotifyApi: any): Promise<IData> => await ['tracks', 'artists'].reduce(async (accumulatorPromise, instance): Promise<ITerms> => {
   const fetchers: {[key: string]: 'getMyTopArtists' | 'getMyTopTracks'} = {
     artists: 'getMyTopArtists',
     tracks: 'getMyTopTracks',
@@ -47,7 +31,7 @@ export const collectIntelData = async (spotifyApi: any): Promise<IPlaylistIntelD
       ...accumulator,
       [term]: items
     }
-  }, Promise.resolve({ short_term: [], medium_term: [], long_term: [] }) as Promise<IPlaylistIntelData>)
+  }, Promise.resolve({ short_term: [], medium_term: [], long_term: [] }) as Promise<IData>)
 
   let genres = {}
 
@@ -79,6 +63,6 @@ export const collectIntelData = async (spotifyApi: any): Promise<IPlaylistIntelD
   }
 }, Promise.resolve({ tracks: {}, artists: {} }) as any)
 
-export const formatIntelData = (data: IPlaylistIntelData) => {
+export const formatIntelData = (data: IData) => {
 
 }

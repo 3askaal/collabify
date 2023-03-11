@@ -1,5 +1,5 @@
 import { Controller, Get, Body, Param, Put } from '@nestjs/common';
-import { IPlaylist, IPlaylistIntel } from '../../../types/playlist';
+import { IPlaylist, IParticipation } from '../../../types/playlist';
 import { Playlist } from './playlist.schema';
 import { PlaylistService } from './playlist.service';
 
@@ -30,7 +30,7 @@ export class PlaylistController {
   @Put(':id')
   async join(
     @Param() params,
-    @Body() payload: IPlaylistIntel,
+    @Body() payload: IParticipation,
   ): Promise<Playlist> {
     const { playlistId } = params;
 
