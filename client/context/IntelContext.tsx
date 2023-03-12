@@ -1,8 +1,9 @@
-import React, { createContext, Dispatch, SetStateAction, useState } from 'react'
+import React, { createContext, Dispatch, SetStateAction, useEffect, useState } from 'react'
 import useAxios from "axios-hooks";
 import { IData } from '../../types/playlist'
 import { API_URL } from '../config';
 import { useRouter } from 'next/router';
+import { formatData } from '../helpers';
 
 export interface IntelContextType {
   data?: IData;
@@ -19,28 +20,60 @@ export const IntelProvider = ({ children }: any) => {
   const { query: { id: playlistId } } = useRouter()
   const [data, setData] = useState<IData>({})
 
-  const [{ data: res }, submitDataCallback] = useAxios(
-    {
-      url: `${API_URL}/${playlistId}`,
+  const [{ data: submitDataRes }, submitDataCallback] = useAxios(
+    playlistId === 'new' ? {
+      url: `${API_URL}/playlist`,
+      method: 'POST'
+    } : {
+      url: `${API_URL}/playlist/${playlistId}`,
       method: 'PUT'
     },
+    { manual: true }
+  )
+
+  const [{ data: getDataRes }, getDataCallback] = useAxios(
+    playlistId ? {
+      url: `${API_URL}/playlist/${playlistId}`,
+      method: 'GET'
+    } : {},
     { manual: true }
   )
 
   const submitData = () => {
     submitDataCallback({
       data: {
-        userId: '???',
-        data: data
+        participations: [{
+          userId: '???',
+          data: formatData(data)
+        }]
       }
     })
   }
+
+  useEffect(() => {
+    if (submitDataRes) {
+      console.log(submitDataRes)
+    }
+  }, [submitDataRes])
+
+  useEffect(() => {
+    if (playlistId && playlistId !== 'new') {
+      getDataCallback()
+    }
+  }, [playlistId])
+
+  useEffect(() => {
+    if (getDataRes) {
+      console.log(getDataRes)
+    }
+  }, [getDataRes])
 
   return (
     <IntelContext.Provider
       value={{
         data,
-        setData
+        setData,
+        submitData
       }}
     >
       {children}

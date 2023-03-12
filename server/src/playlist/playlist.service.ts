@@ -12,14 +12,23 @@ export class PlaylistService {
   ) {}
 
   async create(payload: IPlaylist): Promise<Playlist> {
-    return this.playlistModel.create(payload);
+    const doc = await this.playlistModel.create({
+      ...payload,
+      participations: [
+        {
+          ...payload.participations[0],
+          submittedAt: new Date(),
+        },
+      ],
+    });
+    return doc;
   }
 
   async get(playlistId: string): Promise<Playlist> {
     return this.playlistModel.findById(playlistId);
   }
 
-  async join(
+  async participate(
     playlistId: string,
     participation: IParticipation,
   ): Promise<Playlist> {
