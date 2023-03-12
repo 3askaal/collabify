@@ -39,12 +39,20 @@ export const IntelProvider = ({ children }: any) => {
     { manual: true }
   )
 
+  const [{ data: releaseRes }, release] = useAxios(
+    playlistId ? {
+      url: `${API_URL}/playlist/${playlistId}/release`,
+      method: 'GET'
+    } : {},
+    { manual: true }
+  )
+
   const submitData = () => {
     submitDataCallback({
       data: {
         participations: [{
           userId: '???',
-          data: formatData(data)
+          data: data
         }]
       }
     })
@@ -68,12 +76,19 @@ export const IntelProvider = ({ children }: any) => {
     }
   }, [getDataRes])
 
+  useEffect(() => {
+    if (releaseRes) {
+      console.log(releaseRes)
+    }
+  }, [releaseRes])
+
   return (
     <IntelContext.Provider
       value={{
         data,
         setData,
-        submitData
+        submitData,
+        release
       }}
     >
       {children}
