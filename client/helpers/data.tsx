@@ -1,11 +1,17 @@
-import { flatten, uniq } from "lodash";
+import { flatten, sampleSize, uniq } from "lodash";
 import slugify from "slugify";
 import { IData, ITerms } from "../../types/playlist";
 
-export const collectData = async (spotifyApi: any): Promise<IData> => await ['tracks', 'artists'].reduce(async (accumulatorPromise, instance): Promise<ITerms> => {
+
+export const collectData = async (spotifyApi: any, debug?: boolean, seed_tracks?: string[]): Promise<IData> => await ['artists', 'tracks'].reduce(async (accumulatorPromise, instance): Promise<ITerms> => {
   const fetchers: {[key: string]: 'getMyTopArtists' | 'getMyTopTracks'} = {
     artists: 'getMyTopArtists',
     tracks: 'getMyTopTracks',
+  }
+
+  const debugFetchers: {[key: string]: string} = {
+    artists: 'getRecommendations',
+    tracks: 'getRecommendations',
   }
 
   const accumulator = await accumulatorPromise
@@ -13,19 +19,34 @@ export const collectData = async (spotifyApi: any): Promise<IData> => await ['tr
   const items = await ['short_term', 'medium_term', 'long_term'].reduce(async (accumulatorPromise, term: any): Promise<any> => {
     const accumulator = await accumulatorPromise
 
-    const data = await spotifyApi[fetchers[instance]]({ time_range: term, limit: 50 })
-    const items = data?.body?.items.map(({ name, uri, artists, genres }: any, index: number) => ({
-      id: uri,
-      index,
-      name,
-      include: true,
-      ...(instance === 'tracks' && {
-        artist: artists.map(({ name }: any) => name).join(', '),
-      }),
-      ...(instance === 'artists' && {
-        genres,
-      })
-    }))
+    const data = await spotifyApi[(debug ? debugFetchers : fetchers)[instance]](debug ? { seed_tracks, limit: 50 } : { time_range: term, limit: 50 })
+    let items = []
+
+    if (debug && instance === 'artists') {
+      // console.log('data: ', data);
+      // there is no recommendations endpoint for artists
+      // so we have to filter out the artists from a list of track recommendations
+      items = sampleSize(
+        data.body.tracks
+          .map(({ artists }: any) => artists)
+          .flat()
+          .map(({ name, uri }: any, index: number) => ({ id: uri, index, name })),
+        50
+      )
+    } else {
+      items = (debug ? data.body[instance] : data?.body?.items).map(({ name, uri, artists, genres }: any, index: number) => ({
+        id: uri,
+        index,
+        name,
+        include: true,
+        ...(instance === 'tracks' && {
+          artist: artists.map(({ name }: any) => name).join(', '),
+        }),
+        ...(instance === 'artists' && {
+          genres,
+        })
+      }))
+    }
 
     return {
       ...accumulator,

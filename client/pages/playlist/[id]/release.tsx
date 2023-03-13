@@ -25,7 +25,7 @@ export default function Release() {
 
         <Container s={{ maxWidth: '480px', justifyContent: 'center', flexGrow: 1, overflowY: 'hidden', my: 'm' }}>
           <Spacer>
-            <Button onClick={release}>Submit</Button>
+            <Button onClick={release}>Release</Button>
           </Spacer>
         </Container>
 
