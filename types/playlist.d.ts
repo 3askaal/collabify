@@ -47,4 +47,5 @@ export type IObject = {
   name?: string;
   index?: number;
   rank?: number;
+  include?: boolean;
 }
