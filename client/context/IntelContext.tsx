@@ -17,7 +17,7 @@ export const IntelContext = createContext<IntelContextType>({
 })
 
 export const IntelProvider = ({ children }: any) => {
-  const { query: { id: playlistId } } = useRouter()
+  const { push, query: { id: playlistId } } = useRouter()
   const [data, setData] = useState<IData>({})
   const [debugData, setDebugData] = useState<IData | null>(null)
 
@@ -64,7 +64,7 @@ export const IntelProvider = ({ children }: any) => {
 
   useEffect(() => {
     if (submitDataRes) {
-      console.log(submitDataRes)
+      push(`${submitDataRes._id}/status`)
     }
   }, [submitDataRes])
 

@@ -7,14 +7,12 @@ import { IntelContext } from '../../../context/IntelContext'
 import { collectData } from '../../../helpers'
 import { useRouter } from 'next/router';
 import { sampleSize, map } from 'lodash';
-import { IData } from '../../../../types/playlist';
 
 export default function Playlist() {
   const router = useRouter()
   const { spotifyApi, accessToken, logout } = useSpotifyApi()
   const { setData, submitData, setDebugData } = useContext(IntelContext)
   const [isLoading, setIsLoading] = useState(true)
-
   const [step, setStep] = useState(0);
 
   const onPrev = () => {
