@@ -1,19 +1,16 @@
 import { groupBy } from 'lodash';
 import { IObject, IParticipations, ITerms } from '../../../types/playlist';
 
-export const generateTracklist = (
-  participations: IParticipations,
-): IParticipations => {
-  const rankedParticipations = participations.map((participation) => {
-    // for each participant
-    return {
-      ...participation,
-      data: Object.entries(participation.data).reduce(
-        (accumulator1, [key1, value1]: [string, ITerms]) => {
-          // for each type of data (genres/artists/tracks)
-
+export const generateTracklist = (participations: IParticipations): any => {
+  // merge data of all participants containing genres/artists/tracks
+  // with inside containing data from short/medium/long time periods
+  // into single collections based on category
+  const mergedParticipations = participations.reduce(
+    (acc1, participation) => {
+      const formattedData = Object.entries(participation.data).reduce(
+        (acc2, [key1, value1]: [string, ITerms]) => {
           return {
-            ...accumulator1,
+            ...acc2,
             // transform lists of different time periods
             // into single nested list grouped based on id
             [key1]: Object.values(
@@ -26,6 +23,8 @@ export const generateTracklist = (
                     ...accumulator2,
                     ...value2.map((item) => ({
                       ...item,
+                      // define participator as prop
+                      participator: participation.id,
                       // define time period as prop
                       period: key2.split('_')[0],
                       // define rank by reversing the index
@@ -54,11 +53,52 @@ export const generateTracklist = (
           };
         },
         {},
-      ),
-    };
-  });
+      );
 
-  return rankedParticipations;
+      // merge formatted participation data with previous ones
+      return Object.entries(formattedData).reduce(
+        (acc2, [key2, value2]: [string, any[]]) => ({
+          ...acc2,
+          [key2]: [...acc1[key2], ...value2],
+        }),
+        {
+          artists: [],
+          genres: [],
+          tracks: [],
+        },
+      );
+    },
+    {
+      artists: [],
+      genres: [],
+      tracks: [],
+    },
+  );
+
+  const mergedParticipants = Object.entries(mergedParticipations).reduce(
+    (acc, [key, value]) => ({
+      ...acc,
+      [key]: Object.values(groupBy(value, 'id')).map((items: any[]) =>
+        items.reduce(
+          (acc, { participator, periods, rank, ...rest }) => ({
+            ...acc,
+            ...rest,
+            occurrences: {
+              ...acc.occurrences,
+              [participator]: {
+                periods,
+                rank,
+              },
+            },
+          }),
+          {},
+        ),
+      ),
+    }),
+    {},
+  );
+
+  return mergedParticipants;
 
   // Rate data for each participation individually
   // - Add ranking property (index) to each track in each time period
