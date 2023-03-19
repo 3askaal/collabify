@@ -50,6 +50,28 @@ export class PlaylistService {
 
     const tracklist = generateTracklist(formattedParticipations);
 
+    // Create a playlist
+    // const playlist = await spotifyApi
+    //   .createPlaylist('My playlist', {
+    //     description: 'this playlist is generated with collabify',
+    //     public: true,
+    //   })
+
+    // // Add tracks to a playlist
+    // spotifyApi
+    //   .addTracksToPlaylist('5ieJqeLJjjI8iJWaxeBLuK', [
+    //     'spotify:track:4iV5W9uYEdYUVa79Axb7Rh',
+    //     'spotify:track:1301WleyT98MSxVHPZCA6M',
+    //   ])
+    //   .then(
+    //     function (data) {
+    //       console.log('Added tracks to playlist!');
+    //     },
+    //     function (err) {
+    //       console.log('Something went wrong!', err);
+    //     },
+    //   );
+
     return tracklist;
   }
 }
