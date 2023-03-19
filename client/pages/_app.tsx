@@ -1,17 +1,17 @@
+import { useEffect } from 'react'
 import type { AppProps } from 'next/app'
 import { useRouter } from 'next/router'
 import dynamic from 'next/dynamic'
 import { s, ThemeProvider, GlobalStyle, theme as DEFAULT_THEME } from '3oilerplate'
-import deepmerge from 'deepmerge'
 import ReactGA from 'react-ga4'
-import { THEME, LocalGlobalStyle } from '../style'
+import deepmerge from 'deepmerge'
 import useSpotifyApi from '../hooks/useSpotifyApi'
+import { IntelProvider } from '../context/IntelContext'
+import { THEME, LocalGlobalStyle } from '../style'
 
 import 'reset-css/reset.css'
 import 'normalize.css/normalize.css'
 import '../fonts.css'
-import { useEffect } from 'react'
-import { IntelProvider } from '../context/IntelContext'
 
 ReactGA.initialize('G-B4GVQFN1MH', {
   testMode: process?.env?.NODE_ENV !== 'production'
@@ -43,7 +43,7 @@ const DynamicWrapper = dynamic(() => Promise.resolve(NonSSRWrapper), {
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter()
   const code = router.query.code
-  const { accessToken } = useSpotifyApi(code?.toString())
+  useSpotifyApi(code?.toString())
 
   useEffect(() => {
     if (router.query.id === undefined && !code) {

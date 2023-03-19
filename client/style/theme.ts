@@ -9,6 +9,8 @@ export const fonts = {
 const PRIMARY = '#FB2576'
 const SECONDARY = '#D61C4E'
 
+const SUCCESS = '#59CE8F'
+
 export const THEME = {
   rootFontSizes: {
     rootFontSizes: ['14px', '16px'],
@@ -19,7 +21,8 @@ export const THEME = {
     secondary: '#000',
     secondaryDark: darken('#000', 0.5),
     background: '#212121',
-    color: darken('#fff', 0.75)
+    color: darken('#fff', 0.75),
+    success: SUCCESS
   },
   components: {
     Button: {
@@ -35,27 +38,40 @@ export const THEME = {
     },
     Label: {
       default: {
-        border: '2px solid',
-        borderColor: 'grey20',
         background: 'transparent',
-        borderRadius: '30px',
-        borderWidth: '2px',
-        padding: 'xs',
-        cursor: 'pointer',
-        userSelect: 'none',
-
-        '> p': {
-          color: 'grey20',
-          lineHeight: '1.4',
-          whiteSpace: 'nowrap',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-        }
       },
       variants: {
         isSelected: {
-          borderColor: 'primary',
           color: 'primary',
+          border: '2px solid',
+          borderColor: 'primary',
+          borderRadius: '30px',
+          borderWidth: '2px',
+          padding: 'xs',
+          cursor: 'pointer',
+          userSelect: 'none',
+
+          '> p': {
+            color: 'grey20',
+            lineHeight: '1.4',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          },
+        },
+        isWaiting: {
+          borderColor: 'grey30',
+          color: 'grey30',
+          display: 'inline-flex',
+          px: 'xs',
+          py: 'xxs'
+        },
+        isCompleted: {
+          borderColor: 'success',
+          color: 'success',
+          display: 'inline-flex',
+          px: 'xs',
+          py: 'xxs'
         }
       }
     },
@@ -69,7 +85,7 @@ export const THEME = {
         borderWidth: '1px',
         px: 0,
       }
-    },
+    }
   },
   fonts
 }

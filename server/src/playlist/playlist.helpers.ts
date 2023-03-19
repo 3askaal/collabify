@@ -75,7 +75,7 @@ export const generateTracklist = (participations: IParticipations): any => {
     },
   );
 
-  const mergedParticipants = Object.entries(mergedParticipations).reduce(
+  const mergedData = Object.entries(mergedParticipations).reduce(
     (acc, [key, value]) => ({
       ...acc,
       [key]: Object.values(groupBy(value, 'id')).map((items: any[]) =>
@@ -90,6 +90,7 @@ export const generateTracklist = (participations: IParticipations): any => {
                 rank,
               },
             },
+            totalRank: acc.totalRank + rank,
           }),
           {},
         ),
@@ -98,7 +99,7 @@ export const generateTracklist = (participations: IParticipations): any => {
     {},
   );
 
-  return mergedParticipants;
+  return mergedData;
 
   // Rate data for each participation individually
   // - Add ranking property (index) to each track in each time period

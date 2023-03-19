@@ -8,7 +8,7 @@ export type PlaylistDocument = HydratedDocument<Playlist>;
 export class Playlist {
   @Prop() title: string;
   @Prop() description: string;
-  @Prop() status: 'waiting' | 'completed';
+  @Prop({ default: 'waiting' }) status: 'waiting' | 'completed';
   @Prop() participations: IParticipation[];
 }
 
