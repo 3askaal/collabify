@@ -1,16 +1,16 @@
 import { useContext, useState } from 'react'
-import { Spacer, Box, ElementGroup, Button, Select } from '3oilerplate'
+import { Spacer, Box, ElementGroup, Button, Select, Title } from '3oilerplate'
 import { orderBy, remove, startCase } from 'lodash'
-import { SelectionLabel } from '.'
-import { IntelContext } from '../context/IntelContext'
-import { IData } from '../../types/playlist'
+import { SelectionLabel } from '..'
+import { IntelContext } from '../../context/IntelContext'
+import { IData } from '../../../types/playlist'
+import { ScrollContainer } from '../scrollContainer'
 
 type DataTypes = 'artists' | 'tracks' | 'genres';
 type TermTypes = 'short_term' | 'medium_term' | 'long_term';
 
 export function FilterData() {
   const { data, setData } = useContext(IntelContext)
-
   const [activeTab, setActiveTabState] = useState<DataTypes>('genres')
   const [activeTerm, setActiveTerm] = useState<{ artists: TermTypes, tracks: TermTypes, genres: TermTypes }>({ artists: 'short_term', tracks: 'short_term', genres: 'short_term' })
 
@@ -46,56 +46,58 @@ export function FilterData() {
   }
 
   return (
-    <Spacer size="m" s={{ height: '100%' }}>
-      <Spacer size="s">
-        <ElementGroup>
-          <Button
-            isBlock
-            isOutline={activeTab !== 'genres'}
-            onClick={() => setActiveTab('genres')}
-          >
-            Genres
-          </Button>
-          <Button
-            isBlock
-            isOutline={activeTab !== 'artists'}
-            onClick={() => setActiveTab('artists')}
-          >
-            Artists
-          </Button>
-          <Button
-            isBlock
-            isOutline={activeTab !== 'tracks'}
-            onClick={() => setActiveTab('tracks')}
-          >
-            Tracks
-          </Button>
-        </ElementGroup>
+    <Spacer s={{ height: '100%' }}>
+      <Box df jcc>
+        <Title level="4">Filter your data</Title>
+      </Box>
 
-        <Select
-          options={[
-            {
-              label: 'Short Term',
-              value: 'short_term',
+      <ElementGroup>
+        <Button
+          isBlock
+          isOutline={activeTab !== 'genres'}
+          onClick={() => setActiveTab('genres')}
+        >
+          Genres
+        </Button>
+        <Button
+          isBlock
+          isOutline={activeTab !== 'artists'}
+          onClick={() => setActiveTab('artists')}
+        >
+          Artists
+        </Button>
+        <Button
+          isBlock
+          isOutline={activeTab !== 'tracks'}
+          onClick={() => setActiveTab('tracks')}
+        >
+          Tracks
+        </Button>
+      </ElementGroup>
 
-            },
-            {
-              label: 'Medium Term',
-              value: 'medium_term',
+      <Select
+        options={[
+          {
+            label: 'Short Term',
+            value: 'short_term',
 
-            },
-            {
-              label: 'Long Term',
-              value: 'long_term',
+          },
+          {
+            label: 'Medium Term',
+            value: 'medium_term',
 
-            },
-          ]}
-          value={activeTerm[activeTab]}
-          onChange={(value: string) => setActiveTerm({...activeTerm, [activeTab]: value })}
-        />
-      </Spacer>
+          },
+          {
+            label: 'Long Term',
+            value: 'long_term',
 
-      <Box df fdc s={{ flexGrow: 1, overflowY: 'auto' }}>
+          },
+        ]}
+        value={activeTerm[activeTab]}
+        onChange={(value: string) => setActiveTerm({...activeTerm, [activeTab]: value })}
+      />
+
+      <ScrollContainer>
         { activeTab === 'genres' ? (
           <Spacer>
             <Box df fdr fww jcc>
@@ -143,7 +145,7 @@ export function FilterData() {
             </Box>
           </Spacer>
         ) : null }
-      </Box>
+      </ScrollContainer>
     </Spacer>
   )
 }

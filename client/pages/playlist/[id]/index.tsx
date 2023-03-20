@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react'
 import { Box, Wrapper, Container, Button, Spacer } from '3oilerplate'
-import { User as UserIcon, ArrowLeft as ArrowLeftIcon, ArrowRight as ArrowRightIcon } from 'react-feather'
+import { User as UserIcon } from 'react-feather'
 import { Logo, Steps } from '../../../components';
 import useSpotifyApi from '../../../hooks/useSpotifyApi'
 import { IntelContext } from '../../../context/IntelContext'
@@ -14,15 +14,6 @@ export default function Playlist() {
   const { spotifyApi, accessToken, logout } = useSpotifyApi()
   const { setData, hasParticipated, setDebugData, release } = useContext(IntelContext)
   const [isLoading, setIsLoading] = useState(true)
-  const [step, setStep] = useState(0);
-
-  const onPrev = () => {
-    setStep((currentStep) => currentStep - 1)
-  }
-
-  const onNext = () => {
-    setStep((currentStep) => currentStep + 1)
-  }
 
   useEffect(() => {
     if (!spotifyApi) return
@@ -60,20 +51,9 @@ export default function Playlist() {
           </Button>
         </Box>
 
-        <Container s={{ maxWidth: '480px', justifyContent: 'center', flexGrow: 1, overflowY: 'hidden', my: 'm' }}>
-          { isLoading ? <Box s={{ textAlign: 'center' }}>Wait a second while we fetch your data...</Box> : hasParticipated ? <PlaylistStatus /> : <Steps currentStep={step} /> }
+        <Container s={{ maxWidth: '480px', justifyContent: 'center', flexGrow: 1, overflowY: 'hidden', my: 'l' }}>
+          { isLoading ? <Box s={{ textAlign: 'center' }}>Wait a second while we fetch your data...</Box> : hasParticipated ? <PlaylistStatus /> : <Steps /> }
         </Container>
-
-        { !isLoading && !hasParticipated && (
-          <Spacer s={{ justifyContent: 'center', flexDirection: 'row' }}>
-            <Button isOutline onClick={onPrev} s={{ p: 's', borderRadius: '100%' }} isDisabled={step === 0}>
-              <ArrowLeftIcon />
-            </Button>
-            <Button isOutline onClick={onNext} s={{ p: 's', borderRadius: '100%' }}>
-              <ArrowRightIcon />
-            </Button>
-          </Spacer>
-        )}
 
         { !isLoading && hasParticipated && (
           <Button isBlock onClick={release}>Release</Button>
