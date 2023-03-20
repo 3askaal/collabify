@@ -18,7 +18,7 @@ export const THEME = {
   colors: {
     primary: PRIMARY,
     primaryDark: darken(PRIMARY, .5),
-    primaryLight: brighten(PRIMARY, 1.5),
+    primaryLight: brighten(PRIMARY, 1),
     secondary: SECONDARY,
     secondaryDark: darken(SECONDARY, 1),
     secondaryLight: brighten(SECONDARY, 1.5),
