@@ -11,7 +11,14 @@ const spotifyApi: any = new SpotifyWebApi({
 
 const getExpiresAt = (expiresIn: string) => moment().add(Number(expiresIn), 'seconds').valueOf().toString()
 
-export default function useSpotifyApi(code?: string): { accessToken: string | null, spotifyApi: SpotifyWebApi, logout: Function } {
+interface SpotifyApiHook {
+  accessToken: string | null;
+  refreshToken: string | null;
+  spotifyApi: SpotifyWebApi;
+  logout: Function;
+}
+
+export default function useSpotifyApi(code?: string): SpotifyApiHook {
   const router = useRouter()
   const [accessToken, setAccessToken] = useLocalStorage<string | null>('accessToken', '')
   const [refreshToken, setRefreshToken] = useLocalStorage<string | null>('refreshToken', '')
@@ -85,6 +92,7 @@ export default function useSpotifyApi(code?: string): { accessToken: string | nu
   return {
     spotifyApi: !!accessToken && spotifyApi,
     accessToken,
+    refreshToken,
     logout,
   }
 }

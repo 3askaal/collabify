@@ -12,7 +12,7 @@ import { PlaylistStatus } from '../../../components/status';
 export default function Playlist() {
   const router = useRouter()
   const { spotifyApi, accessToken, logout } = useSpotifyApi()
-  const { setData, hasParticipated, submitData, setDebugData, release } = useContext(IntelContext)
+  const { setData, hasParticipated, setDebugData, release } = useContext(IntelContext)
   const [isLoading, setIsLoading] = useState(true)
   const [step, setStep] = useState(0);
 
@@ -61,7 +61,7 @@ export default function Playlist() {
         </Box>
 
         <Container s={{ maxWidth: '480px', justifyContent: 'center', flexGrow: 1, overflowY: 'hidden', my: 'm' }}>
-          { isLoading ? <Box s={{ textAlign: 'center' }}>Wait a second while we fetch your data...</Box> : hasParticipated ? <PlaylistStatus /> : <Steps currentStep={step} onSubmit={submitData} /> }
+          { isLoading ? <Box s={{ textAlign: 'center' }}>Wait a second while we fetch your data...</Box> : hasParticipated ? <PlaylistStatus /> : <Steps currentStep={step} /> }
         </Container>
 
         { !isLoading && !hasParticipated && (
