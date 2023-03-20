@@ -87,7 +87,7 @@ export const THEME = {
         borderLeft: 0,
         borderRight: 0,
         borderRadius: 0,
-        minWidth: '100%',
+        width: '100%',
         borderWidth: '1px',
         px: 0,
       }
