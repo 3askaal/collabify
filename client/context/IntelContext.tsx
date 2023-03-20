@@ -22,12 +22,14 @@ export interface IMe {
   id: string;
   email: string;
   name: string;
+  refreshToken: string;
 }
 
 export const IntelProvider = ({ children }: any) => {
   const { push, query: { id: playlistId }, pathname } = useRouter()
-  const { spotifyApi } = useSpotifyApi()
-  const [me, setMe] = useState<any>({})
+  const { spotifyApi, refreshToken } = useSpotifyApi()
+  const [name, setName] = useState<string>('')
+  const [me, setMe] = useState<IMe | {}>({})
   const [data, setData] = useState<IData>({})
   const [debugData, setDebugData] = useState<IData | null>(null)
   const [hasParticipated, setHasParticipated] = useState<boolean>(false)
@@ -68,20 +70,24 @@ export const IntelProvider = ({ children }: any) => {
 
     submitDataCallback({
       data: {
+        name,
         participations
       }
     })
   }
 
   useEffect(() => {
+    if (!spotifyApi || !refreshToken) return;
+
     spotifyApi.getMe().then((data) => {
       setMe({
         id: data.body.id,
         email: data.body.email,
         name: data.body.display_name,
+        refreshToken
       })
     })
-  }, [spotifyApi])
+  }, [spotifyApi, refreshToken])
 
   useEffect(() => {
     if (submitDataRes) {
@@ -111,6 +117,7 @@ export const IntelProvider = ({ children }: any) => {
   return (
     <IntelContext.Provider
       value={{
+        setName,
         data,
         setData,
         me,

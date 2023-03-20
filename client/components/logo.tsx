@@ -1,9 +1,16 @@
-import { Box, Title } from '3oilerplate'
+import { s, Box, Title } from '3oilerplate'
+
+const SLogo = s.div(({ theme, c1, c2 }: any) => ({
+  display: 'inline-flex',
+  background: `-webkit-linear-gradient(${theme.colors[c1]}, ${theme.colors[c2]})`,
+  '-webkit-background-clip': 'text',
+  '-webkit-text-fill-color': 'transparent'
+}))
 
 export function Logo({ small }: any) {
   return (
     <Title s={{ fontFamily: 'logo', fontSize: small ? '2rem' : '3.5rem' }}>
-      <Box dif s={{ color: 'grey30' }}>Collab</Box>ify
+      <SLogo c1="primaryLight" c2="primary">Collab</SLogo>ify
     </Title>
   )
 }
