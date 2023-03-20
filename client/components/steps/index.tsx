@@ -54,9 +54,10 @@ export function Steps() {
 
   return (
     <Box df fdc s={{ height: '100%' }}>
-      <Spacer s={{ height: '90%' }}>
+      <Spacer s={{ height: '90%', justifyContent: 'space-between' }}>
+        <span></span>
         { steps.map((Step, index) => step === index && Step) }
-        <Spacer s={{ justifyContent: 'center', flexDirection: 'row' }}>
+        <Spacer s={{ justifyContent: 'center', flexDirection: 'row', justifySelf: 'flex-end' }}>
           { step !== 0 && (
             <Button isOutline onClick={onPrev} s={{ p: 's', borderRadius: '100%' }}>
               <ArrowLeftIcon />
