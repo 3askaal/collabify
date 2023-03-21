@@ -18,12 +18,12 @@ const Details = () => {
   )
 }
 
-const Submit = () => {
+const Submit = ({ id }: { id: string }) => {
   const { submitData } = useContext(IntelContext)
 
   return (
     <Spacer>
-      <Button onClick={submitData}>Submit</Button>
+      <Button onClick={submitData}>{ id === 'new' ? 'Create' : 'Join' } playlist</Button>
     </Spacer>
   )
 }
@@ -36,10 +36,10 @@ export function Steps() {
     <Details key="Details" />,
     <FilterData key="FilterData" />,
     <Invite key="Invite" />,
-    <Submit key="Submit" />
+    <Submit key="Submit" id={(router?.query?.id || '') as string} />
   ] : [
     <FilterData key="FilterData" />,
-    <Submit key="Submit" />
+    <Submit key="Submit" id={(router?.query?.id || '') as string} />
   ]
 
   const onPrev = () => {
@@ -53,10 +53,11 @@ export function Steps() {
   }
 
   return (
-    <Box df fdc s={{ height: '100%' }}>
-      <Spacer s={{ height: '90%', justifyContent: 'space-between' }}>
-        <span></span>
-        { steps.map((Step, index) => step === index && Step) }
+    <>
+      <Spacer s={{flexGrow: 1}}>
+        <Box df s={{ flexGrow: 1 }}>
+          { steps.map((Step, index) => step === index && Step) }
+        </Box>
         <Spacer s={{ justifyContent: 'center', flexDirection: 'row', justifySelf: 'flex-end' }}>
           { step !== 0 && (
             <Button isOutline onClick={onPrev} s={{ p: 's', borderRadius: '100%' }}>
@@ -70,6 +71,6 @@ export function Steps() {
           ) }
         </Spacer>
       </Spacer>
-    </Box>
+    </>
   )
 }
