@@ -51,7 +51,7 @@ export default function Playlist() {
           </Button>
         </Box>
 
-        <Container s={{ maxWidth: '480px', justifyContent: 'center', flexGrow: 1, overflowY: 'hidden', my: 'l' }}>
+        <Container s={{ maxWidth: '480px', justifyContent: 'center', my: 'l', flexGrow: 1 }}>
           { isLoading ? <Box s={{ textAlign: 'center' }}>Wait a second while we fetch your data...</Box> : hasParticipated ? <PlaylistStatus /> : <Steps /> }
         </Container>
 

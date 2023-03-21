@@ -46,7 +46,7 @@ export function FilterData() {
   }
 
   return (
-    <Spacer s={{ height: '100%' }}>
+    <Spacer s={{ flexGrow: 1 }}>
       <Box df jcc>
         <Title level="4">Filter your data</Title>
       </Box>
@@ -99,51 +99,45 @@ export function FilterData() {
 
       <ScrollContainer>
         { activeTab === 'genres' ? (
-          <Spacer>
-            <Box df fdr fww jcc>
-              { topGenres.map(({ id, index, name, include }) => (
-                <SelectionLabel
-                  onClick={() => toggleItem('genres', activeTerm.genres, id)}
-                  key={`genre-${index}`}
-                  active={include}
-                >
-                  { startCase(name) }
-                </SelectionLabel>
-              )) }
-            </Box>
-          </Spacer>
+          <Box df fdr fww jcc s={{ height: 0 }}>
+            { topGenres.map(({ id, index, name, include }) => (
+              <SelectionLabel
+                onClick={() => toggleItem('genres', activeTerm.genres, id)}
+                key={`genre-${index}`}
+                active={include}
+              >
+                { startCase(name) }
+              </SelectionLabel>
+            )) }
+          </Box>
         ) : null }
 
         { activeTab === 'artists' ? (
-          <Spacer>
-            <Box df fdr fww jcc>
-              { topArtists.map(({ id, index, name, include }) => (
-                <SelectionLabel
-                  onClick={() => toggleItem('artists', activeTerm.artists, id)}
-                  key={`artist-${index}`}
-                  active={include}
-                >
-                  { name }
-                </SelectionLabel>
-              )) }
-            </Box>
-          </Spacer>
+          <Box df fdr fww jcc s={{ height: 0 }}>
+            { topArtists.map(({ id, index, name, include }) => (
+              <SelectionLabel
+                onClick={() => toggleItem('artists', activeTerm.artists, id)}
+                key={`artist-${index}`}
+                active={include}
+              >
+                { name }
+              </SelectionLabel>
+            )) }
+          </Box>
         ) : null }
 
         { activeTab === 'tracks' ? (
-          <Spacer>
-            <Box>
-              { topTracks.map(({ id, index, artist, name, include }) => (
-                <SelectionLabel
-                  onClick={() => toggleItem('tracks', activeTerm.tracks, id)}
-                  key={`track-${index}`}
-                  active={include}
-                >
-                  { artist } - { name }
-                </SelectionLabel>
-              )) }
-            </Box>
-          </Spacer>
+          <Box s={{ height: 0 }}>
+            { topTracks.map(({ id, index, artist, name, include }) => (
+              <SelectionLabel
+                onClick={() => toggleItem('tracks', activeTerm.tracks, id)}
+                key={`track-${index}`}
+                active={include}
+              >
+                { artist } - { name }
+              </SelectionLabel>
+            )) }
+          </Box>
         ) : null }
       </ScrollContainer>
     </Spacer>
