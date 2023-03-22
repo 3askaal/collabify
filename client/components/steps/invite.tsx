@@ -26,7 +26,7 @@ export const Invite = () => {
   }
 
   return (
-    <Spacer>
+    <Spacer s={{ flexGrow: 1, overflow: 'hidden', justifyContent: 'center' }}>
       <Box df jcc>
         <Title level="4">Invite your friends</Title>
       </Box>

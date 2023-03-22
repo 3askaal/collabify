@@ -9,7 +9,7 @@ const Details = () => {
   const { setName } = useContext(IntelContext)
 
   return (
-    <Spacer>
+    <Spacer s={{ flexGrow: 1, overflow: 'hidden', justifyContent: 'center' }}>
       <Box df jcc>
         <Title level="4">Name your playlist</Title>
       </Box>
@@ -22,7 +22,7 @@ const Submit = ({ id }: { id: string }) => {
   const { submitData } = useContext(IntelContext)
 
   return (
-    <Spacer>
+    <Spacer s={{ flexGrow: 1, overflow: 'hidden', justifyContent: 'center' }}>
       <Button onClick={submitData}>{ id === 'new' ? 'Create' : 'Join' } playlist</Button>
     </Spacer>
   )
@@ -53,24 +53,22 @@ export function Steps() {
   }
 
   return (
-    <>
-      <Spacer s={{flexGrow: 1}}>
-        <Box df s={{ flexGrow: 1 }}>
-          { steps.map((Step, index) => step === index && Step) }
-        </Box>
-        <Spacer s={{ justifyContent: 'center', flexDirection: 'row', justifySelf: 'flex-end' }}>
-          { step !== 0 && (
-            <Button isOutline onClick={onPrev} s={{ p: 's', borderRadius: '100%' }}>
-              <ArrowLeftIcon />
-            </Button>
-          ) }
-          { step !== steps.length - 1 && (
-            <Button isOutline onClick={onNext} s={{ p: 's', borderRadius: '100%' }}>
-              <ArrowRightIcon />
-            </Button>
-          ) }
-        </Spacer>
+    <Spacer s={{ overflow: 'hidden', flexGrow: 1 }}>
+      <Box df s={{ overflow: 'hidden', flexGrow: 1 }}>
+        { steps.map((Step, index) => step === index && Step) }
+      </Box>
+      <Spacer s={{ justifyContent: 'center', flexDirection: 'row', justifySelf: 'flex-end' }}>
+        { step !== 0 && (
+          <Button isOutline onClick={onPrev} s={{ p: 's', borderRadius: '100%' }}>
+            <ArrowLeftIcon />
+          </Button>
+        ) }
+        { step !== steps.length - 1 && (
+          <Button isOutline onClick={onNext} s={{ p: 's', borderRadius: '100%' }}>
+            <ArrowRightIcon />
+          </Button>
+        ) }
       </Spacer>
-    </>
+    </Spacer>
   )
 }
