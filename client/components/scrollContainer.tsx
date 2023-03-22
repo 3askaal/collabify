@@ -27,12 +27,10 @@ export const SScrollContainer = s.div(({ theme }: any) => ({
 
 export const ScrollContainer = ({ children }: any) => {
   return (
-    <Box s={{ position: 'relative', display: 'flex', flexGrow: 1 }}>
+    <Box s={{ position: 'relative', display: 'flex', overflow: 'hidden' }}>
       <SScrollContainer>
-        <Box s={{ height: 0 }}>
-          <Box s={{ py: '1rem' }}>
-            { children }
-          </Box>
+        <Box s={{ py: '1rem' }}>
+          { children }
         </Box>
       </SScrollContainer>
     </Box>

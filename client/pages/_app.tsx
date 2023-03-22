@@ -21,6 +21,7 @@ export const SApp = s.div(() => ({
   fontFamily: 'base',
   backgroundColor: 'background',
   width: '100%',
+  height: '100%',
   color: 'color'
 }))
 
