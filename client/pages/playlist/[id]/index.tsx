@@ -39,7 +39,7 @@ export default function Playlist() {
 
   return (
     <>
-      <Wrapper s={{ flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'flex-start', pt: 'm', overflow: 'hidden' }}>
+      <Wrapper s={{ flexDirection: 'column', alignItems: 'center', pt: 'm', overflow: 'hidden' }}>
 
         <Box df w100p jcc>
           <Logo small />
@@ -52,7 +52,12 @@ export default function Playlist() {
         </Box>
 
         <Container s={{ maxWidth: '480px', mt: 'm', overflow: 'hidden', flexGrow: 1 }}>
-          { isLoading ? <Box s={{ textAlign: 'center' }}>Wait a second while we fetch your data...</Box> : hasParticipated ? <PlaylistStatus /> : <Steps /> }
+          { isLoading
+            ? <Box s={{ textAlign: 'center' }}>Wait a second while we fetch your data...</Box>
+            : hasParticipated
+              ? <PlaylistStatus />
+              : <Steps />
+          }
         </Container>
 
         { !isLoading && hasParticipated && (
