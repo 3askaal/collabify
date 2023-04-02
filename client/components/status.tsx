@@ -1,4 +1,4 @@
-import { Spacer, Title, List, ListItem, Button, Text, Label } from '3oilerplate'
+import { Spacer, Title, List, ListItem, Row, Col, Text, Label } from '3oilerplate'
 import { useContext } from 'react'
 import { IntelContext } from '../context/IntelContext'
 
@@ -12,9 +12,18 @@ export const PlaylistStatus = () => {
     <Spacer size="l">
       <Spacer size="s" s={{ alignItems: 'center' }}>
         <Title>Details</Title>
-        <Text><strong>Name:</strong>&nbsp;&nbsp;{ playlistName }</Text>
-        <Text><strong>Description:</strong>&nbsp;&nbsp;{ playlistDesc }</Text>
-        <Text><strong>Status:</strong>&nbsp;&nbsp;<Label sRef="Label" isWaiting={getDataRes?.status === 'waiting'} isCompleted={getDataRes?.status === 'completed'}>{ getDataRes?.status }</Label></Text>
+        <Row>
+          <Col width={50}><strong>Name:</strong></Col>
+          <Col width={50} s={{ textAlign: 'right' }}>{ playlistName }</Col>
+        </Row>
+        <Row>
+          <Col width={50}><strong>Description:</strong></Col>
+          <Col width={50} s={{ textAlign: 'right' }}>{ playlistDesc }</Col>
+        </Row>
+        <Row>
+          <Col width={50}><strong>Status:</strong></Col>
+          <Col width={50} s={{ textAlign: 'right' }}><Label sRef="Label" isWaiting={getDataRes?.status === 'waiting'} isCompleted={getDataRes?.status === 'completed'}>{ getDataRes?.status }</Label></Col>
+        </Row>
       </Spacer>
       <Spacer>
         <Title s={{ textAlign: 'center' }}>Participations</Title>
