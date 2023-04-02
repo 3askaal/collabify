@@ -1,8 +1,7 @@
 import { s, Box } from '3oilerplate';
 
 export const SScrollContainer = s.div(({ theme }: any) => ({
-  overflowY: 'scroll',
-  flex: 1,
+  position: 'relative',
 
   '&:before': {
     position: 'absolute',
@@ -27,12 +26,10 @@ export const SScrollContainer = s.div(({ theme }: any) => ({
 
 export const ScrollContainer = ({ children }: any) => {
   return (
-    <Box s={{ position: 'relative', display: 'flex', overflow: 'hidden' }}>
-      <SScrollContainer>
-        <Box s={{ py: '1rem' }}>
-          { children }
-        </Box>
-      </SScrollContainer>
+    <Box s={{ overflowY: 'auto' }}>
+      {/* <SScrollContainer> */}
+        { children }
+      {/* </SScrollContainer> */}
     </Box>
   )
 }

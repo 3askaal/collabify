@@ -39,7 +39,7 @@ export default function Playlist() {
 
   return (
     <>
-      <Wrapper s={{ flexDirection: 'column', alignItems: 'center', pt: 'm', overflow: 'hidden' }}>
+      <Wrapper s={{ display: 'grid', gridTemplateRows: 'auto minmax(0, 1fr)', gridTemplateColumns: '1fr', justifyItems: 'center', gap: 'm' }}>
 
         <Box df w100p jcc>
           <Logo small />
@@ -51,7 +51,7 @@ export default function Playlist() {
           </Button>
         </Box>
 
-        <Container s={{ maxWidth: '480px', mt: 'm', overflow: 'hidden', flexGrow: 1 }}>
+        <Container s={{ display: 'grid', gridTemplateRows: 'minmax(0, 1fr)', maxWidth: '640px' }}>
           { isLoading
             ? <Box s={{ textAlign: 'center' }}>Wait a second while we fetch your data...</Box>
             : hasParticipated
