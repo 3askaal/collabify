@@ -83,13 +83,22 @@ export const THEME = {
     },
     Input: {
       default: {
+        px: 0,
         borderTop: 0,
         borderLeft: 0,
         borderRight: 0,
-        borderRadius: 0,
-        width: '100%',
         borderWidth: '1px',
-        px: 0,
+        borderRadius: 0,
+        color: 'white',
+      },
+      variants: {
+        huge: {
+          fontSize: '1.8rem',
+
+          '&::placeholder': {
+            color: 'grey90'
+          }
+        }
       }
     }
   },
