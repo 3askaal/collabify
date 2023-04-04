@@ -7,8 +7,8 @@ import { useRouter } from 'next/router';
 import useSpotifyApi from '../hooks/useSpotifyApi';
 
 interface IDetails {
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
 }
 
 export interface IntelContextType {
@@ -31,7 +31,7 @@ export const IntelProvider = ({ children }: any) => {
   const { spotifyApi, refreshToken } = useSpotifyApi()
 
   const [me, setMe] = useState<Partial<IUser>>({})
-  const [details, setDetails] = useState<Partial<IDetails>>({})
+  const [details, setDetails] = useState<IDetails>({})
   const [data, setData] = useState<IData>({})
   const [debugData, setDebugData] = useState<IData | null>(null)
   const [hasParticipated, setHasParticipated] = useState<boolean>(false)
@@ -67,15 +67,13 @@ export const IntelProvider = ({ children }: any) => {
   const submitData = () => {
     const participations = [{
       user: me,
-      data: data,
-      refreshToken
+      data: data
     }]
 
     if (debugData) {
       participations.push({
         user: { name: faker.name.fullName(), id: faker.datatype.uuid(), email: faker.internet.email() },
-        data: debugData,
-        refreshToken
+        data: debugData
       })
     }
 
