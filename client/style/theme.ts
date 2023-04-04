@@ -23,6 +23,7 @@ export const THEME = {
     secondaryDark: darken(SECONDARY, 1),
     secondaryLight: brighten(SECONDARY, 1.5),
     background: '#212121',
+    backgroundDark: darken('#212121', .5),
     color: darken('#fff', 0.75),
     success: SUCCESS
   },
