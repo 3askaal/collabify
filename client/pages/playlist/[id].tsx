@@ -111,10 +111,10 @@ export default function Playlist() {
         </Container>
 
         <Spacer s={{ justifyContent: 'center', flexDirection: 'row' }}>
-          <Button onClick={onPrev} s={{ p: 's', borderRadius: '100%' }} isDisabled={step === 0}>
+          <Button isOutline onClick={onPrev} s={{ p: 's', borderRadius: '100%' }} isDisabled={step === 0}>
             <ArrowLeftIcon />
           </Button>
-          <Button onClick={onNext} s={{ p: 's', borderRadius: '100%' }}>
+          <Button isOutline onClick={onNext} s={{ p: 's', borderRadius: '100%' }}>
             <ArrowRightIcon />
           </Button>
         </Spacer>
