@@ -23,7 +23,7 @@ interface Intel {
 export default function CollectIntelAuthenticated() {
   const { spotifyApi, accessToken } = useSpotifyApi()
 
-  const [activeTab, setActiveTabState] = useState<DataTypes>('artists')
+  const [activeTab, setActiveTabState] = useState<DataTypes>('genres')
   const [activeTerm, setActiveTerm] = useState<{ artists: TermTypes, tracks: TermTypes, genres: TermTypes }>({ artists: 'short_term', tracks: 'short_term', genres: 'short_term' })
 
   const [intel, setIntel] = useState<Intel>({
@@ -119,11 +119,10 @@ export default function CollectIntelAuthenticated() {
 
     const updatedTracks = orderBy(
       [...currentTermData, currentItem],
-      ['selected', 'index'],
+      ['include', 'index'],
       ['desc', 'asc']
     );
 
-    // setters[type](newTopTracks)
     setIntel((currentIntel: Intel) => ({
       ...currentIntel,
       [type]: {
@@ -135,8 +134,15 @@ export default function CollectIntelAuthenticated() {
 
   return (
     <Spacer size="l" s={{ height: '100%' }}>
-      <Spacer>
+      <Spacer size="s">
         <ElementGroup>
+          <Button
+            isBlock
+            isOutline={activeTab !== 'genres'}
+            onClick={() => setActiveTab('genres')}
+          >
+            Genres
+          </Button>
           <Button
             isBlock
             isOutline={activeTab !== 'artists'}
@@ -150,13 +156,6 @@ export default function CollectIntelAuthenticated() {
             onClick={() => setActiveTab('tracks')}
           >
             Tracks
-          </Button>
-          <Button
-            isBlock
-            isOutline={activeTab !== 'genres'}
-            onClick={() => setActiveTab('genres')}
-          >
-            Genres
           </Button>
         </ElementGroup>
 
@@ -194,7 +193,7 @@ export default function CollectIntelAuthenticated() {
                 <SelectionLabel
                   onClick={() => toggleItem('genres', activeTerm.genres, id)}
                   key={`genre-${index}`}
-                  selected={include}
+                  active={include}
                 >
                   { startCase(name) }
                 </SelectionLabel>
@@ -210,7 +209,7 @@ export default function CollectIntelAuthenticated() {
                 <SelectionLabel
                   onClick={() => toggleItem('artists', activeTerm.artists, id)}
                   key={`artist-${index}`}
-                  selected={include}
+                  active={include}
                 >
                   { name }
                 </SelectionLabel>
@@ -226,7 +225,7 @@ export default function CollectIntelAuthenticated() {
                 <SelectionLabel
                   onClick={() => toggleItem('tracks', activeTerm.tracks, id)}
                   key={`track-${index}`}
-                  selected={include}
+                  active={include}
                 >
                   { artist } - { name }
                 </SelectionLabel>
