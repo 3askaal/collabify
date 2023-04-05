@@ -10,6 +10,9 @@ const PRIMARY = '#FB2576'
 const SECONDARY = '#D61C4E'
 
 export const THEME = {
+  rootFontSizes: {
+    rootFontSizes: ['14px', '16px'],
+  },
   colors: {
     primary: PRIMARY,
     primaryDark: darken(PRIMARY, 0.5),
@@ -31,12 +34,16 @@ export const THEME = {
         background: 'transparent',
         borderRadius: '30px',
         borderWidth: '2px',
-        padding: 's',
+        padding: 'xs',
         cursor: 'pointer',
         userSelect: 'none',
 
-        '> span': {
+        '> p': {
           color: 'grey20',
+          lineHeight: '1.4',
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
         }
       },
       variants: {
