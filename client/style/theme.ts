@@ -24,7 +24,13 @@ export const THEME = {
   components: {
     Button: {
       default: {
-        background: 'transparent'
+        // background: 'transparent'
+      },
+      variants: {
+        isTermSelector: {
+          paddingY: 'xs',
+          paddingX: 's'
+        }
       }
     },
     Label: {
@@ -63,11 +69,6 @@ export const THEME = {
         px: 0,
       }
     },
-    // Radio: {
-    //   default: {
-    //     color: 'white'
-    //   }
-    // }
   },
   fonts
 }
