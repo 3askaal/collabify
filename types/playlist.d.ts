@@ -3,6 +3,8 @@ export interface IUser {
   email: string;
   name: string;
   refreshToken: string;
+  host?: boolean;
+  bot?: boolean;
 }
 
 export interface ITerms {
@@ -18,7 +20,6 @@ export interface IData {
 }
 
 export interface IParticipation {
-  id?: number;
   user: IUser;
   data: IData;
   submittedAt?: Date;

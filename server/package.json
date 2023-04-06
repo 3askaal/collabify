@@ -33,6 +33,7 @@
     "graphql": "^16.6.0",
     "lodash": "^4.17.21",
     "mongoose": "^7.0.1",
+    "promise-sequential": "^1.1.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0",
     "spotify-web-api-node": "^5.0.2"

@@ -1,7 +1,7 @@
 import React, { createContext, Dispatch, SetStateAction, useEffect, useState } from 'react'
 import useAxios from "axios-hooks";
 import { faker } from '@faker-js/faker';
-import { IData, IPlaylist, IUser } from '../../types/playlist'
+import { IData, IParticipations, IPlaylist, IUser } from '../../types/playlist'
 import { API_URL } from '../config';
 import { useRouter } from 'next/router';
 import useSpotifyApi from '../hooks/useSpotifyApi';
@@ -30,7 +30,7 @@ export const IntelProvider = ({ children }: any) => {
   const { push, query: { id: playlistId } } = useRouter()
   const { spotifyApi, refreshToken } = useSpotifyApi()
 
-  const [me, setMe] = useState<Partial<IUser>>({})
+  const [me, setMe] = useState<IUser | null>(null)
   const [details, setDetails] = useState<IDetails>({})
   const [data, setData] = useState<IData>({})
   const [debugData, setDebugData] = useState<IData | null>(null)
@@ -65,14 +65,25 @@ export const IntelProvider = ({ children }: any) => {
   )
 
   const submitData = () => {
-    const participations = [{
-      user: me,
+    if (!me) return;
+
+    const participations: IParticipations = [{
+      user: {
+        ...me,
+        host: playlistId === 'new',
+      },
       data: data
     }]
 
     if (debugData) {
       participations.push({
-        user: { name: faker.name.fullName(), id: faker.datatype.uuid(), email: faker.internet.email() },
+        user: {
+          id: faker.datatype.uuid().toString(),
+          name: 'Test Person',
+          email: faker.internet.email(),
+          refreshToken: faker.datatype.uuid().toString(),
+          bot: true
+        },
         data: debugData
       })
     }
@@ -94,7 +105,7 @@ export const IntelProvider = ({ children }: any) => {
       setMe({
         id: data.body.id,
         email: data.body.email,
-        name: data.body.display_name,
+        name: data.body.display_name || '',
         refreshToken
       })
     })
