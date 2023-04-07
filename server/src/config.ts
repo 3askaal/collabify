@@ -4,9 +4,5 @@ export const CONFIG = {
 };
 
 export const NEST_CONFIG = () => ({
-  port: parseInt(process.env.PORT, 10) || 1337,
-  // database: {
-  //   host: process.env.DATABASE_HOST,
-  //   port: parseInt(process.env.DATABASE_PORT, 10) || 5432,
-  // },
+  port: CONFIG.PORT,
 });
