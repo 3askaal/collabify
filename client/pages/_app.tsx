@@ -52,7 +52,6 @@ export default function App({ Component, pageProps }: AppProps) {
     }
 
     if (accessToken) {
-      console.log('accessToken: ', accessToken); // eslint-disable-line
       router.replace('/playlist/new');
     }
   }, [accessToken])
