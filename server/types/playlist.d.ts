@@ -25,7 +25,7 @@ export interface IParticipation {
   submittedAt?: Date;
 }
 
-export type IParticipations = IParticipation[]
+export type IParticipations = IParticipation[];
 
 export interface IPlaylist {
   _id?: string;
@@ -58,4 +58,4 @@ export type IObject = {
   index?: number;
   rank?: number;
   include?: boolean;
-}
+};

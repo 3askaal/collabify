@@ -1,5 +1,5 @@
 import { Controller, Post, Get, Put, Body, Param } from '@nestjs/common';
-import { IPlaylist } from '../../../types/playlist';
+import { IPlaylist } from '../../types/playlist';
 import { Playlist } from './playlist.schema';
 import { PlaylistService } from './playlist.service';
 

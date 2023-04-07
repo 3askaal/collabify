@@ -6,7 +6,7 @@ import * as SpotifyWebApi from 'spotify-web-api-node';
 import * as sequential from 'promise-sequential';
 
 import { Playlist, PlaylistDocument } from './playlist.schema';
-import { IPlaylist, IParticipation } from '../../../types/playlist';
+import { IPlaylist, IParticipation } from '../../types/playlist';
 import { simplifyParticipations } from './playlist.helpers';
 
 const getSpotifyInstance = async (refreshToken: string): Promise<any> => {

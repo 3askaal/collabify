@@ -1,7 +1,7 @@
 import React, { createContext, Dispatch, SetStateAction, useEffect, useState } from 'react'
 import useAxios from "axios-hooks";
 import { faker } from '@faker-js/faker';
-import { IData, IParticipations, IPlaylist, IUser } from '../../types/playlist'
+import { IData, IParticipations, IPlaylist, IUser } from '../../server/types/playlist'
 import { API_URL } from '../config';
 import { useRouter } from 'next/router';
 import useSpotifyApi from '../hooks/useSpotifyApi';
