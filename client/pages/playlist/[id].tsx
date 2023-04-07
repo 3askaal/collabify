@@ -6,7 +6,8 @@ import Steps from '../../components/steps'
 import useSpotifyApi from '../../hooks/useSpotifyApi'
 import { flatten, uniq } from 'lodash'
 import slugify from 'slugify'
-import { Intel, IntelContext } from '../../context/IntelContext'
+import { IntelContext } from '../../context/IntelContext'
+import { IPlaylistIntelData } from '../../../types/playlist'
 
 export default function Playlist() {
   const { spotifyApi, accessToken, logout } = useSpotifyApi()
@@ -31,7 +32,7 @@ export default function Playlist() {
     if (!spotifyApi) return
     if (!setIntel) return
 
-    const collectData = async (): Promise<Intel> => await ['tracks', 'artists'].reduce(async (accumulatorPromise, instance): Promise<Intel> => {
+    const collectData = async (): Promise<IPlaylistIntelData> => await ['tracks', 'artists'].reduce(async (accumulatorPromise, instance): Promise<Intel> => {
       const accumulator = await accumulatorPromise
 
       const items = await ['short_term', 'medium_term', 'long_term'].reduce(async (accumulatorPromise, term: any): Promise<any> => {
@@ -55,7 +56,7 @@ export default function Playlist() {
           ...accumulator,
           [term]: items
         }
-      }, Promise.resolve({ short_term: [], medium_term: [], long_term: [] }) as Promise<Intel>)
+      }, Promise.resolve({ short_term: [], medium_term: [], long_term: [] }) as Promise<IPlaylistIntelData>)
 
       let genres = {}
 

@@ -2,7 +2,8 @@ import { useContext, useState } from 'react'
 import { Spacer, Box, ElementGroup, Button } from '3oilerplate'
 import { orderBy, remove, startCase } from 'lodash'
 import SelectionLabel from './selectionLabel'
-import { Intel, IntelContext } from '../context/IntelContext'
+import { IntelContext } from '../context/IntelContext'
+import { IPlaylistIntelData } from '../../types/playlist'
 
 type DataTypes = 'artists' | 'tracks' | 'genres';
 type TermTypes = 'short_term' | 'medium_term' | 'long_term';
@@ -35,7 +36,7 @@ export default function CollectIntelAuthenticated() {
       ['desc', 'asc']
     );
 
-    setIntel && setIntel((currentIntel: Intel) => ({
+    setIntel && setIntel((currentIntel: IPlaylistIntelData) => ({
       ...currentIntel,
       [type]: {
         ...currentIntel[type],
