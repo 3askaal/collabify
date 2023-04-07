@@ -49,7 +49,6 @@ export default function useSpotifyApi(code?: string): SpotifyApiHook {
   }
 
   useEffect(() => {
-    console.log('TEST1'); // eslint-disable-line
     if (router.pathname !== '/' && !accessToken) {
       router.replace('/')
     } else {
@@ -60,8 +59,6 @@ export default function useSpotifyApi(code?: string): SpotifyApiHook {
 
   useEffect(() => {
     if (!code) return
-
-    console.log('TEST2'); // eslint-disable-line
 
     axios
       .post(`${process.env.NEXT_PUBLIC_PROD_URL}/api/auth`, { code })
@@ -90,8 +87,6 @@ export default function useSpotifyApi(code?: string): SpotifyApiHook {
 
     return () => clearInterval(interval)
   }, [expiresAt])
-
-
 
   return {
     spotifyApi: !!accessToken && spotifyApi,
