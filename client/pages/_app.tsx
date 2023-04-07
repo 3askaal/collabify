@@ -45,17 +45,18 @@ const DynamicWrapper = dynamic(() => Promise.resolve(NonSSRWrapper), {
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter()
   const code = router.query.code
-  const { spotifyApi } = useSpotifyApi(code?.toString())
+  const { accessToken } = useSpotifyApi(code?.toString())
 
   useEffect(() => {
     if (router.query.id === undefined && !code) {
       return
     }
 
-    if (code || !router.query.id) {
-      router.push('/playlist/new');
+    if (accessToken) {
+      console.log('accessToken: ', accessToken); // eslint-disable-line
+      router.replace('/playlist/new');
     }
-  }, [code, router])
+  }, [accessToken])
 
   return (
     <ThemeProvider theme={mergeTheme(DEFAULT_THEME, THEME)}>
