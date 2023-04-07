@@ -12,7 +12,7 @@ export const PlaylistStatus = () => {
   const [isCopied, setIsCopied] = useState(false)
 
   const playlistName = getDataRes?.name || getDataRes?.participations.map(({ user }: any) => user.name).join(' x ')
-  const playlistDesc = getDataRes?.description || 'Generated with https://collabify.vercel.app'
+  const playlistDesc = getDataRes?.description || 'Generated with collabify.vercel.app'
 
   const shareUrl = `${window.location.host}/playlist/${playlistId}`
 

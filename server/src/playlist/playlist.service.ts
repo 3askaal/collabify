@@ -7,19 +7,7 @@ import * as sequential from 'promise-sequential';
 
 import { Playlist, PlaylistDocument } from './playlist.schema';
 import { IPlaylist, IParticipation } from '../../../types/playlist';
-import { generateTracklist } from './playlist.helpers';
-
-const refreshAccessToken = (spotifyApiInstance): Promise<string> => {
-  return spotifyApiInstance
-    .refreshAccessToken()
-    .then((data) => {
-      return data.body['access_token'];
-    })
-    .catch((err) => {
-      console.log('ERR: ', err.message); // eslint-disable-line
-      // throw err;
-    });
-};
+import { simplifyParticipations } from './playlist.helpers';
 
 const getSpotifyInstance = async (refreshToken: string): Promise<any> => {
   const instance = new SpotifyWebApi({
@@ -28,7 +16,15 @@ const getSpotifyInstance = async (refreshToken: string): Promise<any> => {
     clientSecret: process.env.SPOTIFY_API_SECRET_ID,
     refreshToken,
   });
-  const accessToken = await refreshAccessToken(instance);
+
+  const accessToken = await instance.refreshAccessToken().then(
+    (data) => {
+      return data.body['access_token'];
+    },
+    (err) => {
+      throw err;
+    },
+  );
 
   instance.setAccessToken(accessToken);
 
@@ -87,7 +83,7 @@ export class PlaylistService {
 
   async release(playlistId: string): Promise<any> {
     const playlist: IPlaylist = await this.playlistModel.findById(playlistId);
-    const participations = generateTracklist(playlist.participations);
+    const participations = simplifyParticipations(playlist.participations);
 
     const defaultTitle = participations
       .map(({ user: { name } }) => name)
@@ -130,6 +126,6 @@ export class PlaylistService {
       status: 'published',
     });
 
-    return true;
+    return playlist;
   }
 }
