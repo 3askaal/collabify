@@ -19,7 +19,7 @@ export default function useSpotifyApi(code?: string): { accessToken: string | nu
   }, [accessToken])
 
   useEffect(() => {
-    if (accessToken) return
+    // if (accessToken) return
     if (!code) return
 
     axios
@@ -30,6 +30,7 @@ export default function useSpotifyApi(code?: string): { accessToken: string | nu
         setExpiresIn(res.data.expiresIn)
       })
       .catch((err) => {
+        (window as any).location = '/'
         console.log('ERR: ', err)
       })
   }, [code, accessToken])
