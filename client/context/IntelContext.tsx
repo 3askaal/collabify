@@ -129,12 +129,6 @@ export const IntelProvider = ({ children }: any) => {
     }
   }, [playlistId])
 
-  useEffect(() => {
-    if (releaseRes) {
-      console.log(releaseRes)
-    }
-  }, [releaseRes])
-
   return (
     <IntelContext.Provider
       value={{

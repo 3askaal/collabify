@@ -10,7 +10,6 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<any>
 ) {
-  console.log('##### api/refresh');
   const refreshToken = req.body.refreshToken
 
   const spotifyApi = new SpotifyApi({
