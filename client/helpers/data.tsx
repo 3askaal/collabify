@@ -22,10 +22,7 @@ export const collectData = async (spotifyApi: any, debug?: boolean, seed_tracks?
 
     const body = await (spotifyApi[((debug ? debugFetchers : fetchers)[instance])])(debug ? { seed_tracks, limit: 50 } : { time_range: term, limit: 50 })
       .then(
-        ({ body }: { body: SpotifyResBody }) => {
-          console.log('data: ', body); // eslint-disable-line
-          return body
-        },
+        ({ body }: { body: SpotifyResBody }) => body,
         (err: Error) => { throw err }
       )
 
