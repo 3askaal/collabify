@@ -4,19 +4,19 @@ export interface ITerms {
   long_term: any[];
 }
 
-export interface IIntel {
+export interface IPlaylistIntel {
   userId: string;
   data: {
-    artists?: Terms;
-    tracks?: Terms;
-    genres?: Terms;
+    artists?: ITerms;
+    tracks?: ITerms;
+    genres?: ITerms;
   };
-  submittedAt: Date;
+  submittedAt?: Date;
 }
 
 export interface IPlaylist {
   id?: string;
   title: string;
   description: string;
-  users: Intel[];
+  users: IPlaylistIntel[];
 }

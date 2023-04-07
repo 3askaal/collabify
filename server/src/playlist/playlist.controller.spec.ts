@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AppController } from './playlist.resolver';
+import { AppController } from './playlist.controller';
 // import { AppService } from './playlist.service';
 
 describe.skip('AppController', () => {
