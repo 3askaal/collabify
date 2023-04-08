@@ -1,5 +1,5 @@
 import { Input, Spacer, Title, Button } from '3oilerplate'
-import { CollectIntelAuthenticated } from './';
+import { FilterData } from './';
 
 export function Steps({ currentStep, onSubmit }: any) {
   switch (currentStep) {
@@ -13,7 +13,7 @@ export function Steps({ currentStep, onSubmit }: any) {
 
     case 1:
       return (
-        <CollectIntelAuthenticated />
+        <FilterData />
       )
 
     default:

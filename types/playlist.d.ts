@@ -4,15 +4,15 @@ export interface ITerms {
   long_term: any[];
 }
 
-export interface IPlaylistIntelData {
+export interface IData {
   artists?: ITerms;
   tracks?: ITerms;
   genres?: ITerms;
 }
 
-export interface IPlaylistIntel {
+export interface IParticipation {
   userId: string;
-  data: IPlaylistIntelData;
+  data: IData;
   submittedAt?: Date;
 }
 
@@ -20,5 +20,23 @@ export interface IPlaylist {
   id?: string;
   title: string;
   description: string;
-  intel: IPlaylistIntel[];
+  participations: IParticipation[];
+  status: 'waiting' | 'completed';
 }
+
+type IGenre = string;
+
+interface IArtist {
+  uri: string;
+  name: string;
+}
+
+interface ITrack {
+  uri: string;
+  name: string;
+  artists: Artist[];
+  genres: Genre[];
+  index: number;
+}
+
+type IObject = Genre | Artist | Track;

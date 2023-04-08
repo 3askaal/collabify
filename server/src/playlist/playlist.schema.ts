@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
-import { IPlaylistIntel } from '../../../types/playlist';
+import { IParticipation } from '../../../types/playlist';
 
 export type PlaylistDocument = HydratedDocument<Playlist>;
 
@@ -9,7 +9,7 @@ export class Playlist {
   @Prop() title: string;
   @Prop() description: string;
   @Prop() status: 'waiting' | 'completed';
-  @Prop() intel: IPlaylistIntel[];
+  @Prop() participations: IParticipation[];
 }
 
 export const PlaylistSchema = SchemaFactory.createForClass(Playlist);

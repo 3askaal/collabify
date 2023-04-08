@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Playlist, PlaylistDocument } from './playlist.schema';
-import { IPlaylist, IPlaylistIntel } from '../../../types/playlist';
+import { IPlaylist, IParticipation } from '../../../types/playlist';
+import { generateTracklist } from './playlist.helpers';
 
 @Injectable()
 export class PlaylistService {
@@ -18,14 +19,22 @@ export class PlaylistService {
     return this.playlistModel.findById(playlistId);
   }
 
-  async join(playlistId: string, intel: IPlaylistIntel): Promise<Playlist> {
+  async join(
+    playlistId: string,
+    participation: IParticipation,
+  ): Promise<Playlist> {
     return this.playlistModel.findByIdAndUpdate(playlistId, {
       $push: {
-        intel: {
-          ...intel,
+        participations: {
+          ...participation,
           submittedAt: new Date(),
         },
       },
     });
+  }
+
+  async release(playlistId: string): Promise<void> {
+    const playlist: IPlaylist = await this.playlistModel.findById(playlistId);
+    const tracklist = generateTracklist(playlist.participations);
   }
 }

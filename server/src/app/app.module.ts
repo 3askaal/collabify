@@ -5,7 +5,7 @@ import { CONFIG } from 'src/config';
 import { PlaylistModule } from 'src/playlist/playlist.module';
 
 @Module({
-  imports: [PlaylistModule, MongooseModule.forRoot(CONFIG.MONGODB_URI)],
+  imports: [MongooseModule.forRoot(CONFIG.MONGODB_URI), PlaylistModule],
   controllers: [AppController],
 })
 export class AppModule {}
