@@ -1,14 +1,14 @@
 import { useContext, useState } from 'react'
 import { Spacer, Box, ElementGroup, Button } from '3oilerplate'
 import { orderBy, remove, startCase } from 'lodash'
-import SelectionLabel from './selectionLabel'
+import { SelectionLabel } from './'
 import { IntelContext } from '../context/IntelContext'
 import { IPlaylistIntelData } from '../../types/playlist'
 
 type DataTypes = 'artists' | 'tracks' | 'genres';
 type TermTypes = 'short_term' | 'medium_term' | 'long_term';
 
-export default function CollectIntelAuthenticated() {
+export function CollectIntelAuthenticated() {
   const { intel, setIntel } = useContext(IntelContext)
 
   const [activeTab, setActiveTabState] = useState<DataTypes>('genres')

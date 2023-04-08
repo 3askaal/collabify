@@ -7,7 +7,7 @@ const searchHandlers: { [key: string]: string } = {
   tracks: 'searchTracks',
 }
 
-export default function CollectIntel({ code }: any) {
+export function CollectIntel({ code }: any) {
   const { spotifyApi }: any = useSpotifyApi(code)
   const [searchText, setSearchText] = useState<any>({
     artists: '',
