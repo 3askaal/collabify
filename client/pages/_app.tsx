@@ -51,7 +51,6 @@ export default function App({ Component, pageProps }: AppProps) {
     if (router.query.id === undefined && !code) {
       return
     }
-
     if (accessToken) {
       router.replace('/playlist/new');
     }

@@ -1,12 +1,12 @@
 import { useContext, useEffect, useState } from 'react'
 import { Box, Button } from '3oilerplate'
-import { Steps } from '../../../components';
-import useSpotifyApi from '../../../hooks/useSpotifyApi'
-import { IntelContext } from '../../../context/IntelContext'
-import { collectData } from '../../../helpers'
+import { Steps } from '../../components';
+import useSpotifyApi from '../../hooks/useSpotifyApi'
+import { IntelContext } from '../../context/IntelContext'
+import { collectData } from '../../helpers'
 import { useRouter } from 'next/router';
 import { sampleSize, map } from 'lodash';
-import { PlaylistStatus } from '../../../components/status';
+import { PlaylistStatus } from '../../components/status';
 
 export default function Playlist() {
   const router = useRouter()
