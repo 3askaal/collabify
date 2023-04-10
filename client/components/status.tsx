@@ -4,6 +4,7 @@ import { IntelContext } from '../context/IntelContext'
 import { Copy, Clipboard } from 'react-feather';
 import { useRouter } from 'next/router';
 import copy from 'copy-to-clipboard';
+import { getDefaultPlaylistTitle } from '../helpers/transform';
 
 
 export const PlaylistStatus = () => {
@@ -11,7 +12,7 @@ export const PlaylistStatus = () => {
   const { getDataRes, me } = useContext(IntelContext)
   const [isCopied, setIsCopied] = useState(false)
 
-  const playlistName = getDataRes?.name || getDataRes?.participations.map(({ user }: any) => user.name).join(' x ')
+  const playlistName = getDataRes?.name || getDefaultPlaylistTitle(getDataRes)
   const playlistDesc = getDataRes?.description || 'Generated with collabify.vercel.app'
 
   const shareUrl = `${window.location.host}/playlist/${playlistId}`

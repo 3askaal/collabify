@@ -33,9 +33,10 @@ export class PlaylistController {
     }
   }
 
-  @Get('/participated/:id')
+  @Get('participated/:id')
   async getByUser(@Param() params): Promise<Playlist[]> {
     const { id: userId } = params;
+    console.log('userId: ', userId); // eslint-disable-line
 
     try {
       return this.playlistService.getParticipated(userId);
