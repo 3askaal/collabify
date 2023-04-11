@@ -4,7 +4,7 @@ import Link from 'next/link'
 export function Login() {
   return (
     <>
-      <Link href="/api/login">
+      <Link href="/api/login/create">
         <Button>Authenticate with Spotify</Button>
       </Link>
     </>

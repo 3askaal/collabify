@@ -7,32 +7,32 @@ import { PlaylistService } from './playlist.service';
 export class PlaylistController {
   constructor(private readonly playlistService: PlaylistService) {}
 
-  @Post()
-  async create(@Body() payload: IPlaylist): Promise<Playlist> {
-    try {
-      return this.playlistService.create(payload);
-    } catch (err) {
-      throw err;
-    }
-  }
-
   @Get(':id')
   async get(@Param() params): Promise<Playlist> {
     const { id: playlistId } = params;
 
     try {
-      return this.playlistService.get(playlistId);
+      return this.playlistService.getOne(playlistId);
     } catch (err) {
       throw err;
     }
   }
 
-  @Get('participated/:id')
-  async getByUser(@Param() params): Promise<Playlist[]> {
-    const { id: userId } = params;
+  @Get('all/:id/:email')
+  async getAll(@Param() params): Promise<Playlist[]> {
+    const { id: userId, email } = params;
 
     try {
-      return this.playlistService.getParticipated(userId);
+      return this.playlistService.getAll(userId, email);
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  @Post()
+  async create(@Body() payload: IPlaylist): Promise<Playlist> {
+    try {
+      return this.playlistService.create(payload);
     } catch (err) {
       throw err;
     }

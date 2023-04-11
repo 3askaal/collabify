@@ -42,16 +42,14 @@ const DynamicWrapper = dynamic(() => Promise.resolve(NonSSRWrapper), {
 })
 
 export default function App({ Component, pageProps }: AppProps) {
-  const router = useRouter()
-  const code = router.query.code
+  const { query: { id, code }, replace } = useRouter();
   const { accessToken } = useSpotifyApi(code?.toString())
 
   useEffect(() => {
-    if (router.query.id === undefined && !code) {
-      return
-    }
+    if (id === undefined && !code) return
+
     if (accessToken) {
-      router.replace('/playlist/new');
+      replace('/playlist/new');
     }
   }, [accessToken])
 
