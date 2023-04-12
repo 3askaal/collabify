@@ -18,11 +18,12 @@ interface SpotifyApiHook {
   logout: Function;
 }
 
-export default function useSpotifyApi(code?: string): SpotifyApiHook {
-  const router = useRouter()
+export default function useSpotifyApi(): SpotifyApiHook {
+  const { query: { id: playlistId, code }, replace } = useRouter()
   const [accessToken, setAccessToken] = useLocalStorage<string | null>('accessToken', '')
   const [refreshToken, setRefreshToken] = useLocalStorage<string | null>('refreshToken', '')
   const [expiresAt, setExpiresAt] = useLocalStorage<string | null>('expiresAt', '')
+  const [redirectPlaylistId, setRedirectPlaylistId] = useLocalStorage<string | null>('redirectPlaylistId', '')
 
   const getRefreshToken = () => {
     axios
@@ -41,7 +42,7 @@ export default function useSpotifyApi(code?: string): SpotifyApiHook {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('expiresAt');
-    router.replace('/');
+    replace('/');
   }
 
   const onError = () => {
@@ -51,11 +52,20 @@ export default function useSpotifyApi(code?: string): SpotifyApiHook {
   useEffect(() => {
     if (accessToken) {
       spotifyApi.setAccessToken(accessToken)
+      replace(`/playlist/${redirectPlaylistId || 'new'}`);
+
+      if (redirectPlaylistId) {
+        setRedirectPlaylistId(null)
+      }
+    } else {
+      if (playlistId) {
+        setRedirectPlaylistId(playlistId as string)
+      }
     }
   }, [accessToken])
 
   useEffect(() => {
-    if (!code) return
+    if (!code || accessToken) return
 
     axios
       .post(`${process.env.NEXT_PUBLIC_PROD_URL}/api/auth`, { code })
