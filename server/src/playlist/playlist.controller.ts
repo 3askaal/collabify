@@ -1,4 +1,4 @@
-import { Controller, Get, Body, Param, Put } from '@nestjs/common';
+import { Controller, Post, Get, Put, Body, Param } from '@nestjs/common';
 import { IPlaylist, IParticipation } from '../../../types/playlist';
 import { Playlist } from './playlist.schema';
 import { PlaylistService } from './playlist.service';
@@ -7,8 +7,11 @@ import { PlaylistService } from './playlist.service';
 export class PlaylistController {
   constructor(private readonly playlistService: PlaylistService) {}
 
-  @Get()
+  @Post()
   async create(@Body() payload: IPlaylist): Promise<Playlist> {
+    console.log('##### CREATE #####');
+    console.log('payload: ', payload);
+
     try {
       return this.playlistService.create(payload);
     } catch (err) {
@@ -18,7 +21,10 @@ export class PlaylistController {
 
   @Get(':id')
   async get(@Param() params): Promise<Playlist> {
-    const { playlistId } = params;
+    console.log('##### GET #####');
+    console.log('params.id: ', params.id);
+
+    const { id: playlistId } = params;
 
     try {
       return this.playlistService.get(playlistId);
@@ -28,14 +34,35 @@ export class PlaylistController {
   }
 
   @Put(':id')
-  async join(
+  async participate(
     @Param() params,
-    @Body() payload: IParticipation,
+    @Body() payload: IPlaylist,
   ): Promise<Playlist> {
+    console.log('##### PARTICIPATE #####');
+    console.log('params.id: ', params.id);
+    console.log('payload: ', payload);
+
+    const { id: playlistId } = params;
+
+    try {
+      return this.playlistService.participate(
+        playlistId,
+        payload.participations[0],
+      );
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  @Get(':id/release')
+  async release(@Param() params): Promise<void> {
+    console.log('##### RELEASE #####');
+    console.log('params.id: ', params.id);
+
     const { playlistId } = params;
 
     try {
-      return this.playlistService.join(playlistId, payload);
+      return this.playlistService.release(playlistId);
     } catch (err) {
       throw err;
     }

@@ -45,10 +45,14 @@ export default function App({ Component, pageProps }: AppProps) {
   const { accessToken } = useSpotifyApi(code?.toString())
 
   useEffect(() => {
-    if (accessToken || code) {
+    if (router.query.id === undefined && !code) {
+      return
+    }
+
+    if (code || !router.query.id) {
       router.push('/playlist/new');
     }
-  }, [accessToken, code])
+  }, [code, router])
 
   return (
     <ThemeProvider theme={mergeTheme(DEFAULT_THEME, THEME)}>

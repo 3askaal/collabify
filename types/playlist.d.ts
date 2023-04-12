@@ -16,11 +16,13 @@ export interface IParticipation {
   submittedAt?: Date;
 }
 
+export type IParticipations = IParticipation[]
+
 export interface IPlaylist {
   id?: string;
   title: string;
   description: string;
-  participations: IParticipation[];
+  participations: IParticipations;
   status: 'waiting' | 'completed';
 }
 

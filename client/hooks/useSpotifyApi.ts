@@ -29,8 +29,6 @@ export default function useSpotifyApi(code?: string): { accessToken: string | nu
   useEffect(() => {
     if (!code) return
 
-    console.log('gets new access token'); // eslint-disable-line
-
     axios
       .post(`${process.env.NEXT_PUBLIC_PROD_URL}/api/auth`, { code })
       .then((res) => {
@@ -45,8 +43,6 @@ export default function useSpotifyApi(code?: string): { accessToken: string | nu
   }, [code, setAccessToken, setRefreshToken, setExpiresAt])
 
   const getRefreshToken = () => {
-    console.log('call getRefreshToken');
-
     axios
       .post(`${process.env.NEXT_PUBLIC_PROD_URL}/api/refresh`, { refreshToken })
       .then((res) => {
@@ -66,17 +62,11 @@ export default function useSpotifyApi(code?: string): { accessToken: string | nu
     let interval: ReturnType<typeof setInterval>
 
     const isExpired = moment() > moment(Number(expiresAt))
-    console.log('isExpired: ', isExpired); // eslint-disable-line
 
     if (isExpired) {
       getRefreshToken()
     } else {
       const expiresIn = moment(Number(expiresAt)).valueOf() - moment().valueOf()
-      const expiresInMinutes = moment(Number(expiresAt)).diff(moment(), 'minutes')
-
-      console.log('expiresIn: ', expiresIn); // eslint-disable-line
-      console.log('expiresInMinutes: ', expiresInMinutes); // eslint-disable-line
-
       interval = setInterval(getRefreshToken, expiresIn)
     }
 
@@ -84,7 +74,6 @@ export default function useSpotifyApi(code?: string): { accessToken: string | nu
   }, [expiresAt])
 
   const logout = () => {
-    console.log('call logout'); // eslint-disable-line
     setAccessToken(null);
     setRefreshToken(null);
     setExpiresAt(null);

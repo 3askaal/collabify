@@ -1,7 +1,7 @@
-import { IPlaylist, IParticipation } from '../../../types/playlist';
+import { IParticipations } from '../../../types/playlist';
 
 export const generateTracklist = (
-  participations: IPlaylist['participations'],
+  participations: IParticipations,
 ): string[] => {
   // Rate data for each participation individually
   // - Add ranking property (index) to each track in each time period

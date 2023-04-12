@@ -8,7 +8,7 @@ import { collectData } from '../../helpers'
 
 export default function Playlist() {
   const { spotifyApi, accessToken, logout } = useSpotifyApi()
-  const { setData } = useContext(IntelContext)
+  const { setData, submitData } = useContext(IntelContext)
 
   const [step, setStep] = useState(0);
 
@@ -44,7 +44,7 @@ export default function Playlist() {
         </Box>
 
         <Container s={{ maxWidth: '480px', justifyContent: 'center', flexGrow: 1, overflowY: 'hidden', my: 'm' }}>
-          <Steps currentStep={step} />
+          <Steps currentStep={step} onSubmit={submitData} />
         </Container>
 
         <Spacer s={{ justifyContent: 'center', flexDirection: 'row' }}>
