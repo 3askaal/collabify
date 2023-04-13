@@ -44,7 +44,12 @@ export class PlaylistService {
 
   async release(playlistId: string): Promise<any> {
     const playlist: IPlaylist = await this.playlistModel.findById(playlistId);
-    const tracklist = generateTracklist(playlist.participations);
+
+    const formattedParticipations = playlist.participations.map(
+      (item, index) => ({ ...item, id: index }),
+    );
+
+    const tracklist = generateTracklist(formattedParticipations);
 
     return tracklist;
   }

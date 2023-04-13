@@ -1,7 +1,7 @@
 export interface ITerms {
-  short_term: any[];
-  medium_term: any[];
-  long_term: any[];
+  short_term: IObject[];
+  medium_term: IObject[];
+  long_term: IObject[];
 }
 
 export interface IData {
@@ -11,6 +11,7 @@ export interface IData {
 }
 
 export interface IParticipation {
+  id?: number;
   userId: string;
   data: IData;
   submittedAt?: Date;
@@ -26,14 +27,14 @@ export interface IPlaylist {
   status: 'waiting' | 'completed';
 }
 
-type IGenre = string;
+export type IGenre = string;
 
-interface IArtist {
+export interface IArtist {
   uri: string;
   name: string;
 }
 
-interface ITrack {
+export interface ITrack {
   uri: string;
   name: string;
   artists: Artist[];
@@ -41,4 +42,9 @@ interface ITrack {
   index: number;
 }
 
-type IObject = Genre | Artist | Track;
+export type IObject = {
+  id: string;
+  name?: string;
+  index?: number;
+  rank?: number;
+}
