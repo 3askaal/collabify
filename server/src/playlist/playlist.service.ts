@@ -42,8 +42,10 @@ export class PlaylistService {
     });
   }
 
-  async release(playlistId: string): Promise<void> {
+  async release(playlistId: string): Promise<any> {
     const playlist: IPlaylist = await this.playlistModel.findById(playlistId);
     const tracklist = generateTracklist(playlist.participations);
+
+    return tracklist;
   }
 }

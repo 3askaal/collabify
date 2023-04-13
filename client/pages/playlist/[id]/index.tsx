@@ -1,10 +1,10 @@
 import { useContext, useEffect, useState } from 'react'
 import { Box, Wrapper, Container, Button, Spacer } from '3oilerplate'
 import { User as UserIcon, ArrowLeft as ArrowLeftIcon, ArrowRight as ArrowRightIcon } from 'react-feather'
-import { Logo, Steps } from '../../components';
-import useSpotifyApi from '../../hooks/useSpotifyApi'
-import { IntelContext } from '../../context/IntelContext'
-import { collectData } from '../../helpers'
+import { Logo, Steps } from '../../../components';
+import useSpotifyApi from '../../../hooks/useSpotifyApi'
+import { IntelContext } from '../../../context/IntelContext'
+import { collectData } from '../../../helpers'
 
 export default function Playlist() {
   const { spotifyApi, accessToken, logout } = useSpotifyApi()

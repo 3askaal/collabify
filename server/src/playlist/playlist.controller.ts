@@ -1,5 +1,5 @@
 import { Controller, Post, Get, Put, Body, Param } from '@nestjs/common';
-import { IPlaylist, IParticipation } from '../../../types/playlist';
+import { IPlaylist } from '../../../types/playlist';
 import { Playlist } from './playlist.schema';
 import { PlaylistService } from './playlist.service';
 
@@ -59,7 +59,7 @@ export class PlaylistController {
     console.log('##### RELEASE #####');
     console.log('params.id: ', params.id);
 
-    const { playlistId } = params;
+    const { id: playlistId } = params;
 
     try {
       return this.playlistService.release(playlistId);
