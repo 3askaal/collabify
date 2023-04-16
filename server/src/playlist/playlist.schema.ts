@@ -4,7 +4,7 @@ import { IParticipation } from '../../../types/playlist';
 
 export type PlaylistDocument = HydratedDocument<Playlist>;
 
-@Schema()
+@Schema({ timestamps: true })
 export class Playlist {
   @Prop() title: string;
   @Prop() description: string;

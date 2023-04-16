@@ -23,9 +23,7 @@ export const collectData = async (spotifyApi: any, debug?: boolean, seed_tracks?
     let items = []
 
     if (debug && instance === 'artists') {
-      // console.log('data: ', data);
-      // there is no recommendations endpoint for artists
-      // so we have to filter out the artists from a list of track recommendations
+      // mapping artists out of tracks because there is no recommendations endpoint for artists
       items = sampleSize(
         data.body.tracks
           .map(({ artists }: any) => artists)

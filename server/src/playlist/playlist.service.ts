@@ -12,14 +12,13 @@ export class PlaylistService {
   ) {}
 
   async create(payload: IPlaylist): Promise<Playlist> {
+    const now = new Date();
     const doc = await this.playlistModel.create({
       ...payload,
-      participations: [
-        {
-          ...payload.participations[0],
-          submittedAt: new Date(),
-        },
-      ],
+      participations: payload.participations.map((participation) => ({
+        ...participation,
+        submittedAt: now,
+      })),
     });
     return doc;
   }

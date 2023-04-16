@@ -32,7 +32,10 @@ export default function Playlist() {
     collectData(spotifyApi).then((data) => {
       setData(data)
 
-      if (!router.query.debug) return
+      if (!router.query.debug) {
+        setIsLoading(false)
+        return
+      }
 
       // get debug data based on own data
       const seed_tracks = map(sampleSize(data.tracks?.short_term, 3), 'id').map((id) => id.split(':')[2])

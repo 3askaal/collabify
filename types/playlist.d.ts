@@ -45,6 +45,8 @@ export interface ITrack {
 export type IObject = {
   id: string;
   name?: string;
+  artist?: string;
   index?: number;
   rank?: number;
+  include?: boolean;
 }
