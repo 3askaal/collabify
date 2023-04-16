@@ -19,6 +19,7 @@ export const IntelContext = createContext<IntelContextType>({
 export const IntelProvider = ({ children }: any) => {
   const { query: { id: playlistId } } = useRouter()
   const [data, setData] = useState<IData>({})
+  const [debugData, setDebugData] = useState<IData | null>(null)
 
   const [{ data: submitDataRes }, submitDataCallback] = useAxios(
     playlistId === 'new' ? {
@@ -48,12 +49,15 @@ export const IntelProvider = ({ children }: any) => {
   )
 
   const submitData = () => {
+    const participations = [{ userId: '???', data: data }]
+
+    if (debugData) {
+      participations.push({ userId: '???', data: debugData })
+    }
+
     submitDataCallback({
       data: {
-        participations: [{
-          userId: '???',
-          data: data
-        }]
+        participations
       }
     })
   }
@@ -88,7 +92,8 @@ export const IntelProvider = ({ children }: any) => {
         data,
         setData,
         submitData,
-        release
+        release,
+        setDebugData
       }}
     >
       {children}

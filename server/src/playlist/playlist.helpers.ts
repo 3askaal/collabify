@@ -63,8 +63,8 @@ export const generateTracklist = (
                         .flat()
                         // find identical objects in unified collection
                         .filter(({ id: objectId }) => objectId === id)
-                        // get ranking of identical objects (by reversing the index value)
-                        .map(({ index }) => value2.length - index)
+                        // map ranking value
+                        .map(({ rank }) => rank)
                         // sum ranking value
                         .reduce((sum, a) => sum + a, 0);
 

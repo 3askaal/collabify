@@ -5,10 +5,15 @@ import { Logo, Steps } from '../../../components';
 import useSpotifyApi from '../../../hooks/useSpotifyApi'
 import { IntelContext } from '../../../context/IntelContext'
 import { collectData } from '../../../helpers'
+import { useRouter } from 'next/router';
+import { sampleSize, map } from 'lodash';
+import { IData } from '../../../../types/playlist';
 
 export default function Playlist() {
+  const router = useRouter()
   const { spotifyApi, accessToken, logout } = useSpotifyApi()
-  const { setData, submitData } = useContext(IntelContext)
+  const { setData, submitData, setDebugData } = useContext(IntelContext)
+  const [isLoading, setIsLoading] = useState(true)
 
   const [step, setStep] = useState(0);
 
@@ -26,8 +31,18 @@ export default function Playlist() {
 
     collectData(spotifyApi).then((data) => {
       setData(data)
+
+      if (!router.query.debug) return
+
+      // get debug data based on own data
+      const seed_tracks = map(sampleSize(data.tracks?.short_term, 3), 'id').map((id) => id.split(':')[2])
+
+      collectData(spotifyApi, true, seed_tracks).then((debugData) => {
+        setDebugData(debugData)
+        setIsLoading(false)
+      })
     })
-  }, [spotifyApi, accessToken, setData])
+  }, [spotifyApi, accessToken, setData, setDebugData])
 
   return (
     <>
@@ -44,7 +59,7 @@ export default function Playlist() {
         </Box>
 
         <Container s={{ maxWidth: '480px', justifyContent: 'center', flexGrow: 1, overflowY: 'hidden', my: 'm' }}>
-          <Steps currentStep={step} onSubmit={submitData} />
+          { isLoading ? <Box s={{ textAlign: 'center' }}>Wait a second while we fetch your data...</Box> : <Steps currentStep={step} onSubmit={submitData} /> }
         </Container>
 
         <Spacer s={{ justifyContent: 'center', flexDirection: 'row' }}>
