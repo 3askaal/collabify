@@ -5,7 +5,7 @@ import { Logo } from '../../../components';
 import useSpotifyApi from '../../../hooks/useSpotifyApi'
 import { IntelContext } from '../../../context/IntelContext'
 
-export default function Release() {
+export default function Status() {
   const { logout } = useSpotifyApi()
   const { release } = useContext(IntelContext)
 

@@ -25,12 +25,10 @@ export const collectData = async (spotifyApi: any, debug?: boolean, seed_tracks?
     if (debug && instance === 'artists') {
       // mapping artists out of tracks because there is no recommendations endpoint for artists
       items = sampleSize(
-        data.body.tracks
-          .map(({ artists }: any) => artists)
-          .flat()
-          .map(({ name, uri }: any, index: number) => ({ id: uri, index, name })),
+        data.body.tracks.map(({ artists }: any) => artists).flat(),
         50
-      )
+      ).map(({ name, uri }: any, index: number) => ({ id: uri, index, name }));
+
     } else {
       items = (debug ? data.body[instance] : data?.body?.items).map(({ name, uri, artists, genres }: any, index: number) => ({
         id: uri,
