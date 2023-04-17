@@ -20,7 +20,7 @@ export interface IParticipation {
 export type IParticipations = IParticipation[]
 
 export interface IPlaylist {
-  id?: string;
+  _id?: string;
   title: string;
   description: string;
   participations: IParticipations;

@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "3oilerplate": "^0.2.49",
+    "@faker-js/faker": "^7.6.0",
     "@next/font": "13.1.1",
     "@types/axios": "^0.14.0",
     "@types/node": "18.11.17",

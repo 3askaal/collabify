@@ -1,9 +1,11 @@
 import React, { createContext, Dispatch, SetStateAction, useEffect, useState } from 'react'
 import useAxios from "axios-hooks";
-import { IData } from '../../types/playlist'
+import { faker } from '@faker-js/faker';
+import { IData, IPlaylist } from '../../types/playlist'
 import { API_URL } from '../config';
 import { useRouter } from 'next/router';
 import { formatData } from '../helpers';
+import useSpotifyApi from '../hooks/useSpotifyApi';
 
 export interface IntelContextType {
   data?: IData;
@@ -16,12 +18,21 @@ export const IntelContext = createContext<IntelContextType>({
   setData: () => null
 })
 
+export interface IMe {
+  id: string;
+  email: string;
+  name: string;
+}
+
 export const IntelProvider = ({ children }: any) => {
-  const { push, query: { id: playlistId } } = useRouter()
+  const { push, query: { id: playlistId }, pathname } = useRouter()
+  const { spotifyApi } = useSpotifyApi()
+  const [me, setMe] = useState<any>({})
   const [data, setData] = useState<IData>({})
   const [debugData, setDebugData] = useState<IData | null>(null)
+  const [hasParticipated, setHasParticipated] = useState<boolean>(false)
 
-  const [{ data: submitDataRes }, submitDataCallback] = useAxios(
+  const [{ data: submitDataRes }, submitDataCallback] = useAxios<IPlaylist>(
     playlistId === 'new' ? {
       url: `${API_URL}/playlist`,
       method: 'POST'
@@ -32,7 +43,7 @@ export const IntelProvider = ({ children }: any) => {
     { manual: true }
   )
 
-  const [{ data: getDataRes }, getDataCallback] = useAxios(
+  const [{ data: getDataRes }, getDataCallback] = useAxios<IPlaylist>(
     playlistId ? {
       url: `${API_URL}/playlist/${playlistId}`,
       method: 'GET'
@@ -49,10 +60,10 @@ export const IntelProvider = ({ children }: any) => {
   )
 
   const submitData = () => {
-    const participations = [{ userId: '???', data: data }]
+    const participations = [{ user: me, data: data }]
 
     if (debugData) {
-      participations.push({ userId: '???', data: debugData })
+      participations.push({ user: { name: faker.name.fullName(), id: faker.datatype.uuid(), email: faker.internet.email() }, data: debugData })
     }
 
     submitDataCallback({
@@ -63,22 +74,33 @@ export const IntelProvider = ({ children }: any) => {
   }
 
   useEffect(() => {
+    spotifyApi.getMe().then((data) => {
+      setMe({
+        id: data.body.id,
+        email: data.body.email,
+        name: data.body.display_name,
+      })
+    })
+  }, [spotifyApi])
+
+  useEffect(() => {
     if (submitDataRes) {
-      push(`${submitDataRes._id}/status`)
+      push(`${submitDataRes._id}`)
     }
   }, [submitDataRes])
+
+  useEffect(() => {
+    console.log('getDataRes: ', getDataRes);
+    if (me?.id && (getDataRes || submitDataRes)?.participations.map(({ id }) => id === me?.id)) {
+      setHasParticipated(true)
+    }
+  }, [getDataRes, submitDataRes, me])
 
   useEffect(() => {
     if (playlistId && playlistId !== 'new') {
       getDataCallback()
     }
   }, [playlistId])
-
-  useEffect(() => {
-    if (getDataRes) {
-      console.log(getDataRes)
-    }
-  }, [getDataRes])
 
   useEffect(() => {
     if (releaseRes) {
@@ -91,9 +113,14 @@ export const IntelProvider = ({ children }: any) => {
       value={{
         data,
         setData,
+        me,
+        setMe,
         submitData,
         release,
-        setDebugData
+        setDebugData,
+        getDataRes,
+        hasParticipated,
+        setHasParticipated
       }}
     >
       {children}

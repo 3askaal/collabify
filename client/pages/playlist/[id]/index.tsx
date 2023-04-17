@@ -7,11 +7,12 @@ import { IntelContext } from '../../../context/IntelContext'
 import { collectData } from '../../../helpers'
 import { useRouter } from 'next/router';
 import { sampleSize, map } from 'lodash';
+import { PlaylistStatus } from '../../../components/status';
 
 export default function Playlist() {
   const router = useRouter()
   const { spotifyApi, accessToken, logout } = useSpotifyApi()
-  const { setData, submitData, setDebugData } = useContext(IntelContext)
+  const { setData, hasParticipated, submitData, setDebugData, release } = useContext(IntelContext)
   const [isLoading, setIsLoading] = useState(true)
   const [step, setStep] = useState(0);
 
@@ -60,17 +61,23 @@ export default function Playlist() {
         </Box>
 
         <Container s={{ maxWidth: '480px', justifyContent: 'center', flexGrow: 1, overflowY: 'hidden', my: 'm' }}>
-          { isLoading ? <Box s={{ textAlign: 'center' }}>Wait a second while we fetch your data...</Box> : <Steps currentStep={step} onSubmit={submitData} /> }
+          { isLoading ? <Box s={{ textAlign: 'center' }}>Wait a second while we fetch your data...</Box> : hasParticipated ? <PlaylistStatus /> : <Steps currentStep={step} onSubmit={submitData} /> }
         </Container>
 
-        <Spacer s={{ justifyContent: 'center', flexDirection: 'row' }}>
-          <Button isOutline onClick={onPrev} s={{ p: 's', borderRadius: '100%' }} isDisabled={step === 0}>
-            <ArrowLeftIcon />
-          </Button>
-          <Button isOutline onClick={onNext} s={{ p: 's', borderRadius: '100%' }}>
-            <ArrowRightIcon />
-          </Button>
-        </Spacer>
+        { !isLoading && !hasParticipated && (
+          <Spacer s={{ justifyContent: 'center', flexDirection: 'row' }}>
+            <Button isOutline onClick={onPrev} s={{ p: 's', borderRadius: '100%' }} isDisabled={step === 0}>
+              <ArrowLeftIcon />
+            </Button>
+            <Button isOutline onClick={onNext} s={{ p: 's', borderRadius: '100%' }}>
+              <ArrowRightIcon />
+            </Button>
+          </Spacer>
+        )}
+
+        { !isLoading && hasParticipated && (
+          <Button isBlock onClick={release}>Release</Button>
+        ) }
 
       </Wrapper>
     </>
