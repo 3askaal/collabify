@@ -1,7 +1,7 @@
 import React, { createContext, Dispatch, SetStateAction, useEffect, useState } from 'react'
 import useAxios from "axios-hooks";
 import { faker } from '@faker-js/faker';
-import { IData, IPlaylist } from '../../types/playlist'
+import { IData, IPlaylist, IUser } from '../../types/playlist'
 import { API_URL } from '../config';
 import { useRouter } from 'next/router';
 import { formatData } from '../helpers';
@@ -18,21 +18,15 @@ export const IntelContext = createContext<IntelContextType>({
   setData: () => null
 })
 
-export interface IMe {
-  id: string;
-  email: string;
-  name: string;
-  refreshToken: string;
-}
-
 export const IntelProvider = ({ children }: any) => {
-  const { push, query: { id: playlistId }, pathname } = useRouter()
+  const { push, query: { id: playlistId } } = useRouter()
   const { spotifyApi, refreshToken } = useSpotifyApi()
   const [name, setName] = useState<string>('')
-  const [me, setMe] = useState<IMe | {}>({})
+  const [me, setMe] = useState<Partial<IUser>>({})
   const [data, setData] = useState<IData>({})
   const [debugData, setDebugData] = useState<IData | null>(null)
   const [hasParticipated, setHasParticipated] = useState<boolean>(false)
+  const [invitations, setInvitations] = useState<string[]>([])
 
   const [{ data: submitDataRes }, submitDataCallback] = useAxios<IPlaylist>(
     playlistId === 'new' ? {
@@ -71,7 +65,8 @@ export const IntelProvider = ({ children }: any) => {
     submitDataCallback({
       data: {
         name,
-        participations
+        participations,
+        invitations,
       }
     })
   }
@@ -96,8 +91,7 @@ export const IntelProvider = ({ children }: any) => {
   }, [submitDataRes])
 
   useEffect(() => {
-    console.log('getDataRes: ', getDataRes);
-    if (me?.id && (getDataRes || submitDataRes)?.participations.map(({ id }) => id === me?.id)) {
+    if (me?.id && getDataRes?.participations.some(({ id }) => id === me?.id)) {
       setHasParticipated(true)
     }
   }, [getDataRes, submitDataRes, me])
@@ -127,7 +121,9 @@ export const IntelProvider = ({ children }: any) => {
         setDebugData,
         getDataRes,
         hasParticipated,
-        setHasParticipated
+        setHasParticipated,
+        invitations,
+        setInvitations
       }}
     >
       {children}
