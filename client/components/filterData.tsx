@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react'
-import { Spacer, Box, ElementGroup, Button } from '3oilerplate'
+import { Spacer, Box, ElementGroup, Button, Select } from '3oilerplate'
 import { orderBy, remove, startCase } from 'lodash'
 import { SelectionLabel } from '.'
 import { IntelContext } from '../context/IntelContext'
@@ -20,7 +20,7 @@ export function FilterData() {
 
   const setActiveTab = (activeTab: DataTypes) => {
     setActiveTabState(activeTab)
-    setActiveTerm({...activeTerm, [activeTab]: 'short_term'})
+    setActiveTerm({...activeTerm, [activeTab]: 'short_term' })
   }
 
   const toggleItem = (type: DataTypes, term: TermTypes, id: string) => {
@@ -72,29 +72,27 @@ export function FilterData() {
           </Button>
         </ElementGroup>
 
-        <ElementGroup s={{ alignSelf: 'center' }}>
-          <Button
-            isTermSelector
-            isOutline={activeTerm[activeTab] !== 'short_term'}
-            onClick={() => setActiveTerm({...activeTerm, [activeTab]: 'short_term'})}
-          >
-            Short Term
-          </Button>
-          <Button
-            isTermSelector
-            isOutline={activeTerm[activeTab] !== 'medium_term'}
-            onClick={() => setActiveTerm({...activeTerm, [activeTab]: 'medium_term'})}
-          >
-            Medium Term
-          </Button>
-          <Button
-            isTermSelector
-            isOutline={activeTerm[activeTab] !== 'long_term'}
-            onClick={() => setActiveTerm({...activeTerm, [activeTab]: 'long_term'})}
-          >
-            Long Term
-          </Button>
-        </ElementGroup>
+        <Select
+          options={[
+            {
+              label: 'Short Term',
+              value: 'short_term',
+
+            },
+            {
+              label: 'Medium Term',
+              value: 'medium_term',
+
+            },
+            {
+              label: 'Long Term',
+              value: 'long_term',
+
+            },
+          ]}
+          value={activeTerm[activeTab]}
+          onChange={(value: string) => setActiveTerm({...activeTerm, [activeTab]: value })}
+        />
       </Spacer>
 
       <Box df fdc s={{ flexGrow: 1, overflowY: 'auto' }}>

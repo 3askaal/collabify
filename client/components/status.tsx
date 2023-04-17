@@ -6,7 +6,7 @@ export const PlaylistStatus = () => {
   const { release, getDataRes, me } = useContext(IntelContext)
 
   const playlistName = getDataRes?.name || getDataRes?.participations.map(({ user }: any) => user.name).join(' x ')
-  const playlistDesc = getDataRes?.description || 'playlist generated with collabify'
+  const playlistDesc = getDataRes?.description || 'Playlist generated with collabify'
 
   return (
     <Spacer size="l">

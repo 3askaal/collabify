@@ -1,3 +1,10 @@
+export interface IUser {
+  id: string;
+  email: string;
+  name: string;
+  refreshToken: string;
+}
+
 export interface ITerms {
   short_term: IObject[];
   medium_term: IObject[];
@@ -12,7 +19,7 @@ export interface IData {
 
 export interface IParticipation {
   id?: number;
-  userId: string;
+  user: IUser;
   data: IData;
   submittedAt?: Date;
 }

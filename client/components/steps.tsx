@@ -1,13 +1,17 @@
 import { Input, Spacer, Title, Button } from '3oilerplate'
+import { useContext } from 'react';
+import { IntelContext } from '../context/IntelContext';
 import { FilterData } from './';
 
 export function Steps({ currentStep, onSubmit }: any) {
+  const { setName, release } = useContext(IntelContext)
+
   switch (currentStep) {
     case 0:
       return (
         <Spacer>
           <Title level="4">Choose a name for your playlist</Title>
-          <Input />
+          <Input onChange={setName} />
         </Spacer>
       )
 
@@ -19,7 +23,7 @@ export function Steps({ currentStep, onSubmit }: any) {
     default:
       return (
         <Spacer>
-          <Button onClick={onSubmit}>Submit</Button>
+          <Button onClick={release}>Submit</Button>
         </Spacer>
       )
   }
