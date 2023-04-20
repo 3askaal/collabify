@@ -6,7 +6,6 @@ export const SScrollContainer = s.div(({ theme }: any) => ({
   position: 'relative',
   height: '100%',
   overflow: 'hidden',
-  // paddingBottom: '4rem',
 
   '&:before': {
     position: 'absolute',
@@ -32,7 +31,7 @@ export const SScrollContainer = s.div(({ theme }: any) => ({
 export const ScrollContainer = ({ children }: any) => {
   return (
     <SScrollContainer>
-      <Box df fdc fg={1} s={{ overflowY: 'auto', py: 'm' }}>
+      <Box db s={{ overflowY: 'auto', py: 'm' }}>
         { children }
       </Box>
     </SScrollContainer>
