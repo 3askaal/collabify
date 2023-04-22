@@ -1,14 +1,15 @@
-import { Controller, Post, Get, Put, Body, Param } from '@nestjs/common';
+import { Controller, Post, Get, Put, Body, Param, NotFoundException, BadRequestException } from '@nestjs/common';
 import { IPlaylist } from '../../types/playlist';
 import { Playlist } from './playlist.schema';
 import { PlaylistService } from './playlist.service';
+import { GetParams, GetAllParams } from './playlist.validators';
 
 @Controller('playlist')
 export class PlaylistController {
   constructor(private readonly playlistService: PlaylistService) {}
 
   @Get(':id')
-  async get(@Param() params): Promise<Playlist> {
+  async get(@Param() params: GetParams): Promise<Playlist> {
     const { id: playlistId } = params;
 
     try {
@@ -19,7 +20,7 @@ export class PlaylistController {
   }
 
   @Get('all/:id/:email')
-  async getAll(@Param() params): Promise<Playlist[]> {
+  async getAll(@Param() params: GetAllParams): Promise<Playlist[]> {
     const { id: userId, email } = params;
 
     try {

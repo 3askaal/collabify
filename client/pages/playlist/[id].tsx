@@ -6,10 +6,10 @@ import { IntelContext } from '../../context/IntelContext'
 import { collectData } from '../../helpers'
 import { useRouter } from 'next/router';
 import { sampleSize, map } from 'lodash';
-import { PlaylistStatus } from '../../components/status';
+import { Status } from '../../components/status';
 
 export default function Playlist() {
-  const router = useRouter()
+  const { query: { id: playlistId, debug }, asPath } = useRouter()
   const { spotifyApi, accessToken, logout } = useSpotifyApi()
   const { setData, hasParticipated, setDebugData, release } = useContext(IntelContext)
   const [isLoading, setIsLoading] = useState(false)
@@ -24,7 +24,7 @@ export default function Playlist() {
       .then((data) => {
         setData(data)
 
-        if (!router.query.debug) {
+        if (!debug) {
           setIsLoading(false)
           return
         }
@@ -47,15 +47,15 @@ export default function Playlist() {
       {
         isLoading
           ? <Box s={{ display: 'grid', gridTemplateRows: '1fr', alignItems: 'center', justifyContent: 'center' }}>Wait a second while we fetch your data...</Box>
-          : accessToken
+          : accessToken && playlistId === 'new'
             ? <Steps />
-            : <PlaylistStatus />
+            : <Status />
       }
       { !isLoading && hasParticipated && (
         <Button isBlock onClick={release}>Release</Button>
       ) }
       { !isLoading && !accessToken && (
-        <Link href={`/api/login/participate?redirect_uri=http://${window.location.host + router.asPath}`}>
+        <Link href={`/api/login/participate?redirect_uri=http://${window.location.host + asPath}`}>
           <Button isBlock>Authenticate with Spotify to join</Button>
         </Link>
       ) }

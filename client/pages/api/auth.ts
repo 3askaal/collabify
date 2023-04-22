@@ -28,7 +28,7 @@ export default async function handler(
       })
     })
     .catch((err) => {
-      console.log('ERR:', err);
+      console.log('api/auth ERR: ', err)
       res.send(400)
     })
 }

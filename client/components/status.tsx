@@ -7,7 +7,7 @@ import copy from 'copy-to-clipboard';
 import { getDefaultPlaylistTitle } from '../helpers/transform';
 
 
-export const PlaylistStatus = () => {
+export const Status = () => {
   const { query: { id: playlistId } } = useRouter()
   const { getDataRes, me } = useContext(IntelContext)
   const [isCopied, setIsCopied] = useState(false)
@@ -48,7 +48,7 @@ export const PlaylistStatus = () => {
       </Spacer>
       <Spacer>
         <List>
-          { getDataRes?.participations.map(({ user }: any) => (
+          { getDataRes?.participations?.map(({ user }: any) => (
             <ListItem s={{ display: 'flex', justifyContent: 'space-between' }} key={user.id}>{user.name} <strong>{user.id === me?.id ? 'You' : ''}</strong></ListItem>
           )) || [] }
         </List>
