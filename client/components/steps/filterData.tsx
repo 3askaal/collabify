@@ -99,7 +99,7 @@ export function FilterData() {
 
       <ScrollContainer>
         { activeTab === 'genres' ? (
-          <Box df fdr fww jcc s={{ height: 0 }}>
+          <Box df fdr fww jcc>
             { topGenres.map(({ id, index, name, include }) => (
               <SelectionLabel
                 onClick={() => toggleItem('genres', activeTerm.genres, id)}
@@ -113,7 +113,7 @@ export function FilterData() {
         ) : null }
 
         { activeTab === 'artists' ? (
-          <Box df fdr fww jcc s={{ height: 0 }}>
+          <Box df fdr fww jcc>
             { topArtists.map(({ id, index, name, include }) => (
               <SelectionLabel
                 onClick={() => toggleItem('artists', activeTerm.artists, id)}
@@ -127,7 +127,7 @@ export function FilterData() {
         ) : null }
 
         { activeTab === 'tracks' ? (
-          <Box s={{ height: 0 }}>
+          <Box>
             { topTracks.map(({ id, index, artist, name, include }) => (
               <SelectionLabel
                 onClick={() => toggleItem('tracks', activeTerm.tracks, id)}
