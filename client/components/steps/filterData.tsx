@@ -46,7 +46,7 @@ export function FilterData() {
   }
 
   return (
-    <Spacer s={{ flexGrow: 1 }}>
+    <Spacer s={{ flexGrow: 1, overflow: 'hidden' }}>
       <Box df jcc>
         <Title level="4">Filter your data</Title>
       </Box>
