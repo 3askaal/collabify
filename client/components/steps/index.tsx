@@ -9,7 +9,7 @@ const Details = () => {
   const { setName } = useContext(IntelContext)
 
   return (
-    <Spacer s={{ flexGrow: 1, overflow: 'hidden', justifyContent: 'center' }}>
+    <Spacer s={{ flexGrow: 1, justifyContent: 'center' }}>
       <Box df jcc>
         <Title level="4">Name your playlist</Title>
       </Box>
@@ -22,7 +22,7 @@ const Submit = ({ id }: { id: string }) => {
   const { submitData } = useContext(IntelContext)
 
   return (
-    <Spacer s={{ flexGrow: 1, overflow: 'hidden', justifyContent: 'center' }}>
+    <Spacer s={{ flexGrow: 1, justifyContent: 'center' }}>
       <Button onClick={submitData}>{ id === 'new' ? 'Create' : 'Join' } playlist</Button>
     </Spacer>
   )
@@ -53,10 +53,8 @@ export function Steps() {
   }
 
   return (
-    <Spacer s={{ overflow: 'hidden', flexGrow: 1 }}>
-      <Box df s={{ overflow: 'hidden', flexGrow: 1 }}>
-        { steps.map((Step, index) => step === index && Step) }
-      </Box>
+    <Box s={{ display: 'grid', gridTemplateRows: 'minmax(0, 1fr) auto', gap: 'm' }}>
+      { steps.map((Step, index) => step === index && Step) }
       <Spacer s={{ justifyContent: 'center', flexDirection: 'row', justifySelf: 'flex-end' }}>
         { step !== 0 && (
           <Button isOutline onClick={onPrev} s={{ p: 's', borderRadius: '100%' }}>
@@ -69,6 +67,6 @@ export function Steps() {
           </Button>
         ) }
       </Spacer>
-    </Spacer>
+    </Box>
   )
 }

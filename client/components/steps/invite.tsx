@@ -40,8 +40,7 @@ export const Invite = () => {
               placeholder="Fill in email address"
             />
             <Button
-              s={{ p: 's' }}
-              isOutline
+              s={{ p: 's', background: 'none', border: 0, borderBottom: '1px solid', borderColor: 'primary', color: 'primary', borderRadius: 0 }}
               onClick={() => removeInvitation(index)}
             >
               <XIcon size="16" />
@@ -57,8 +56,7 @@ export const Invite = () => {
           placeholder="Fill in email address"
         />
         <Button
-          s={{ p: 's' }}
-          isOutline
+          s={{ p: 's', background: 'none', border: 0, borderBottom: '1px solid', borderColor: 'primary', color: 'primary', borderRadius: 0 }}
           isDisabled={!currentInvitation.length}
           onClick={addInvitation}
         >

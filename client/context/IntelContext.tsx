@@ -91,7 +91,7 @@ export const IntelProvider = ({ children }: any) => {
   }, [submitDataRes])
 
   useEffect(() => {
-    if (me?.id && getDataRes?.participations.some(({ id }) => id === me?.id)) {
+    if (me?.id && getDataRes?.participations.some(({ user }) => user.id === me?.id)) {
       setHasParticipated(true)
     }
   }, [getDataRes, submitDataRes, me])

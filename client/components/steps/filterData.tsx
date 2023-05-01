@@ -46,7 +46,7 @@ export function FilterData() {
   }
 
   return (
-    <Spacer s={{ flexGrow: 1, overflow: 'hidden' }}>
+    <Box s={{ display: 'grid', gridTemplateRows: 'auto auto auto minmax(0, 1fr)', gap: 'm' }}>
       <Box df jcc>
         <Title level="4">Filter your data</Title>
       </Box>
@@ -140,6 +140,6 @@ export function FilterData() {
           </Box>
         ) : null }
       </ScrollContainer>
-    </Spacer>
+    </Box>
   )
 }
