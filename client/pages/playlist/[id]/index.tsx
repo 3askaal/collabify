@@ -53,7 +53,7 @@ export default function Playlist() {
 
         <Container s={{ display: 'grid', gridTemplateRows: 'minmax(0, 1fr)', maxWidth: '640px' }}>
           { isLoading
-            ? <Box s={{ textAlign: 'center' }}>Wait a second while we fetch your data...</Box>
+            ? <Box s={{ display: 'grid', gridTemplateRows: '1fr', alignItems: 'center', justifyContent: 'center' }}>Wait a second while we fetch your data...</Box>
             : hasParticipated
               ? <PlaylistStatus />
               : <Steps />
