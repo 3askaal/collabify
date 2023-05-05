@@ -13,7 +13,7 @@ const spotifyApi: any = new SpotifyWebApi({
 
 const refreshAccessToken = (refreshToken) => {
   return axios
-    .post(`${process.env.NEXT_PUBLIC_PROD_URL}/api/refresh`, { refreshToken })
+    .post(`${process.env.PROD_URL}/api/refresh`, { refreshToken })
     .then((res) => {
       return res.data.accessToken;
     })
