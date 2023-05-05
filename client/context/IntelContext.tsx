@@ -4,25 +4,34 @@ import { faker } from '@faker-js/faker';
 import { IData, IPlaylist, IUser } from '../../types/playlist'
 import { API_URL } from '../config';
 import { useRouter } from 'next/router';
-import { formatData } from '../helpers';
 import useSpotifyApi from '../hooks/useSpotifyApi';
+
+interface IDetails {
+  title?: string;
+  description?: string;
+}
 
 export interface IntelContextType {
   data?: IData;
   setData?: Dispatch<SetStateAction<IData>>;
+  details: IDetails;
+  setDetails: Dispatch<SetStateAction<IDetails>>;
   [key: string]: any;
 }
 
 export const IntelContext = createContext<IntelContextType>({
   data: {},
-  setData: () => null
+  setData: () => null,
+  details: { title: '', description: '' },
+  setDetails: () => null,
 })
 
 export const IntelProvider = ({ children }: any) => {
   const { push, query: { id: playlistId } } = useRouter()
   const { spotifyApi, refreshToken } = useSpotifyApi()
-  const [name, setName] = useState<string>('')
+
   const [me, setMe] = useState<Partial<IUser>>({})
+  const [details, setDetails] = useState<IDetails>({})
   const [data, setData] = useState<IData>({})
   const [debugData, setDebugData] = useState<IData | null>(null)
   const [hasParticipated, setHasParticipated] = useState<boolean>(false)
@@ -56,15 +65,22 @@ export const IntelProvider = ({ children }: any) => {
   )
 
   const submitData = () => {
-    const participations = [{ user: me, data: data }]
+    const participations = [{
+      user: me,
+      data: data
+    }]
 
     if (debugData) {
-      participations.push({ user: { name: faker.name.fullName(), id: faker.datatype.uuid(), email: faker.internet.email() }, data: debugData })
+      participations.push({
+        user: { name: faker.name.fullName(), id: faker.datatype.uuid(), email: faker.internet.email() },
+        data: debugData
+      })
     }
 
     submitDataCallback({
       data: {
-        name,
+        title: details.title,
+        description: details.description,
         participations,
         invitations,
       }
@@ -111,7 +127,8 @@ export const IntelProvider = ({ children }: any) => {
   return (
     <IntelContext.Provider
       value={{
-        setName,
+        details,
+        setDetails,
         data,
         setData,
         me,

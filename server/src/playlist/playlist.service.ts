@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import SpotifyWebApi from 'spotify-web-api-node';
+import * as SpotifyWebApi from 'spotify-web-api-node';
 import axios from 'axios';
 import { Playlist, PlaylistDocument } from './playlist.schema';
 import { IPlaylist, IParticipation } from '../../../types/playlist';
