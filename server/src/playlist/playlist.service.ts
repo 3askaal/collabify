@@ -1,10 +1,28 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import SpotifyWebApi from 'spotify-web-api-node';
+import axios from 'axios';
 import { Playlist, PlaylistDocument } from './playlist.schema';
 import { IPlaylist, IParticipation } from '../../../types/playlist';
 import { generateTracklist } from './playlist.helpers';
 
+const spotifyApi: any = new SpotifyWebApi({
+  clientSecret: process.env.SPOTIFY_API_SECRET_ID,
+});
+
+const refreshAccessToken = (refreshToken) => {
+  return axios
+    .post(`${process.env.NEXT_PUBLIC_PROD_URL}/api/refresh`, { refreshToken })
+    .then((res) => {
+      return res.data.accessToken;
+    })
+    .catch((err) => {
+      (window as any).location = '/';
+      console.log('ERR: ', err);
+      // history.push('/')
+    });
+};
 @Injectable()
 export class PlaylistService {
   constructor(
@@ -50,27 +68,29 @@ export class PlaylistService {
 
     const tracklist = generateTracklist(formattedParticipations);
 
-    // Create a playlist
-    // const playlist = await spotifyApi
-    //   .createPlaylist('My playlist', {
-    //     description: 'this playlist is generated with collabify',
-    //     public: true,
-    //   })
+    const { id: spotifyPlaylistId } = await spotifyApi.createPlaylist(
+      playlist.title,
+      {
+        description: playlist.description,
+        public: false,
+      },
+    );
 
-    // // Add tracks to a playlist
-    // spotifyApi
-    //   .addTracksToPlaylist('5ieJqeLJjjI8iJWaxeBLuK', [
-    //     'spotify:track:4iV5W9uYEdYUVa79Axb7Rh',
-    //     'spotify:track:1301WleyT98MSxVHPZCA6M',
-    //   ])
-    //   .then(
-    //     function (data) {
-    //       console.log('Added tracks to playlist!');
-    //     },
-    //     function (err) {
-    //       console.log('Something went wrong!', err);
-    //     },
-    //   );
+    await Promise.all(
+      formattedParticipations.map(({ refreshToken, tracks }: any) => {
+        const accessToken = refreshAccessToken(refreshToken);
+        spotifyApi.setAccessToken(accessToken);
+
+        return spotifyApi.addTracksToPlaylist(spotifyPlaylistId, tracks).then(
+          (data) => {
+            // add tracks to playlist success
+          },
+          (err) => {
+            // add tracks to playlist fail
+          },
+        );
+      }),
+    );
 
     return tracklist;
   }
