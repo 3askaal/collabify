@@ -1,6 +1,6 @@
 import { flatten, sampleSize, uniq } from "lodash";
 import slugify from "slugify";
-import { IData, ITerms } from "../../types/playlist";
+import { IData, ITerms } from "../../server/types/playlist";
 
 
 export const collectData = async (spotifyApi: any, debug?: boolean, seed_tracks?: string[]): Promise<IData> => await ['artists', 'tracks'].reduce(async (accumulatorPromise, instance): Promise<ITerms> => {

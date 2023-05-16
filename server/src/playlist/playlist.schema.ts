@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
-import { IParticipation } from '../../../types/playlist';
+import { IParticipation } from '../../types/playlist';
 
 export type PlaylistDocument = HydratedDocument<Playlist>;
 

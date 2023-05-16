@@ -3,7 +3,7 @@ import { Spacer, Box, ElementGroup, Button, Select, Title } from '3oilerplate'
 import { orderBy, remove, startCase } from 'lodash'
 import { SelectionLabel } from '..'
 import { IntelContext } from '../../context/IntelContext'
-import { IData } from '../../../types/playlist'
+import { IData } from '../../../server/types/playlist'
 import { ScrollContainer } from '../scrollContainer'
 
 type DataTypes = 'artists' | 'tracks' | 'genres';
