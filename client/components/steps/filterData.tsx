@@ -11,6 +11,7 @@ type TermTypes = 'short_term' | 'medium_term' | 'long_term';
 
 export function FilterData() {
   const { data, setData } = useContext(IntelContext)
+
   const [activeTab, setActiveTabState] = useState<DataTypes>('genres')
   const [activeTerm, setActiveTerm] = useState<{ artists: TermTypes, tracks: TermTypes, genres: TermTypes }>({ artists: 'short_term', tracks: 'short_term', genres: 'short_term' })
 

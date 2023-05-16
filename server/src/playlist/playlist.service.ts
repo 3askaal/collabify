@@ -1,28 +1,48 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { sampleSize } from 'lodash';
 import * as SpotifyWebApi from 'spotify-web-api-node';
-import axios from 'axios';
+import * as sequential from 'promise-sequential';
+
 import { Playlist, PlaylistDocument } from './playlist.schema';
 import { IPlaylist, IParticipation } from '../../../types/playlist';
 import { generateTracklist } from './playlist.helpers';
 
-const spotifyApi: any = new SpotifyWebApi({
-  clientSecret: process.env.SPOTIFY_API_SECRET_ID,
-});
-
-const refreshAccessToken = (refreshToken) => {
-  return axios
-    .post(`${process.env.PROD_URL}/api/refresh`, { refreshToken })
-    .then((res) => {
-      return res.data.accessToken;
+const refreshAccessToken = (spotifyApiInstance): Promise<string> => {
+  return spotifyApiInstance
+    .refreshAccessToken()
+    .then((data) => {
+      return data.body['access_token'];
     })
     .catch((err) => {
-      (window as any).location = '/';
-      console.log('ERR: ', err);
-      // history.push('/')
+      console.log('ERR: ', err.message); // eslint-disable-line
+      // throw err;
     });
 };
+
+const getSpotifyInstance = async (refreshToken: string): Promise<any> => {
+  const instance = new SpotifyWebApi({
+    redirectUri: `${process.env.PROD_URL}/callback`,
+    clientId: process.env.SPOTIFY_API_CLIENT_ID,
+    clientSecret: process.env.SPOTIFY_API_SECRET_ID,
+    refreshToken,
+  });
+  const accessToken = await refreshAccessToken(instance);
+
+  instance.setAccessToken(accessToken);
+
+  return instance;
+};
+
+const onSuccess = (data) => {
+  return data.body;
+};
+
+const onError = (err) => {
+  console.log('ERROR: ', err); // eslint-disable-line
+};
+
 @Injectable()
 export class PlaylistService {
   constructor(
@@ -45,6 +65,12 @@ export class PlaylistService {
     return this.playlistModel.findById(playlistId);
   }
 
+  async getParticipated(userId: string): Promise<Playlist[]> {
+    return this.playlistModel.find({
+      'participations.$.user.id': userId,
+    });
+  }
+
   async participate(
     playlistId: string,
     participation: IParticipation,
@@ -61,37 +87,49 @@ export class PlaylistService {
 
   async release(playlistId: string): Promise<any> {
     const playlist: IPlaylist = await this.playlistModel.findById(playlistId);
+    const participations = generateTracklist(playlist.participations);
 
-    const formattedParticipations = playlist.participations.map(
-      (item, index) => ({ ...item, id: index }),
+    const defaultTitle = participations
+      .map(({ user: { name } }) => name)
+      .join(' x ');
+    const defaultDescription = 'Generated with https://collabify.vercel.app';
+
+    const hostParticipation: IParticipation = playlist.participations.find(
+      ({ user }): boolean => user.host,
     );
 
-    const tracklist = generateTracklist(formattedParticipations);
+    const spotifyApiInstance = await getSpotifyInstance(
+      hostParticipation.user.refreshToken,
+    );
 
-    const { id: spotifyPlaylistId } = await spotifyApi.createPlaylist(
-      playlist.title,
-      {
-        description: playlist.description,
+    const { id: spotifyPlaylistId } = await spotifyApiInstance
+      .createPlaylist(hostParticipation.user.id, {
+        name: playlist.title || defaultTitle,
+        description: playlist.description || defaultDescription,
         public: false,
-      },
-    );
+      })
+      .then(onSuccess, onError);
 
-    await Promise.all(
-      formattedParticipations.map(({ refreshToken, tracks }: any) => {
-        const accessToken = refreshAccessToken(refreshToken);
-        spotifyApi.setAccessToken(accessToken);
+    await sequential(
+      participations.map(({ user, data }) => async () => {
+        const tracks = sampleSize(data.tracks, 20).map(({ id }) => id);
 
-        return spotifyApi.addTracksToPlaylist(spotifyPlaylistId, tracks).then(
-          (data) => {
-            // add tracks to playlist success
-          },
-          (err) => {
-            // add tracks to playlist fail
-          },
-        );
+        const refreshToken = !user.bot
+          ? user.refreshToken
+          : hostParticipation.user.refreshToken;
+
+        const spotifyApiInstance = await getSpotifyInstance(refreshToken);
+
+        return spotifyApiInstance
+          .addTracksToPlaylist(spotifyPlaylistId, tracks)
+          .then(onSuccess, onError);
       }),
     );
 
-    return tracklist;
+    await this.playlistModel.findByIdAndUpdate(playlistId, {
+      status: 'published',
+    });
+
+    return true;
   }
 }

@@ -33,6 +33,17 @@ export class PlaylistController {
     }
   }
 
+  @Get('/participated/:id')
+  async getByUser(@Param() params): Promise<Playlist[]> {
+    const { id: userId } = params;
+
+    try {
+      return this.playlistService.getParticipated(userId);
+    } catch (err) {
+      throw err;
+    }
+  }
+
   @Put(':id')
   async participate(
     @Param() params,

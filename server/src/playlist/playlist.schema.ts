@@ -8,9 +8,10 @@ export type PlaylistDocument = HydratedDocument<Playlist>;
 export class Playlist {
   @Prop() name: string;
   @Prop() description: string;
-  @Prop({ default: 'waiting' }) status: 'waiting' | 'completed';
   @Prop() participations: IParticipation[];
   @Prop() invitations: string[];
+  @Prop({ default: 'waiting' }) status: 'waiting' | 'published' | 'active';
+  @Prop() shouldUpdate: 'daily' | 'weekly' | 'monthly';
 }
 
 export const PlaylistSchema = SchemaFactory.createForClass(Playlist);
