@@ -12,7 +12,7 @@ const Details = () => {
     <Box df fdc s={{ flexGrow: 1, justifyContent: 'center' }}>
       <Spacer size="l">
         <Input huge placeholder={`${me.name} x ...`} onChange={(value: string) => setDetails((details) => ({ ...details, title: value}))} />
-        <Input huge placeholder="Generated with Collabify" onChange={(value: string) => setDetails((details) => ({ ...details, description: value }))} />
+        <Input huge placeholder="Generated with collabify.vercel.app" onChange={(value: string) => setDetails((details) => ({ ...details, description: value }))} />
       </Spacer>
     </Box>
   )

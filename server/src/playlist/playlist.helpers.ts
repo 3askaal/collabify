@@ -1,7 +1,9 @@
 import { groupBy } from 'lodash';
 import { IObject, IParticipations, ITerms } from '../../../types/playlist';
 
-export const generateTracklist = (participations: IParticipations): any => {
+export const simplifyParticipations = (
+  participations: IParticipations,
+): any => {
   // for each data type (tracks/artists/genres)
   // merge lists with short/medium/long term data
   // into single list with a sum of the ranking

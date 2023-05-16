@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from 'react'
-import { Box, Wrapper, Container, Button, Spacer } from '3oilerplate'
-import { User as UserIcon } from 'react-feather'
-import { Logo, Steps } from '../../../components';
+import { Box } from '3oilerplate'
+import { Steps } from '../../../components';
 import useSpotifyApi from '../../../hooks/useSpotifyApi'
 import { IntelContext } from '../../../context/IntelContext'
 import { collectData } from '../../../helpers'
@@ -39,32 +38,13 @@ export default function Playlist() {
 
   return (
     <>
-      <Wrapper s={{ display: 'grid', gridTemplateRows: 'auto minmax(0, 1fr)', gridTemplateColumns: '1fr', justifyItems: 'center', gap: 'm' }}>
-
-        <Box df w100p jcc>
-          <Logo small />
-        </Box>
-
-        <Box posa r='0' t='0' s={{ p: 'm' }}>
-          <Button isOutline onClick={logout} s={{ p: 's', borderRadius: '100%' }}>
-            <UserIcon size="14" />
-          </Button>
-        </Box>
-
-        <Container s={{ display: 'grid', gridTemplateRows: 'minmax(0, 1fr)', maxWidth: '480px' }}>
-          { isLoading
+      {
+        isLoading
             ? <Box s={{ display: 'grid', gridTemplateRows: '1fr', alignItems: 'center', justifyContent: 'center' }}>Wait a second while we fetch your data...</Box>
             : hasParticipated
               ? <PlaylistStatus />
               : <Steps />
-          }
-        </Container>
-
-        { !isLoading && hasParticipated && (
-          <Button isBlock onClick={release}>Release</Button>
-        ) }
-
-      </Wrapper>
+      }
     </>
   )
 }

@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic'
 import { s, ThemeProvider, GlobalStyle, theme as DEFAULT_THEME } from '3oilerplate'
 import ReactGA from 'react-ga4'
 import deepmerge from 'deepmerge'
+import { Layout } from '../components/layout'
 import useSpotifyApi from '../hooks/useSpotifyApi'
 import { IntelProvider } from '../context/IntelContext'
 import { THEME, LocalGlobalStyle } from '../style'
@@ -43,7 +44,7 @@ const DynamicWrapper = dynamic(() => Promise.resolve(NonSSRWrapper), {
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter()
   const code = router.query.code
-  useSpotifyApi(code?.toString())
+  const { spotifyApi } = useSpotifyApi(code?.toString())
 
   useEffect(() => {
     if (router.query.id === undefined && !code) {
@@ -62,7 +63,9 @@ export default function App({ Component, pageProps }: AppProps) {
           <SApp>
             <GlobalStyle />
             <LocalGlobalStyle />
-            <Component {...pageProps} />
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
           </SApp>
         </DynamicWrapper>
       </IntelProvider>
