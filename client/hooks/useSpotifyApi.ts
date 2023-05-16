@@ -24,6 +24,30 @@ export default function useSpotifyApi(code?: string): SpotifyApiHook {
   const [refreshToken, setRefreshToken] = useLocalStorage<string | null>('refreshToken', '')
   const [expiresAt, setExpiresAt] = useLocalStorage<string | null>('expiresAt', '')
 
+  const getRefreshToken = () => {
+    axios
+      .post(`${process.env.NEXT_PUBLIC_PROD_URL}/api/refresh`, { refreshToken })
+      .then((res) => {
+        setAccessToken(res.data.accessToken)
+        setExpiresAt(getExpiresAt(res.data.expiresIn))
+      })
+      .catch(onError)
+  }
+
+  const logout = () => {
+    setAccessToken(null);
+    setRefreshToken(null);
+    setExpiresAt(null);
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('expiresAt');
+    router.replace('/');
+  }
+
+  const onError = () => {
+    logout();
+  }
+
   useEffect(() => {
     if (router.pathname !== '/' && !accessToken) {
       router.replace('/')
@@ -43,25 +67,9 @@ export default function useSpotifyApi(code?: string): SpotifyApiHook {
         setRefreshToken(res.data.refreshToken)
         setExpiresAt(getExpiresAt(res.data.expiresIn))
       })
-      .catch((err) => {
-        (window as any).location = '/'
-        console.log('ERR: ', err)
-      })
+      .catch(onError)
   }, [code, setAccessToken, setRefreshToken, setExpiresAt])
 
-  const getRefreshToken = () => {
-    axios
-      .post(`${process.env.NEXT_PUBLIC_PROD_URL}/api/refresh`, { refreshToken })
-      .then((res) => {
-        setAccessToken(res.data.accessToken)
-        setExpiresAt(getExpiresAt(res.data.expiresIn))
-      })
-      .catch((err) => {
-        (window as any).location = '/'
-        console.log('ERR: ', err)
-        // history.push('/')
-      })
-  }
 
   useEffect(() => {
     if (!expiresAt) return
@@ -79,15 +87,6 @@ export default function useSpotifyApi(code?: string): SpotifyApiHook {
 
     return () => clearInterval(interval)
   }, [expiresAt])
-
-  const logout = () => {
-    setAccessToken(null);
-    setRefreshToken(null);
-    setExpiresAt(null);
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('expiresAt');
-  }
 
   return {
     spotifyApi: !!accessToken && spotifyApi,

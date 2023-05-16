@@ -45,10 +45,7 @@ export class PlaylistController {
   }
 
   @Put(':id')
-  async participate(
-    @Param() params,
-    @Body() payload: IPlaylist,
-  ): Promise<Playlist> {
+  async participate(@Param() params, @Body() payload: IPlaylist): Promise<Playlist> {
     console.log('##### PARTICIPATE #####');
     console.log('params.id: ', params.id);
     console.log('payload: ', payload);
@@ -56,10 +53,7 @@ export class PlaylistController {
     const { id: playlistId } = params;
 
     try {
-      return this.playlistService.participate(
-        playlistId,
-        payload.participations[0],
-      );
+      return this.playlistService.participate(playlistId, payload.participations[0]);
     } catch (err) {
       throw err;
     }

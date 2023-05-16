@@ -2,6 +2,7 @@ import { flatten, sampleSize, uniq } from "lodash";
 import slugify from "slugify";
 import { IData, ITerms } from "../../server/types/playlist";
 
+type SpotifyResBody = SpotifyApi.UsersTopArtistsResponse | SpotifyApi.UsersTopTracksResponse | SpotifyApi.RecommendationsObject
 
 export const collectData = async (spotifyApi: any, debug?: boolean, seed_tracks?: string[]): Promise<IData> => await ['artists', 'tracks'].reduce(async (accumulatorPromise, instance): Promise<ITerms> => {
   const fetchers: {[key: string]: 'getMyTopArtists' | 'getMyTopTracks'} = {
@@ -9,7 +10,7 @@ export const collectData = async (spotifyApi: any, debug?: boolean, seed_tracks?
     tracks: 'getMyTopTracks',
   }
 
-  const debugFetchers: {[key: string]: string} = {
+  const debugFetchers: {[key: string]: 'getRecommendations'} = {
     artists: 'getRecommendations',
     tracks: 'getRecommendations',
   }
@@ -19,18 +20,23 @@ export const collectData = async (spotifyApi: any, debug?: boolean, seed_tracks?
   const items = await ['short_term', 'medium_term', 'long_term'].reduce(async (accumulatorPromise, term: any): Promise<any> => {
     const accumulator = await accumulatorPromise
 
-    const data = await spotifyApi[(debug ? debugFetchers : fetchers)[instance]](debug ? { seed_tracks, limit: 50 } : { time_range: term, limit: 50 })
+    const body = await (spotifyApi[((debug ? debugFetchers : fetchers)[instance])])(debug ? { seed_tracks, limit: 50 } : { time_range: term, limit: 50 })
+      .then(
+        ({ body }: { body: SpotifyResBody }) => body,
+        (err: Error) => { throw err }
+      )
+
     let items = []
 
     if (debug && instance === 'artists') {
       // mapping artists out of tracks because there is no recommendations endpoint for artists
       items = sampleSize(
-        data.body.tracks.map(({ artists }: any) => artists).flat(),
+        body.tracks.map(({ artists }: any) => artists).flat(),
         50
       ).map(({ name, uri }: any, index: number) => ({ id: uri, index, name }));
 
     } else {
-      items = (debug ? data.body[instance] : data?.body?.items).map(({ name, uri, artists, genres }: any, index: number) => ({
+      items = (debug ? body[instance] : body?.items).map(({ name, uri, artists, genres }: any, index: number) => ({
         id: uri,
         index,
         name,

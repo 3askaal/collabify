@@ -41,9 +41,7 @@ const onError = (err) => {
 
 @Injectable()
 export class PlaylistService {
-  constructor(
-    @InjectModel(Playlist.name) private playlistModel: Model<PlaylistDocument>,
-  ) {}
+  constructor(@InjectModel(Playlist.name) private playlistModel: Model<PlaylistDocument>) {}
 
   async create(payload: IPlaylist): Promise<Playlist> {
     const now = new Date();
@@ -67,10 +65,7 @@ export class PlaylistService {
     });
   }
 
-  async participate(
-    playlistId: string,
-    participation: IParticipation,
-  ): Promise<Playlist> {
+  async participate(playlistId: string, participation: IParticipation): Promise<Playlist> {
     return this.playlistModel.findByIdAndUpdate(playlistId, {
       $push: {
         participations: {
@@ -85,18 +80,12 @@ export class PlaylistService {
     const playlist: IPlaylist = await this.playlistModel.findById(playlistId);
     const participations = simplifyParticipations(playlist.participations);
 
-    const defaultTitle = participations
-      .map(({ user: { name } }) => name)
-      .join(' x ');
+    const defaultTitle = participations.map(({ user: { name } }) => name).join(' x ');
     const defaultDescription = 'Generated with https://collabify.vercel.app';
 
-    const hostParticipation: IParticipation = playlist.participations.find(
-      ({ user }): boolean => user.host,
-    );
+    const hostParticipation: IParticipation = playlist.participations.find(({ user }): boolean => user.host);
 
-    const spotifyApiInstance = await getSpotifyInstance(
-      hostParticipation.user.refreshToken,
-    );
+    const spotifyApiInstance = await getSpotifyInstance(hostParticipation.user.refreshToken);
 
     const { id: spotifyPlaylistId } = await spotifyApiInstance
       .createPlaylist(hostParticipation.user.id, {
@@ -110,15 +99,11 @@ export class PlaylistService {
       participations.map(({ user, data }) => async () => {
         const tracks = sampleSize(data.tracks, 20).map(({ id }) => id);
 
-        const refreshToken = !user.bot
-          ? user.refreshToken
-          : hostParticipation.user.refreshToken;
+        const refreshToken = !user.bot ? user.refreshToken : hostParticipation.user.refreshToken;
 
         const spotifyApiInstance = await getSpotifyInstance(refreshToken);
 
-        return spotifyApiInstance
-          .addTracksToPlaylist(spotifyPlaylistId, tracks)
-          .then(onSuccess, onError);
+        return spotifyApiInstance.addTracksToPlaylist(spotifyPlaylistId, tracks).then(onSuccess, onError);
       }),
     );
 

@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react'
-import { Box } from '3oilerplate'
+import { Box, Button } from '3oilerplate'
 import { Steps } from '../../../components';
 import useSpotifyApi from '../../../hooks/useSpotifyApi'
 import { IntelContext } from '../../../context/IntelContext'
@@ -18,26 +18,30 @@ export default function Playlist() {
     if (!spotifyApi) return
     if (!setData) return
 
-    collectData(spotifyApi).then((data) => {
-      setData(data)
+    collectData(spotifyApi)
+      .then((data) => {
+        setData(data)
 
-      if (!router.query.debug) {
-        setIsLoading(false)
-        return
-      }
+        if (!router.query.debug) {
+          setIsLoading(false)
+          return
+        }
 
-      // get debug data based on own data
-      const seed_tracks = map(sampleSize(data.tracks?.short_term, 3), 'id').map((id) => id.split(':')[2])
+        // get debug data based on own data
+        const seed_tracks = map(sampleSize(data.tracks?.short_term, 3), 'id').map((id) => id.split(':')[2])
 
-      collectData(spotifyApi, true, seed_tracks).then((debugData) => {
-        setDebugData(debugData)
-        setIsLoading(false)
+        collectData(spotifyApi, true, seed_tracks).then((debugData) => {
+          setDebugData(debugData)
+          setIsLoading(false)
+        })
       })
-    })
+      .catch(() => {
+        logout()
+      })
   }, [spotifyApi, accessToken, setData, setDebugData])
 
   return (
-    <>
+    <Box s={{ display: 'grid', gridTemplateRows: 'minmax(0, 1fr) auto' }}>
       {
         isLoading
             ? <Box s={{ display: 'grid', gridTemplateRows: '1fr', alignItems: 'center', justifyContent: 'center' }}>Wait a second while we fetch your data...</Box>
@@ -45,6 +49,9 @@ export default function Playlist() {
               ? <PlaylistStatus />
               : <Steps />
       }
-    </>
+      { !isLoading && hasParticipated && (
+        <Button isBlock onClick={release}>Release</Button>
+      ) }
+    </Box>
   )
 }
