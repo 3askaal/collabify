@@ -60,7 +60,7 @@ export class PlaylistService {
 
   async getParticipated(userId: string): Promise<Playlist[]> {
     return this.playlistModel.find({
-      'participations.$.user.id': userId,
+      'participations.user.id': userId,
     });
   }
 

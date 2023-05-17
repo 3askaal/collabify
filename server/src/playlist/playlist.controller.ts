@@ -9,9 +9,6 @@ export class PlaylistController {
 
   @Post()
   async create(@Body() payload: IPlaylist): Promise<Playlist> {
-    console.log('##### CREATE #####');
-    console.log('payload: ', payload);
-
     try {
       return this.playlistService.create(payload);
     } catch (err) {
@@ -21,9 +18,6 @@ export class PlaylistController {
 
   @Get(':id')
   async get(@Param() params): Promise<Playlist> {
-    console.log('##### GET #####');
-    console.log('params.id: ', params.id);
-
     const { id: playlistId } = params;
 
     try {
@@ -33,7 +27,7 @@ export class PlaylistController {
     }
   }
 
-  @Get('/participated/:id')
+  @Get('participated/:id')
   async getByUser(@Param() params): Promise<Playlist[]> {
     const { id: userId } = params;
 
@@ -46,10 +40,6 @@ export class PlaylistController {
 
   @Put(':id')
   async participate(@Param() params, @Body() payload: IPlaylist): Promise<Playlist> {
-    console.log('##### PARTICIPATE #####');
-    console.log('params.id: ', params.id);
-    console.log('payload: ', payload);
-
     const { id: playlistId } = params;
 
     try {
@@ -61,9 +51,6 @@ export class PlaylistController {
 
   @Get(':id/release')
   async release(@Param() params): Promise<void> {
-    console.log('##### RELEASE #####');
-    console.log('params.id: ', params.id);
-
     const { id: playlistId } = params;
 
     try {

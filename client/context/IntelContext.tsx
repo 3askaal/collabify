@@ -49,10 +49,18 @@ export const IntelProvider = ({ children }: any) => {
   )
 
   const [{ data: getDataRes }, getDataCallback] = useAxios<IPlaylist>(
-    playlistId ? {
+    {
       url: `${API_URL}/playlist/${playlistId}`,
       method: 'GET'
-    } : {},
+    },
+    { manual: true }
+  )
+
+  const [{ data: getPlaylistsRes }, getPlaylistsCallback] = useAxios<IPlaylist>(
+    {
+      url: `${API_URL}/playlist/participated/${me?.id}`,
+      method: 'GET'
+    },
     { manual: true }
   )
 
@@ -137,8 +145,15 @@ export const IntelProvider = ({ children }: any) => {
   }, [playlistId])
 
   useEffect(() => {
-    console.log('releaseRes: ', releaseRes);
-  }, [releaseRes])
+    console.log('getPlaylistsRes: ', getPlaylistsRes);
+  }, [getPlaylistsRes])
+
+  useEffect(() => {
+    if (me?.id) {
+      getPlaylistsCallback()
+      console.log('me: ', me);
+    }
+  }, [me, getPlaylistsCallback])
 
   return (
     <IntelContext.Provider
@@ -152,11 +167,12 @@ export const IntelProvider = ({ children }: any) => {
         submitData,
         release,
         setDebugData,
-        getDataRes,
         hasParticipated,
         setHasParticipated,
         invitations,
-        setInvitations
+        setInvitations,
+        getDataRes,
+        getPlaylistsRes,
       }}
     >
       {children}
