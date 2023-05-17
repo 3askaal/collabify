@@ -28,7 +28,7 @@ export const IntelContext = createContext<IntelContextType>({
 
 export const IntelProvider = ({ children }: any) => {
   const { push, query: { id: playlistId } } = useRouter()
-  const { spotifyApi, refreshToken } = useSpotifyApi()
+  const { spotifyApi, accessToken, refreshToken } = useSpotifyApi()
 
   const [me, setMe] = useState<IUser | null>(null)
   const [details, setDetails] = useState<IDetails>({})
@@ -70,7 +70,6 @@ export const IntelProvider = ({ children }: any) => {
     const participations: IParticipations = [{
       user: {
         ...me,
-        host: playlistId === 'new',
       },
       data: data
     }]
@@ -81,7 +80,6 @@ export const IntelProvider = ({ children }: any) => {
           id: faker.datatype.uuid().toString(),
           name: 'Test Person',
           email: faker.internet.email(),
-          refreshToken: faker.datatype.uuid().toString(),
           bot: true
         },
         data: debugData
@@ -99,17 +97,26 @@ export const IntelProvider = ({ children }: any) => {
   }
 
   useEffect(() => {
-    if (!spotifyApi || !refreshToken) return;
+    if (!accessToken || !refreshToken || !spotifyApi) return;
 
-    spotifyApi.getMe().then((data) => {
-      setMe({
-        id: data.body.id,
-        email: data.body.email,
-        name: data.body.display_name || '',
-        refreshToken
-      })
-    })
-  }, [spotifyApi, refreshToken])
+    spotifyApi.getMe()
+      .then(
+        (data) => {
+          setMe({
+            id: data.body.id,
+            email: data.body.email,
+            name: data.body.display_name || '',
+            ...(playlistId === 'new' && {
+              refreshToken
+            })
+          })
+        },
+        (err: any) => {
+          console.log('ERROR: ', err); // eslint-disable-line
+          return
+        }
+      )
+  }, [accessToken, refreshToken, spotifyApi, playlistId])
 
   useEffect(() => {
     if (submitDataRes) {
@@ -128,6 +135,10 @@ export const IntelProvider = ({ children }: any) => {
       getDataCallback()
     }
   }, [playlistId])
+
+  useEffect(() => {
+    console.log('releaseRes: ', releaseRes);
+  }, [releaseRes])
 
   return (
     <IntelContext.Provider

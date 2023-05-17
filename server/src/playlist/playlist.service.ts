@@ -1,15 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { sampleSize } from 'lodash';
+import { orderBy, flatten, shuffle } from 'lodash';
 import * as SpotifyWebApi from 'spotify-web-api-node';
-import * as sequential from 'promise-sequential';
 
 import { Playlist, PlaylistDocument } from './playlist.schema';
 import { IPlaylist, IParticipation } from '../../types/playlist';
-import { simplifyParticipations } from './playlist.helpers';
+import { mergeParticipationsData } from './playlist.helpers';
 
-const getSpotifyInstance = async (refreshToken: string): Promise<any> => {
+const getSpotifyInstance = async (refreshToken: string): Promise<SpotifyWebApi> => {
   const instance = new SpotifyWebApi({
     redirectUri: `${process.env.PROD_URL}/callback`,
     clientId: process.env.SPOTIFY_API_CLIENT_ID,
@@ -76,15 +75,16 @@ export class PlaylistService {
     });
   }
 
+  // NOTE: tracks can currently only be added by the creator of the playlist
+  // (https://community.spotify.com/t5/Your-Library/API-Playlists-Allow-users-to-add-tracks-to-collaborative/td-p/5334108)
+  // when this changes this feature should make every user add their own tracks
+
   async release(playlistId: string): Promise<any> {
     const playlist: IPlaylist = await this.playlistModel.findById(playlistId);
-    const participations = simplifyParticipations(playlist.participations);
 
-    const defaultTitle = participations.map(({ user: { name } }) => name).join(' x ');
+    const defaultTitle = playlist.participations.map(({ user: { name } }) => name).join(' x ');
     const defaultDescription = 'Generated with https://collabify.vercel.app';
-
-    const hostParticipation: IParticipation = playlist.participations.find(({ user }): boolean => user.host);
-
+    const hostParticipation: IParticipation = playlist.participations.find(({ user }): boolean => !!user.refreshToken);
     const spotifyApiInstance = await getSpotifyInstance(hostParticipation.user.refreshToken);
 
     const { id: spotifyPlaylistId } = await spotifyApiInstance
@@ -95,17 +95,20 @@ export class PlaylistService {
       })
       .then(onSuccess, onError);
 
-    await sequential(
-      participations.map(({ user, data }) => async () => {
-        const tracks = sampleSize(data.tracks, 20).map(({ id }) => id);
+    const mergedParticipations = mergeParticipationsData(playlist.participations);
 
-        const refreshToken = !user.bot ? user.refreshToken : hostParticipation.user.refreshToken;
-
-        const spotifyApiInstance = await getSpotifyInstance(refreshToken);
-
-        return spotifyApiInstance.addTracksToPlaylist(spotifyPlaylistId, tracks).then(onSuccess, onError);
-      }),
+    const tracks = shuffle(
+      flatten(
+        playlist.participations.map(({ user: { id } }) => {
+          const tracksByParticipation = mergedParticipations.tracks.filter(({ occurrences }) => occurrences[id]);
+          const tracksOrderedByRank = orderBy(tracksByParticipation, ['totalRank'], ['desc']);
+          const trackIds = tracksOrderedByRank.map(({ id }) => id);
+          return trackIds.slice(0, 20);
+        }),
+      ),
     );
+
+    await spotifyApiInstance.addTracksToPlaylist(spotifyPlaylistId, tracks).then(onSuccess, onError);
 
     await this.playlistModel.findByIdAndUpdate(playlistId, {
       status: 'published',

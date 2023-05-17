@@ -2,8 +2,7 @@ export interface IUser {
   id: string;
   email: string;
   name: string;
-  refreshToken: string;
-  host?: boolean;
+  refreshToken?: string;
   bot?: boolean;
 }
 
