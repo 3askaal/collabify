@@ -31,14 +31,14 @@ export const THEME = {
     Button: {
       default: {
         borderRadius: '5rem',
-        px: 'm',
-        // background: `-webkit-linear-gradient(${brighten(PRIMARY, 1.5)}, ${PRIMARY}) !important`,
-        // color: 'primaryDark'
+        px: 'm'
       }
     },
     Label: {
       default: {
         background: 'transparent',
+        textTransform: 'uppercase',
+        color: 'primary'
       },
       variants: {
         isSelection: {
@@ -48,6 +48,7 @@ export const THEME = {
           borderRadius: '5rem',
           padding: 'xs',
           cursor: 'pointer',
+          textTransform: 'lowercase',
 
           '> p': {
             color: 'grey40',

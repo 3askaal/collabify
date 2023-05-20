@@ -49,7 +49,7 @@ export const PlaylistStatus = () => {
       <Spacer>
         <List>
           { getDataRes?.participations.map(({ user }: any) => (
-            <ListItem s={{ display: 'flex', justifyContent: 'space-between' }} key={user?.id}>{user?.name} <strong>{user.id === me.id ? 'You' : ''}</strong></ListItem>
+            <ListItem s={{ display: 'flex', justifyContent: 'space-between' }} key={user.id}>{user.name} <strong>{user.id === me?.id ? 'You' : ''}</strong></ListItem>
           )) || [] }
         </List>
       </Spacer>

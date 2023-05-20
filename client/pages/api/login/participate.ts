@@ -15,16 +15,8 @@ export default async function handler(
       response_type: "code",
       client_id: process.env.NEXT_PUBLIC_SPOTIFY_API_CLIENT_ID,
       scope: [
-        'streaming',
-        'user-read-private',
         'user-read-email',
-        'user-top-read',
-        'user-library-read',
-        'user-library-modify',
-        'playlist-read-collaborative',
-        'playlist-modify-public',
-        'playlist-read-private',
-        'playlist-modify-private'
+        'user-top-read'
       ].join(' '),
       redirect_uri: process.env.NEXT_PUBLIC_PROD_URL,
       state: state,

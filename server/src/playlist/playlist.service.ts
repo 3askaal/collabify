@@ -42,6 +42,22 @@ const onError = (err) => {
 export class PlaylistService {
   constructor(@InjectModel(Playlist.name) private playlistModel: Model<PlaylistDocument>) {}
 
+  async getOne(playlistId: string): Promise<Playlist> {
+    return this.playlistModel.findById(playlistId);
+  }
+
+  async getAll(userId: string, email: string): Promise<Playlist[]> {
+    const participated = await this.playlistModel.find({
+      'participations.user.id': userId,
+    });
+
+    const invited = await this.playlistModel.find({
+      invitations: email,
+    });
+
+    return [...participated, ...invited];
+  }
+
   async create(payload: IPlaylist): Promise<Playlist> {
     const now = new Date();
     const doc = await this.playlistModel.create({
@@ -52,16 +68,6 @@ export class PlaylistService {
       })),
     });
     return doc;
-  }
-
-  async get(playlistId: string): Promise<Playlist> {
-    return this.playlistModel.findById(playlistId);
-  }
-
-  async getParticipated(userId: string): Promise<Playlist[]> {
-    return this.playlistModel.find({
-      'participations.user.id': userId,
-    });
   }
 
   async participate(playlistId: string, participation: IParticipation): Promise<Playlist> {

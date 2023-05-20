@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react'
-import { Box, Button } from '3oilerplate'
+import { Box, Button, Link } from '3oilerplate'
 import { Steps } from '../../components';
 import useSpotifyApi from '../../hooks/useSpotifyApi'
 import { IntelContext } from '../../context/IntelContext'
@@ -12,11 +12,13 @@ export default function Playlist() {
   const router = useRouter()
   const { spotifyApi, accessToken, logout } = useSpotifyApi()
   const { setData, hasParticipated, setDebugData, release } = useContext(IntelContext)
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     if (!spotifyApi) return
     if (!setData) return
+
+    setIsLoading(true);
 
     collectData(spotifyApi)
       .then((data) => {
@@ -44,13 +46,18 @@ export default function Playlist() {
     <Box s={{ display: 'grid', gridTemplateRows: 'minmax(0, 1fr) auto' }}>
       {
         isLoading
-            ? <Box s={{ display: 'grid', gridTemplateRows: '1fr', alignItems: 'center', justifyContent: 'center' }}>Wait a second while we fetch your data...</Box>
-            : hasParticipated
-              ? <PlaylistStatus />
-              : <Steps />
+          ? <Box s={{ display: 'grid', gridTemplateRows: '1fr', alignItems: 'center', justifyContent: 'center' }}>Wait a second while we fetch your data...</Box>
+          : accessToken
+            ? <Steps />
+            : <PlaylistStatus />
       }
       { !isLoading && hasParticipated && (
         <Button isBlock onClick={release}>Release</Button>
+      ) }
+      { !isLoading && !accessToken && (
+        <Link href={`/api/login/participate?redirect_uri=http://${window.location.host + router.asPath}`}>
+          <Button isBlock>Authenticate with Spotify to join</Button>
+        </Link>
       ) }
     </Box>
   )

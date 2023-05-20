@@ -49,13 +49,10 @@ export default function useSpotifyApi(code?: string): SpotifyApiHook {
   }
 
   useEffect(() => {
-    if (router.pathname !== '/' && !accessToken) {
-      router.replace('/')
-    } else {
+    if (accessToken) {
       spotifyApi.setAccessToken(accessToken)
     }
-
-  }, [accessToken, router.pathname])
+  }, [accessToken])
 
   useEffect(() => {
     if (!code) return

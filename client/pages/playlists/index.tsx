@@ -4,7 +4,7 @@ import { Spacer, List, ListItem, Label } from '3oilerplate'
 import { IntelContext } from '../../context/IntelContext';
 import { getDefaultPlaylistTitle } from '../../helpers/transform';
 
-export default function Participated() {
+export default function Playlists() {
   const router = useRouter()
   const { getPlaylistsRes } = useContext(IntelContext)
 

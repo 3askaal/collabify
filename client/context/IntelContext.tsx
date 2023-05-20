@@ -58,7 +58,7 @@ export const IntelProvider = ({ children }: any) => {
 
   const [{ data: getPlaylistsRes }, getPlaylistsCallback] = useAxios<IPlaylist>(
     {
-      url: `${API_URL}/playlist/participated/${me?.id}`,
+      url: `${API_URL}/playlist/all/${me?.id}/${me?.email}`,
       method: 'GET'
     },
     { manual: true }
