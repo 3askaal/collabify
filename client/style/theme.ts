@@ -48,7 +48,6 @@ export const THEME = {
           borderRadius: '5rem',
           padding: 'xs',
           cursor: 'pointer',
-          textTransform: 'lowercase',
 
           '> p': {
             color: 'grey40',

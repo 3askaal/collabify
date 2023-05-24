@@ -42,16 +42,7 @@ const DynamicWrapper = dynamic(() => Promise.resolve(NonSSRWrapper), {
 })
 
 export default function App({ Component, pageProps }: AppProps) {
-  const { query: { id, code }, replace } = useRouter();
-  const { accessToken } = useSpotifyApi(code?.toString())
-
-  useEffect(() => {
-    if (id === undefined && !code) return
-
-    if (accessToken) {
-      replace('/playlist/new');
-    }
-  }, [accessToken])
+  // const { query: { id: playlistId, code }, replace } = useRouter();
 
   return (
     <ThemeProvider theme={mergeTheme(DEFAULT_THEME, THEME)}>
