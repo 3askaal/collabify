@@ -133,7 +133,8 @@ export const IntelProvider = ({ children }: any) => {
   }, [submitDataRes])
 
   useEffect(() => {
-    if (me?.id && getDataRes?.participations.some(({ user }) => user.id === me?.id)) {
+    console.log('getDataRes: ', getDataRes); // eslint-disable-line
+    if (me?.id && getDataRes?.participations?.some(({ user }) => user.id === me?.id)) {
       setHasParticipated(true)
     }
   }, [getDataRes, submitDataRes, me])
@@ -145,13 +146,8 @@ export const IntelProvider = ({ children }: any) => {
   }, [playlistId])
 
   useEffect(() => {
-    console.log('getPlaylistsRes: ', getPlaylistsRes);
-  }, [getPlaylistsRes])
-
-  useEffect(() => {
     if (me?.id) {
       getPlaylistsCallback()
-      console.log('me: ', me);
     }
   }, [me, getPlaylistsCallback])
 

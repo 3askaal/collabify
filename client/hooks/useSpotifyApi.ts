@@ -9,7 +9,7 @@ const spotifyApi: any = new SpotifyWebApi({
   clientId: process.env.NEXT_PUBLIC_SPOTIFY_API_CLIENT_ID
 })
 
-const getExpiresAt = (expiresIn: string) => moment().add(Number(expiresIn), 'seconds').valueOf().toString()
+const getExpiresAt = (expiresIn: number): string => moment().add(expiresIn, 'seconds').valueOf().toString()
 
 interface SpotifyApiHook {
   accessToken: string | null;
@@ -29,6 +29,7 @@ export default function useSpotifyApi(): SpotifyApiHook {
     axios
       .post(`${process.env.NEXT_PUBLIC_PROD_URL}/api/refresh`, { refreshToken })
       .then((res) => {
+        if (!res.data.accessToken) return
         setAccessToken(res.data.accessToken)
         setExpiresAt(getExpiresAt(res.data.expiresIn))
       })
@@ -52,27 +53,26 @@ export default function useSpotifyApi(): SpotifyApiHook {
   useEffect(() => {
     if (accessToken) {
       spotifyApi.setAccessToken(accessToken)
-      replace(`/playlist/${redirectPlaylistId || 'new'}`);
-
-      if (redirectPlaylistId) {
-        setRedirectPlaylistId(null)
-      }
-    } else {
-      if (playlistId) {
-        setRedirectPlaylistId(playlistId as string)
-      }
     }
   }, [accessToken])
 
   useEffect(() => {
-    if (!code || accessToken) return
+    if (!accessToken && playlistId && playlistId !== 'new') {
+      setRedirectPlaylistId(playlistId as string)
+    }
+  }, [playlistId, accessToken])
+
+  useEffect(() => {
+    if (!code) return
 
     axios
       .post(`${process.env.NEXT_PUBLIC_PROD_URL}/api/auth`, { code })
       .then((res) => {
+        if (!res.data.accessToken) return
         setAccessToken(res.data.accessToken)
         setRefreshToken(res.data.refreshToken)
         setExpiresAt(getExpiresAt(res.data.expiresIn))
+        replace(`/playlist/${redirectPlaylistId || 'new'}`);
       })
       .catch(onError)
   }, [code, setAccessToken, setRefreshToken, setExpiresAt])
