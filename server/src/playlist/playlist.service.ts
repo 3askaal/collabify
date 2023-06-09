@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Cron } from '@nestjs/schedule';
 import { Model, now } from 'mongoose';
-import { shuffle } from 'lodash';
 import moment from 'moment';
 import SpotifyWebApi from 'spotify-web-api-node';
 
@@ -125,6 +124,8 @@ export class PlaylistService {
 
     const hostParticipation: IParticipation = playlist.participations.find(({ user }): boolean => !!user.refreshToken);
     const spotifyApiInstance = await getSpotifyInstance(hostParticipation.user.refreshToken);
+
+    console.log('hostParticipation: ', hostParticipation); // eslint-disable-line
 
     const { items } = await spotifyApiInstance.getPlaylistTracks(playlist.spotifyId).then(onSuccess, onError);
     const tracks = items.map(({ track: { uri } }) => ({ uri }));
