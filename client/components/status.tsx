@@ -9,11 +9,11 @@ import { getDefaultPlaylistTitle } from '../helpers/transform';
 
 export const Status = () => {
   const { query: { id: playlistId } } = useRouter()
-  const { getDataRes, me } = useContext(IntelContext)
+  const { getPlaylistRes, me } = useContext(IntelContext)
   const [isCopied, setIsCopied] = useState(false)
 
-  const playlistName = getDataRes?.name || getDefaultPlaylistTitle(getDataRes)
-  const playlistDesc = getDataRes?.description || 'Generated with collabify.vercel.app'
+  const playlistName = getPlaylistRes?.name || getDefaultPlaylistTitle(getPlaylistRes)
+  const playlistDesc = getPlaylistRes?.description || 'Generated with collabify.vercel.app'
 
   const shareUrl = `${window.location.host}/playlist/${playlistId}`
 
@@ -43,12 +43,12 @@ export const Status = () => {
         </Spacer>
         <Spacer size="s" s={{ alignItems: 'center' }}>
           <div><strong>Status</strong></div>
-          <div><Label sRef="Label" isWaiting={getDataRes?.status === 'waiting'} isCompleted={getDataRes?.status === 'completed'}>{ getDataRes?.status }</Label></div>
+          <div><Label sRef="Label" isWaiting={getPlaylistRes?.status === 'waiting'} isCompleted={getPlaylistRes?.status === 'completed'}>{ getPlaylistRes?.status }</Label></div>
         </Spacer>
       </Spacer>
       <Spacer>
         <List>
-          { getDataRes?.participations?.map(({ user }: any) => (
+          { getPlaylistRes?.participations?.map(({ user }: any) => (
             <ListItem s={{ display: 'flex', justifyContent: 'space-between' }} key={user.id}>{user.name} <strong>{user.id === me?.id ? 'You' : ''}</strong></ListItem>
           )) || [] }
         </List>

@@ -1,5 +1,5 @@
-import { Controller, Post, Get, Put, Body, Param, NotFoundException, BadRequestException } from '@nestjs/common';
-import { IPlaylist } from '../../types/playlist';
+import { Controller, Post, Get, Put, Body, Param } from '@nestjs/common';
+import { IData, IPlaylist } from '../../types/playlist';
 import { Playlist } from './playlist.schema';
 import { PlaylistService } from './playlist.service';
 import { GetParams, GetAllParams } from './playlist.validators';
@@ -26,6 +26,7 @@ export class PlaylistController {
     try {
       return this.playlistService.getAll(userId, email);
     } catch (err) {
+      console.log('err: ', err); // eslint-disable-line
       throw err;
     }
   }
@@ -50,12 +51,34 @@ export class PlaylistController {
     }
   }
 
+  @Post('collect')
+  async collect(@Body() payload: any): Promise<IData> {
+    // const { id: playlistId } = params;
+
+    try {
+      return this.playlistService.collect(payload);
+    } catch (err) {
+      throw err;
+    }
+  }
+
   @Get(':id/release')
   async release(@Param() params): Promise<void> {
     const { id: playlistId } = params;
 
     try {
       return this.playlistService.release(playlistId);
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  @Get(':id/refresh')
+  async update(@Param() params): Promise<void> {
+    const { id: playlistId } = params;
+
+    try {
+      return this.playlistService.refresh(playlistId);
     } catch (err) {
       throw err;
     }

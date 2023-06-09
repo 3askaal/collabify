@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, now } from 'mongoose';
 import { orderBy, flatten, shuffle } from 'lodash';
-import * as SpotifyWebApi from 'spotify-web-api-node';
+import SpotifyWebApi from 'spotify-web-api-node';
 
 import { Playlist, PlaylistDocument } from './playlist.schema';
-import { IPlaylist, IParticipation } from '../../types/playlist';
-import { mergeParticipationsData } from './playlist.helpers';
+import { IPlaylist, IParticipation, IData } from '../../types/playlist';
+import { collectData, mergeParticipationsData } from './playlist.helpers';
+import { Cron } from '@nestjs/schedule';
+import moment from 'moment';
 
 const getSpotifyInstance = async (refreshToken: string): Promise<SpotifyWebApi> => {
   const instance = new SpotifyWebApi({
@@ -35,7 +37,7 @@ const onSuccess = (data) => {
 };
 
 const onError = (err) => {
-  console.log('ERROR: ', err); // eslint-disable-line
+  console.log('ERROR: ', err);
 };
 
 @Injectable()
@@ -56,6 +58,11 @@ export class PlaylistService {
     });
 
     return [...participated, ...invited];
+  }
+
+  async collect({ refreshToken, debug, seed_tracks }: any): Promise<IData> {
+    const spotifyInstance = await getSpotifyInstance(refreshToken);
+    return collectData(spotifyInstance, debug, seed_tracks);
   }
 
   async create(payload: IPlaylist): Promise<Playlist> {
@@ -93,9 +100,8 @@ export class PlaylistService {
     const hostParticipation: IParticipation = playlist.participations.find(({ user }): boolean => !!user.refreshToken);
     const spotifyApiInstance = await getSpotifyInstance(hostParticipation.user.refreshToken);
 
-    const { id: spotifyPlaylistId } = await spotifyApiInstance
-      .createPlaylist(hostParticipation.user.id, {
-        name: playlist.title || defaultTitle,
+    const { id: spotifyId } = await spotifyApiInstance
+      .createPlaylist(playlist.title || defaultTitle, {
         description: playlist.description || defaultDescription,
         public: false,
       })
@@ -114,12 +120,81 @@ export class PlaylistService {
       ),
     );
 
-    await spotifyApiInstance.addTracksToPlaylist(spotifyPlaylistId, tracks).then(onSuccess, onError);
+    await spotifyApiInstance.addTracksToPlaylist(spotifyId, tracks).then(onSuccess, onError);
 
     await this.playlistModel.findByIdAndUpdate(playlistId, {
       status: 'published',
+      publishedAt: Date.now(),
+      spotifyId,
     });
 
     return playlist;
+  }
+
+  async refresh(playlistId: string): Promise<any> {
+    const playlist: IPlaylist = await this.playlistModel.findById(playlistId);
+
+    const hostParticipation: IParticipation = playlist.participations.find(({ user }): boolean => !!user.refreshToken);
+    const spotifyApiInstance = await getSpotifyInstance(hostParticipation.user.refreshToken);
+
+    const { items } = await spotifyApiInstance.getPlaylistTracks(playlist.spotifyId).then(onSuccess, onError);
+    const tracks = items.map(({ track: { uri } }) => ({ uri }));
+
+    await spotifyApiInstance.removeTracksFromPlaylist(playlist.spotifyId, tracks).then(onSuccess, onError);
+
+    const newParticipations = await Promise.all(
+      playlist.participations.map(async (participation) => ({
+        ...participation,
+        data: await this.collect({ refreshToken: participation.user.refreshToken }),
+      })),
+    );
+
+    await this.playlistModel.findByIdAndUpdate(playlistId, { participations: newParticipations });
+
+    const mergedParticipations = mergeParticipationsData(newParticipations);
+
+    const newTracks = shuffle(
+      flatten(
+        playlist.participations.map(({ user: { id } }) => {
+          const tracksByParticipation = mergedParticipations.tracks.filter(({ occurrences }) => occurrences[id]);
+          const tracksOrderedByRank = orderBy(tracksByParticipation, ['totalRank'], ['desc']);
+          const trackIds = tracksOrderedByRank.map(({ id }) => id);
+          return trackIds.slice(0, 20);
+        }),
+      ),
+    );
+
+    await spotifyApiInstance.addTracksToPlaylist(playlist.spotifyId, newTracks).then(onSuccess, onError);
+
+    await this.playlistModel.findByIdAndUpdate(playlistId, {
+      refreshedAt: now(),
+    });
+
+    return playlist;
+  }
+
+  @Cron('0 0 * * *') // every day at 00:00
+  async refreshesAt(): Promise<void> {
+    const playlists: IPlaylist[] = await this.playlistModel.find({
+      refreshEvery: { $exists: true },
+    });
+
+    playlists.forEach((playlist) => {
+      if (playlist.refreshEvery === 'week') {
+        const dayOfTheWeek = moment(playlist.publishedAt).day();
+
+        if (moment().day() === dayOfTheWeek) {
+          this.refresh(playlist._id);
+        }
+      }
+
+      if (playlist.refreshEvery === 'month') {
+        const dayOfTheMonth = moment(playlist.publishedAt).date();
+
+        if (moment().date() === dayOfTheMonth) {
+          this.refresh(playlist._id);
+        }
+      }
+    });
   }
 }

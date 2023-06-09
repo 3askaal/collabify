@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "3oilerplate": "^0.2.50",
+    "3oilerplate": "^0.2.52",
     "@faker-js/faker": "^7.6.0",
     "@next/font": "13.1.1",
     "@types/axios": "^0.14.0",

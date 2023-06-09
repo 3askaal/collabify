@@ -1,16 +1,16 @@
 import { useContext, useState } from 'react'
-import { Spacer, Box, ElementGroup, Button, Select, Title } from '3oilerplate'
-import { orderBy, remove, startCase } from 'lodash'
+import { Box, ElementGroup, Button, Select, Title } from '3oilerplate'
+import { orderBy, pull, startCase } from 'lodash'
 import { SelectionLabel } from '..'
 import { IntelContext } from '../../context/IntelContext'
-import { IData } from '../../../server/types/playlist'
+import { IObject } from '../../../server/types/playlist'
 import { ScrollContainer } from '../scrollContainer'
 
 type DataTypes = 'artists' | 'tracks' | 'genres';
 type TermTypes = 'short_term' | 'medium_term' | 'long_term';
 
 export function FilterData() {
-  const { data, setData } = useContext(IntelContext)
+  const { data, excludeData, setExcludeData } = useContext(IntelContext)
 
   const [activeTab, setActiveTabState] = useState<DataTypes>('genres')
   const [activeTerm, setActiveTerm] = useState<{ artists: TermTypes, tracks: TermTypes, genres: TermTypes }>({ artists: 'short_term', tracks: 'short_term', genres: 'short_term' })
@@ -25,30 +25,26 @@ export function FilterData() {
   }
 
   const toggleItem = (type: DataTypes, id: string) => {
-    const currentTypeData = data![type]
+    let currentTypeData = excludeData[type] || []
 
-    currentTypeData && Object.keys(currentTypeData).forEach((key) => {
-      const currentTermData = currentTypeData ? currentTypeData[key as TermTypes] : []
+    if (currentTypeData.includes(id)) {
+      currentTypeData = pull(currentTypeData, id)
+    } else {
+      currentTypeData = [...currentTypeData, id]
+    }
 
-      const currentItem = remove(currentTermData, { id })[0];
-      if (!currentItem) return
-
-      currentItem.include = !currentItem.include;
-
-      const updatedTracks = orderBy(
-        [...currentTermData, currentItem],
-        ['include', 'index'],
-        ['desc', 'asc']
-      );
-
-      setData && setData((currentIntel: IData) => ({
-        ...currentIntel,
-        [type]: {
-          ...currentIntel[type],
-          [key]: updatedTracks
-        }
-      }))
+    setExcludeData({
+      ...excludeData,
+      [type]: currentTypeData
     })
+  }
+
+  const isIncluded = (id: string): boolean => {
+    return !Object.values(excludeData).flat().includes(id)
+  }
+
+  const orderByIncluded = (items: IObject[]): IObject[] => {
+    return orderBy(items, ({ id }) => Object.values(excludeData).flat().includes(id))
   }
 
   return (
@@ -106,11 +102,11 @@ export function FilterData() {
       <ScrollContainer>
         { activeTab === 'genres' ? (
           <Box df fdr fww jcc>
-            { topGenres.map(({ id, index, name, include }) => (
+            { orderByIncluded(topGenres).map(({ id, index, name, include }) => (
               <SelectionLabel
                 onClick={() => toggleItem('genres', id)}
                 key={`genre-${index}`}
-                active={include}
+                active={isIncluded(id)}
               >
                 { startCase(name) }
               </SelectionLabel>
@@ -120,11 +116,11 @@ export function FilterData() {
 
         { activeTab === 'artists' ? (
           <Box df fdr fww jcc>
-            { topArtists.map(({ id, index, name, include }) => (
+            { orderByIncluded(topArtists).map(({ id, index, name, include }) => (
               <SelectionLabel
                 onClick={() => toggleItem('artists', id)}
                 key={`artist-${index}`}
-                active={include}
+                active={isIncluded(id)}
               >
                 { name }
               </SelectionLabel>
@@ -134,11 +130,11 @@ export function FilterData() {
 
         { activeTab === 'tracks' ? (
           <Box>
-            { topTracks.map(({ id, index, artist, name, include }) => (
+            { orderByIncluded(topTracks).map(({ id, index, artist, name, include }) => (
               <SelectionLabel
                 onClick={() => toggleItem('tracks', id)}
                 key={`track-${index}`}
-                active={include}
+                active={isIncluded(id)}
               >
                 { artist } - { name }
               </SelectionLabel>

@@ -18,9 +18,16 @@ export interface IData {
   genres?: ITerms;
 }
 
+export interface IExcludeData {
+  artists?: string[];
+  tracks?: string[];
+  genres?: string[];
+}
+
 export interface IParticipation {
   user: IUser;
   data: IData;
+  excludeData?: IExcludeData;
   submittedAt?: Date;
 }
 
@@ -28,11 +35,16 @@ export type IParticipations = IParticipation[];
 
 export interface IPlaylist {
   _id?: string;
+  spotifyId?: string;
   title: string;
   description: string;
   participations: IParticipations;
   invitations: string[];
-  status: 'waiting' | 'completed';
+  status: 'waiting' | 'published';
+  refreshEvery?: 'week' | 'month';
+  publishedAt?: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export type IGenre = string;

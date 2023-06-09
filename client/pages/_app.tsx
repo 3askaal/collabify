@@ -6,7 +6,6 @@ import { s, ThemeProvider, GlobalStyle, theme as DEFAULT_THEME } from '3oilerpla
 import ReactGA from 'react-ga4'
 import deepmerge from 'deepmerge'
 import { Layout } from '../components/layout'
-import useSpotifyApi from '../hooks/useSpotifyApi'
 import { IntelProvider } from '../context/IntelContext'
 import { THEME, LocalGlobalStyle } from '../style'
 
@@ -42,8 +41,6 @@ const DynamicWrapper = dynamic(() => Promise.resolve(NonSSRWrapper), {
 })
 
 export default function App({ Component, pageProps }: AppProps) {
-  // const { query: { id: playlistId, code }, replace } = useRouter();
-
   return (
     <ThemeProvider theme={mergeTheme(DEFAULT_THEME, THEME)}>
       <IntelProvider>

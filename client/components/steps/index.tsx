@@ -1,18 +1,45 @@
-import { Input, Spacer, Button, Box } from '3oilerplate'
+import { Input, Spacer, Button, Box, Checkbox, Select } from '3oilerplate'
 import { useRouter } from 'next/router';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { ArrowLeft as ArrowLeftIcon, ArrowRight as ArrowRightIcon } from 'react-feather'
 import { IntelContext } from '../../context/IntelContext';
 import { FilterData, Invite } from '..';
 
 const Details = () => {
   const { me, setDetails } = useContext(IntelContext)
+  const [shouldRefresh, setShouldRefresh] = useState(false)
+
+  useEffect(() => {
+    setDetails((details) => ({ ...details, refreshEvery: shouldRefresh ? 'week' : undefined }))
+  }, [shouldRefresh])
 
   return (
     <Box df fdc s={{ flexGrow: 1, justifyContent: 'center' }}>
-      <Spacer size="l">
-        <Input huge placeholder={`${me?.name} x ...`} onChange={(value: string) => setDetails((details) => ({ ...details, title: value}))} />
-        <Input huge placeholder="Generated with collabify.vercel.app" onChange={(value: string) => setDetails((details) => ({ ...details, description: value }))} />
+      <Spacer size="xl">
+        <Spacer size="l">
+          <Input huge placeholder={`${me?.name} x ...`} onChange={(value: string) => setDetails((details) => ({ ...details, title: value}))} />
+          <Input huge placeholder="Generated with collabify.vercel.app" onChange={(value: string) => setDetails((details) => ({ ...details, description: value }))} />
+        </Spacer>
+        <Spacer size="l" s={{ flexDirection: 'row' }}>
+          <Checkbox label="Should refresh" onChange={(value: boolean) => setShouldRefresh(value)} />
+          { shouldRefresh && (
+            <Select
+              s={{ flexGrow: '1' }}
+              options={[
+                {
+                  label: 'Weekly',
+                  value: 'week',
+
+                },
+                {
+                  label: 'Monthly',
+                  value: 'month',
+                },
+              ]}
+              onChange={(value: string) => setDetails((details) => ({ ...details, refreshEvery: value }))}
+            />
+          ) }
+        </Spacer>
       </Spacer>
     </Box>
   )
