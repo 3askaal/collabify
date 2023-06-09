@@ -1,4 +1,4 @@
-import { groupBy, flatten, sampleSize, uniq } from 'lodash';
+import { groupBy, sampleSize, uniq, shuffle, flatten, orderBy, times, sample } from 'lodash';
 import slugify from 'slugify';
 import { IData, IObject, IParticipations, ITerms } from '../../types/playlist';
 
@@ -187,4 +187,34 @@ export const mergeParticipationsData = (participations: IParticipations): any =>
   );
 
   return mergedData;
+};
+
+export const getRandomTracksBasedOnRank = (participations: IParticipations, amount: number) => {
+  const mergedParticipations = mergeParticipationsData(participations);
+
+  return shuffle(
+    flatten(
+      participations.map(({ user: { id } }) => {
+        const tracksByParticipation = mergedParticipations.tracks.filter(({ occurrences }) => occurrences[id]);
+        const tracksOrderedByRank = orderBy(tracksByParticipation, ['totalRank'], ['desc']);
+        const tracksMultipliedByTotalRank = flatten(
+          tracksOrderedByRank.map((track) => {
+            return times(track.totalRank, () => track);
+          }),
+        ).map(({ id }) => id);
+
+        const newTracks = [];
+
+        while (newTracks.length < amount) {
+          const possibleTrack = sample(tracksMultipliedByTotalRank);
+
+          if (!newTracks.includes(possibleTrack)) {
+            newTracks.push(possibleTrack);
+          }
+        }
+
+        return newTracks;
+      }),
+    ),
+  );
 };
