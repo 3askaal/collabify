@@ -1,19 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { Cron } from '@nestjs/schedule';
 import { Model, now } from 'mongoose';
-import { orderBy, flatten, shuffle } from 'lodash';
+import { shuffle } from 'lodash';
+import moment from 'moment';
 import SpotifyWebApi from 'spotify-web-api-node';
 
 import { Playlist, PlaylistDocument } from './playlist.schema';
 import { IPlaylist, IParticipation, IData } from '../../types/playlist';
-import {
-  collectData,
-  getRandomTracksWeightedByRank,
-  getRecommendations,
-  mergeParticipationsData,
-} from './playlist.helpers';
-import { Cron } from '@nestjs/schedule';
-import moment from 'moment';
+import { collectData, getRandomTracksWeightedByRank } from './playlist.helpers';
 
 const getSpotifyInstance = async (refreshToken: string): Promise<SpotifyWebApi> => {
   const instance = new SpotifyWebApi({
@@ -112,11 +107,9 @@ export class PlaylistService {
       })
       .then(onSuccess, onError);
 
-    const tracks = getRandomTracksWeightedByRank(playlist.participations, 20);
-    const recommendations = await getRecommendations(spotifyApiInstance, playlist.participations, 10);
-    const tracklist = shuffle([...tracks, ...recommendations]);
+    const tracks = await getRandomTracksWeightedByRank(spotifyApiInstance, playlist.participations, 20, 10);
 
-    await spotifyApiInstance.addTracksToPlaylist(spotifyId, tracklist).then(onSuccess, onError);
+    await spotifyApiInstance.addTracksToPlaylist(spotifyId, tracks).then(onSuccess, onError);
 
     await this.playlistModel.findByIdAndUpdate(playlistId, {
       status: 'published',
@@ -145,12 +138,9 @@ export class PlaylistService {
       })),
     );
 
-    const newTracks = getRandomTracksWeightedByRank(newParticipations, 20);
-    const recommendations = await getRecommendations(spotifyApiInstance, newParticipations, 10);
+    const newTracks = await getRandomTracksWeightedByRank(spotifyApiInstance, newParticipations, 20, 10);
 
-    const tracklist = shuffle([...newTracks, ...recommendations]);
-
-    await spotifyApiInstance.addTracksToPlaylist(playlist.spotifyId, tracklist).then(onSuccess, onError);
+    await spotifyApiInstance.addTracksToPlaylist(playlist.spotifyId, newTracks).then(onSuccess, onError);
 
     await this.playlistModel.findByIdAndUpdate(playlistId, {
       participations: newParticipations,
