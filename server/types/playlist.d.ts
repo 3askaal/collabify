@@ -12,6 +12,8 @@ export interface ITerms {
   long_term: IObject[];
 }
 
+type IDataInstances = 'artists' | 'tracks' | 'genres';
+
 export interface IData {
   artists?: ITerms;
   tracks?: ITerms;
@@ -32,6 +34,22 @@ export interface IParticipation {
 }
 
 export type IParticipations = IParticipation[];
+
+export type IMergedParticipation = {
+  [Key in keyof IData]: {
+    id: string;
+    name: string;
+    artist?: string;
+    totalRank: number;
+    index: number;
+    occurrences: {
+      [id: string]: {
+        periods: ('short' | 'medium' | 'long')[];
+        rank: number;
+      };
+    };
+  }[];
+};
 
 export interface IPlaylist {
   _id?: string;
@@ -68,5 +86,4 @@ export type IObject = {
   artist?: string;
   index?: number;
   rank?: number;
-  include?: boolean;
 };

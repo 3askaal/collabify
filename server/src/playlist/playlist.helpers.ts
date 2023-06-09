@@ -1,6 +1,6 @@
-import { groupBy, sampleSize, uniq, shuffle, flatten, orderBy, times, sample } from 'lodash';
+import { groupBy, sampleSize, uniq, shuffle, flatten, orderBy, last, random } from 'lodash';
 import slugify from 'slugify';
-import { IData, IObject, IParticipations, ITerms } from '../../types/playlist';
+import { IData, IMergedParticipation, IObject, IParticipations, ITerms } from '../../types/playlist';
 
 type SpotifyResBody =
   | SpotifyApi.UsersTopArtistsResponse
@@ -46,7 +46,6 @@ export const collectData = async (spotifyApi: any, debug?: boolean, seed_tracks?
             id: uri,
             index,
             name,
-            include: true,
             ...(instance === 'tracks' && {
               artist: artists.map(({ name }: any) => name).join(', '),
             }),
@@ -73,7 +72,6 @@ export const collectData = async (spotifyApi: any, debug?: boolean, seed_tracks?
           .filter((genre1) => uniqueGenres.some((genre2) => genre1 !== genre2 && genre2.includes(genre1)))
           .map((genre, index) => ({
             id: slugify(genre),
-            include: true,
             name: genre,
             index,
           }));
@@ -94,7 +92,7 @@ export const collectData = async (spotifyApi: any, debug?: boolean, seed_tracks?
     };
   }, Promise.resolve({ tracks: {}, artists: {} }) as any);
 
-export const mergeParticipationsData = (participations: IParticipations): any => {
+export const mergeParticipationsData = (participations: IParticipations): IMergedParticipation => {
   // merge data of all participants containing genres/artists/tracks
   // with inside containing data from short/medium/long time periods
   // into single collections based on category
@@ -126,7 +124,7 @@ export const mergeParticipationsData = (participations: IParticipations): any =>
             ),
           )
             // merge nested grouped list into single list and merge values
-            .map((items: any) => {
+            .map((items) => {
               return items.reduce(
                 (acc, { period, rank, ...rest }) => {
                   return {
@@ -189,31 +187,33 @@ export const mergeParticipationsData = (participations: IParticipations): any =>
   return mergedData;
 };
 
-export const getRandomTracksBasedOnRank = (participations: IParticipations, amount: number) => {
+export const getRandomTracksWeightedByRank = (participations: IParticipations, amount: number) => {
   const mergedParticipations = mergeParticipationsData(participations);
 
   return shuffle(
     flatten(
       participations.map(({ user: { id } }) => {
         const tracksByParticipation = mergedParticipations.tracks.filter(({ occurrences }) => occurrences[id]);
-        const tracksOrderedByRank = orderBy(tracksByParticipation, ['totalRank'], ['desc']);
-        const tracksMultipliedByTotalRank = flatten(
-          tracksOrderedByRank.map((track) => {
-            return times(track.totalRank, () => track);
-          }),
-        ).map(({ id }) => id);
+        const tracksOrderedByTotalRank = orderBy(tracksByParticipation, ['totalRank'], ['asc']);
+        const tracksWithCumulativeTotalRank = tracksOrderedByTotalRank.map(({ id, totalRank }, index) => ({
+          id,
+          totalRank: index ? tracksOrderedByTotalRank[index - 1].totalRank + totalRank : totalRank,
+        }));
 
-        const newTracks = [];
+        const maxCumulativeTotalRank = last(tracksWithCumulativeTotalRank).totalRank;
 
-        while (newTracks.length < amount) {
-          const possibleTrack = sample(tracksMultipliedByTotalRank);
+        const randomTracks = [];
 
-          if (!newTracks.includes(possibleTrack)) {
-            newTracks.push(possibleTrack);
+        while (randomTracks.length < amount) {
+          const randomNumber = random(0, maxCumulativeTotalRank);
+          const { id } = tracksWithCumulativeTotalRank.find(({ totalRank }) => totalRank >= randomNumber);
+
+          if (!randomTracks.includes(id)) {
+            randomTracks.push(id);
           }
         }
 
-        return newTracks;
+        return randomTracks;
       }),
     ),
   );

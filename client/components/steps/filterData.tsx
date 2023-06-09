@@ -102,7 +102,7 @@ export function FilterData() {
       <ScrollContainer>
         { activeTab === 'genres' ? (
           <Box df fdr fww jcc>
-            { orderByIncluded(topGenres).map(({ id, index, name, include }) => (
+            { orderByIncluded(topGenres).map(({ id, index, name }) => (
               <SelectionLabel
                 onClick={() => toggleItem('genres', id)}
                 key={`genre-${index}`}
@@ -116,7 +116,7 @@ export function FilterData() {
 
         { activeTab === 'artists' ? (
           <Box df fdr fww jcc>
-            { orderByIncluded(topArtists).map(({ id, index, name, include }) => (
+            { orderByIncluded(topArtists).map(({ id, index, name }) => (
               <SelectionLabel
                 onClick={() => toggleItem('artists', id)}
                 key={`artist-${index}`}
@@ -130,7 +130,7 @@ export function FilterData() {
 
         { activeTab === 'tracks' ? (
           <Box>
-            { orderByIncluded(topTracks).map(({ id, index, artist, name, include }) => (
+            { orderByIncluded(topTracks).map(({ id, index, artist, name }) => (
               <SelectionLabel
                 onClick={() => toggleItem('tracks', id)}
                 key={`track-${index}`}
