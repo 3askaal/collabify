@@ -24,26 +24,31 @@ export function FilterData() {
     setActiveTerm({...activeTerm, [activeTab]: 'short_term' })
   }
 
-  const toggleItem = (type: DataTypes, term: TermTypes, id: string) => {
+  const toggleItem = (type: DataTypes, id: string) => {
     const currentTypeData = data![type]
-    const currentTermData = currentTypeData ? currentTypeData[term] : []
 
-    const currentItem = remove(currentTermData, { id })[0];
-    currentItem.include = !currentItem.include;
+    currentTypeData && Object.keys(currentTypeData).forEach((key) => {
+      const currentTermData = currentTypeData ? currentTypeData[key as TermTypes] : []
 
-    const updatedTracks = orderBy(
-      [...currentTermData, currentItem],
-      ['include', 'index'],
-      ['desc', 'asc']
-    );
+      const currentItem = remove(currentTermData, { id })[0];
+      if (!currentItem) return
 
-    setData && setData((currentIntel: IData) => ({
-      ...currentIntel,
-      [type]: {
-        ...currentIntel[type],
-        [term]: updatedTracks
-      }
-    }))
+      currentItem.include = !currentItem.include;
+
+      const updatedTracks = orderBy(
+        [...currentTermData, currentItem],
+        ['include', 'index'],
+        ['desc', 'asc']
+      );
+
+      setData && setData((currentIntel: IData) => ({
+        ...currentIntel,
+        [type]: {
+          ...currentIntel[type],
+          [key]: updatedTracks
+        }
+      }))
+    })
   }
 
   return (
@@ -103,7 +108,7 @@ export function FilterData() {
           <Box df fdr fww jcc>
             { topGenres.map(({ id, index, name, include }) => (
               <SelectionLabel
-                onClick={() => toggleItem('genres', activeTerm.genres, id)}
+                onClick={() => toggleItem('genres', id)}
                 key={`genre-${index}`}
                 active={include}
               >
@@ -117,7 +122,7 @@ export function FilterData() {
           <Box df fdr fww jcc>
             { topArtists.map(({ id, index, name, include }) => (
               <SelectionLabel
-                onClick={() => toggleItem('artists', activeTerm.artists, id)}
+                onClick={() => toggleItem('artists', id)}
                 key={`artist-${index}`}
                 active={include}
               >
@@ -131,7 +136,7 @@ export function FilterData() {
           <Box>
             { topTracks.map(({ id, index, artist, name, include }) => (
               <SelectionLabel
-                onClick={() => toggleItem('tracks', activeTerm.tracks, id)}
+                onClick={() => toggleItem('tracks', id)}
                 key={`track-${index}`}
                 active={include}
               >
