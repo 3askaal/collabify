@@ -109,7 +109,7 @@ export const IntelProvider = ({ children }: any) => {
       participations.push({
         user: {
           id: faker.datatype.uuid().toString(),
-          name: 'Test Person',
+          name: 'AI',
           email: faker.internet.email(),
           bot: true
         },
