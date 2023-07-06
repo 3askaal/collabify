@@ -19,9 +19,9 @@ export class PlaylistController {
     }
   }
 
-  @Get('all/:id/:email')
-  async getAll(@Param() params: GetAllParams): Promise<Playlist[]> {
-    const { id: userId, email } = params;
+  @Post('all')
+  async getAll(@Body() payload: GetAllParams): Promise<Playlist[]> {
+    const { id: userId, email } = payload;
 
     try {
       return this.playlistService.getAll(userId, email);

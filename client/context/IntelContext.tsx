@@ -72,8 +72,8 @@ export const IntelProvider = ({ children }: any) => {
 
   const [{ data: getPlaylistsRes }, getPlaylistsCallback] = useAxios<IPlaylist>(
     {
-      url: `${API_URL}/playlist/all/${me?.id}/${me?.email}`,
-      method: 'GET'
+      url: `${API_URL}/playlist/all`,
+      method: 'POST'
     },
     { manual: true }
   )
@@ -127,7 +127,7 @@ export const IntelProvider = ({ children }: any) => {
   }
 
   useEffect(() => {
-    if (!accessToken || !refreshToken || !spotifyApi) return;
+    if (!refreshToken || !spotifyApi) return;
 
     spotifyApi.getMe()
       .then(
@@ -143,10 +143,10 @@ export const IntelProvider = ({ children }: any) => {
         },
         (err: any) => {
           console.log('ERROR: ', err); // eslint-disable-line
-          return
+          return;
         }
       )
-  }, [accessToken, refreshToken, spotifyApi, playlistId])
+  }, [refreshToken, spotifyApi])
 
   useEffect(() => {
     console.log('getPlaylistRes: ', getPlaylistRes); // eslint-disable-line
@@ -161,11 +161,16 @@ export const IntelProvider = ({ children }: any) => {
     }
   }, [playlistId])
 
-  // useEffect(() => {
-  //   if (me?.id && me?.email) {
-  //     getPlaylistsCallback()
-  //   }
-  // }, [me, getPlaylistsCallback])
+  useEffect(() => {
+    if (me) {
+      getPlaylistsCallback({
+        data: {
+          id: me.id,
+          email: me.email
+        }
+      })
+    }
+  }, [me])
 
   useEffect(() => {
     console.log('collectDataRes: ', collectDataRes);
@@ -176,6 +181,10 @@ export const IntelProvider = ({ children }: any) => {
       push(`${submitDataRes._id}`)
     }
   }, [submitDataRes])
+
+  useEffect(() => {
+    console.log('getPlaylistsRes: ', getPlaylistsRes);
+  }, [getPlaylistsRes])
 
   useEffect(() => {
     console.log('releaseRes: ', releaseRes);

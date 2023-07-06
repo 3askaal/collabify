@@ -1,10 +1,19 @@
-import { Box, Wrapper, Container, Button } from '3oilerplate'
-import { User as UserIcon } from 'react-feather'
+import { useState } from 'react'
+import { useRouter } from 'next/router'
+import { Box, Wrapper, Container, Button, List, ListItem } from '3oilerplate'
+import { User as UserIcon, ArrowLeft as ArrowLeftIcon } from 'react-feather'
 import { Logo } from './logo'
 import useSpotifyApi from '../hooks/useSpotifyApi'
 
 export function Layout({ children }: any) {
+  const { push, back, query } = useRouter()
   const { spotifyApi, logout } = useSpotifyApi()
+  const [menuOpen, setMenuOpen] = useState(false)
+
+  const navigate = (route: string) => {
+    setMenuOpen(false)
+    push(route)
+  }
 
   return (
     <Wrapper s={{ display: 'grid', gridTemplateRows: spotifyApi ? 'auto minmax(0, 1fr)' : 'auto', gridTemplateColumns: '1fr', justifyItems: 'center', gap: 'm' }}>
@@ -15,11 +24,28 @@ export function Layout({ children }: any) {
               <Logo small />
             </Box>
 
+            { query.id && (
+              <Box posa l='0' t='0' s={{ p: 'm' }}>
+                <Button isOutline onClick={back} s={{ p: 's', borderRadius: '100%' }}>
+                  <ArrowLeftIcon size="14" />
+                </Button>
+              </Box>
+            )}
+
             <Box posa r='0' t='0' s={{ p: 'm' }}>
-              <Button isOutline onClick={logout} s={{ p: 's', borderRadius: '100%' }}>
+              <Button isOutline onClick={() => setMenuOpen(!menuOpen)} s={{ p: 's', borderRadius: '100%' }}>
                 <UserIcon size="14" />
               </Button>
             </Box>
+
+            { menuOpen && (
+              <Box df s={{ position: 'absolute', top: 0, right: 0, m: 'm', mt: 'xxl', minWidth: '140px', zIndex: 400 }}>
+                <List s={{ borderRight: '1px solid', borderLeft: '1px solid', borderColor: 'primary', textAlign: 'center', cursor: 'pointer' }}>
+                  <ListItem onClick={() => navigate('/playlists')}>My Playlists</ListItem>
+                  <ListItem onClick={logout}>Logout</ListItem>
+                </List>
+              </Box>
+            )}
           </>
         )
       }

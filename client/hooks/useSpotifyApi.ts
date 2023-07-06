@@ -53,6 +53,7 @@ export default function useSpotifyApi(): SpotifyApiHook {
   useEffect(() => {
     if (accessToken) {
       spotifyApi.setAccessToken(accessToken)
+      setRedirectPlaylistId(null)
     }
   }, [accessToken])
 
@@ -76,7 +77,6 @@ export default function useSpotifyApi(): SpotifyApiHook {
       })
       .catch(onError)
   }, [code, setAccessToken, setRefreshToken, setExpiresAt])
-
 
   useEffect(() => {
     if (!expiresAt) return
