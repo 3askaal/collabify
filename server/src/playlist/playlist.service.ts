@@ -125,8 +125,6 @@ export class PlaylistService {
     const hostParticipation: IParticipation = playlist.participations.find(({ user }): boolean => !!user.refreshToken);
     const spotifyApiInstance = await getSpotifyInstance(hostParticipation.user.refreshToken);
 
-    console.log('hostParticipation: ', hostParticipation); // eslint-disable-line
-
     const { items } = await spotifyApiInstance.getPlaylistTracks(playlist.spotifyId).then(onSuccess, onError);
     const tracks = items.map(({ track: { uri } }) => ({ uri }));
 
@@ -135,7 +133,7 @@ export class PlaylistService {
     const newParticipations = await Promise.all(
       playlist.participations.map(async (participation) => ({
         ...participation,
-        data: await this.collect({ refreshToken: participation.user.refreshToken }),
+        data: await this.collect({ refreshToken: hostParticipation.user.refreshToken }),
       })),
     );
 
