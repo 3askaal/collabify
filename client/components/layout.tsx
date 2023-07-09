@@ -6,7 +6,7 @@ import { Logo } from './logo'
 import useSpotifyApi from '../hooks/useSpotifyApi'
 
 export function Layout({ children }: any) {
-  const { push, back, query } = useRouter()
+  const { push, back, query: { id: playlistId } } = useRouter()
   const { spotifyApi, logout } = useSpotifyApi()
   const [menuOpen, setMenuOpen] = useState(false)
 
@@ -24,7 +24,7 @@ export function Layout({ children }: any) {
               <Logo small />
             </Box>
 
-            { query.id && (
+            { playlistId && playlistId !== 'new' && (
               <Box posa l='0' t='0' s={{ p: 'm' }}>
                 <Button isOutline onClick={back} s={{ p: 's', borderRadius: '100%' }}>
                   <ArrowLeftIcon size="14" />
