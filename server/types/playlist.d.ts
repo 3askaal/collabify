@@ -40,7 +40,7 @@ export type IMergedParticipationsData = {
   [Key in keyof IData]: {
     id: string;
     name: string;
-    artist?: string;
+    artists?: string[];
     totalRank: number;
     index: number;
     occurrences: {
@@ -87,4 +87,6 @@ export type IObject = {
   artist?: string;
   index?: number;
   rank?: number;
+  artists?: string[];
+  genres?: string[];
 };
