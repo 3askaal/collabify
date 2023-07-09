@@ -26,7 +26,6 @@ export class PlaylistController {
     try {
       return this.playlistService.getAll(userId, email);
     } catch (err) {
-      console.log('err: ', err); // eslint-disable-line
       throw err;
     }
   }

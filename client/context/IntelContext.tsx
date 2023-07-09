@@ -136,9 +136,7 @@ export const IntelProvider = ({ children }: any) => {
             id: data.body.id,
             email: data.body.email,
             name: data.body.display_name || '',
-            ...(playlistId === 'new' && {
-              refreshToken
-            })
+            refreshToken
           })
         },
         (err: any) => {

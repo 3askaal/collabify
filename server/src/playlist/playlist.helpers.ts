@@ -18,7 +18,7 @@ export const collectData = async (spotifyApi: SpotifyWebApi, debug?: boolean, se
   await ['artists', 'tracks'].reduce(async (accumulatorPromise, instance: 'artists' | 'tracks'): Promise<ITerms> => {
     const accumulator = await accumulatorPromise;
 
-    const fetchers: { [key: string]: 'getMyTopArtists' | 'getMyTopTracks' } = {
+    const fetchers = {
       artists: 'getMyTopArtists',
       tracks: 'getMyTopTracks',
     };
@@ -27,7 +27,7 @@ export const collectData = async (spotifyApi: SpotifyWebApi, debug?: boolean, se
       async (accumulatorPromise, term: ITermInstances): Promise<ITerms> => {
         const accumulator = await accumulatorPromise;
 
-        const { body }: CollectDataRes = await spotifyApi[(debug ? 'getRecommendations' : fetchers)[instance]](
+        const { body }: CollectDataRes = await spotifyApi[debug ? 'getRecommendations' : fetchers[instance]](
           debug ? { seed_tracks, limit: 50 } : { time_range: term, limit: 50 },
         );
 
@@ -71,7 +71,7 @@ export const collectData = async (spotifyApi: SpotifyWebApi, debug?: boolean, se
         const genres = uniqueGenres
           // .filter((genre1) => uniqueGenres.some((genre2) => genre1 !== genre2 && genre2.includes(genre1)))
           .map((genre, index) => ({
-            id: slugify(genre),
+            id: slugify(genre || ''),
             name: genre,
             index,
           }));
@@ -92,85 +92,46 @@ export const collectData = async (spotifyApi: SpotifyWebApi, debug?: boolean, se
     };
   }, Promise.resolve({ tracks: {}, artists: {} }) as any);
 
-export const mergeParticipationsData = (participations: IParticipations): IMergedParticipationsData => {
-  // merge data of all participants containing genres/artists/tracks
-  // with inside containing data from short/medium/long time periods
-  // into single collections based on category
-  const mergedParticipations = participations.reduce(
-    (acc1, participation) => {
-      const formattedData = Object.entries(participation.data).reduce((acc2, [key1, value1]: [string, ITerms]) => {
-        return {
-          ...acc2,
-          // transform lists of different time periods
-          // into single nested list grouped based on id
-          [key1]: Object.values(
-            groupBy(
-              Object.entries(value1).reduce(
-                (accumulator2, [key2, value2]: [string, (IObject & { period: string })[]]) => [
-                  ...accumulator2,
-                  ...value2.map((item) => ({
-                    ...item,
-                    // define participator as prop
-                    participator: participation.user.id,
-                    // define time period as prop
-                    period: key2.split('_')[0],
-                    // define rank by reversing the index
-                    rank: value2.length - item.index,
-                  })),
-                ],
-                [],
-              ),
-              'id',
-            ),
-          )
-            // merge nested grouped list into single list and merge values
-            .map((items) => {
-              return items.reduce(
-                (acc, { period, rank, ...rest }) => {
-                  return {
-                    ...acc,
-                    ...rest,
-                    rank: acc.rank + rank,
-                    periods: [...acc.periods, period],
-                  };
-                },
-                { periods: [], rank: 0 },
-              );
-            }),
-        };
-      }, {});
+const rankData = (participations: IParticipations): IMergedParticipationsData => {
+  const mergedData = participations.reduce((acc1, { data, user: { id: userId } }) => {
+    const mergedPeriods = Object.entries(data).reduce((acc1, [type, typeData]: [string, ITerms]) => {
+      return {
+        ...acc1,
+        [type]: Object.entries(typeData).reduce(
+          (acc2, [term, termData]: [string, (IObject & { period: string })[]]) => [
+            ...acc2,
+            ...termData.map(({ id, index }) => ({
+              id,
+              user: userId,
+              period: term.split('_')[0],
+              rank: termData.length - index,
+            })),
+          ],
+          [],
+        ),
+      };
+    }, []);
 
-      // merge formatted participation data with previous ones
-      return Object.entries(formattedData).reduce(
-        (acc2, [key2, value2]: [string, any[]]) => ({
-          ...acc2,
-          [key2]: [...acc1[key2], ...value2],
-        }),
-        {
-          artists: [],
-          genres: [],
-          tracks: [],
-        },
-      );
-    },
-    {
-      artists: [],
-      genres: [],
-      tracks: [],
-    },
-  );
+    return Object.entries(mergedPeriods).reduce(
+      (acc2, [key2, value2]: [string, any[]]) => ({
+        ...acc2,
+        [key2]: [...(acc1[key2] || []), ...value2],
+      }),
+      {},
+    );
+  }, {});
 
-  const mergedData = Object.entries(mergedParticipations).reduce(
-    (acc, [key, value]) => ({
+  const rankedData = Object.entries(mergedData).reduce(
+    (acc, [key, value]: any) => ({
       ...acc,
       [key]: Object.values(groupBy(value, 'id')).map((items: any[]) =>
         items.reduce(
-          (acc, { participator, periods, rank, ...rest }) => ({
+          (acc, { user, periods, rank, ...rest }) => ({
             ...acc,
             ...rest,
             occurrences: {
               ...acc.occurrences,
-              [participator]: {
+              [user]: {
                 periods,
                 rank,
               },
@@ -184,7 +145,7 @@ export const mergeParticipationsData = (participations: IParticipations): IMerge
     {},
   );
 
-  return mergedData;
+  return rankedData;
 };
 
 export const getRandomTracksWeightedByRank = async (
@@ -193,13 +154,13 @@ export const getRandomTracksWeightedByRank = async (
   amount: number,
   amountRecommendations?: number,
 ) => {
-  const mergedParticipations = mergeParticipationsData(participations);
+  const rankedData = rankData(participations);
 
   return shuffle(
     flatten(
       await Promise.all(
         participations.map(async ({ user }): Promise<string[]> => {
-          const tracksByParticipation = mergedParticipations.tracks.filter(({ occurrences }) => occurrences[user.id]);
+          const tracksByParticipation = rankedData.tracks.filter(({ occurrences }) => occurrences[user.id]);
           const tracksOrderedByTotalRank = orderBy(tracksByParticipation, ['totalRank'], ['asc']);
           const tracksWithCumulativeTotalRank = tracksOrderedByTotalRank.map(({ id, totalRank }, index) => ({
             id,
