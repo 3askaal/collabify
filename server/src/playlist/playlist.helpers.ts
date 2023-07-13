@@ -1,4 +1,4 @@
-import { groupBy, sampleSize, uniq, shuffle, flatten, orderBy, times, sample } from 'lodash';
+import { groupBy, sampleSize, uniq, shuffle, flatten, orderBy, last, random } from 'lodash';
 import slugify from 'slugify';
 import { IData, IObject, IParticipations, ITerms } from '../../types/playlist';
 
@@ -189,31 +189,34 @@ export const mergeParticipationsData = (participations: IParticipations): any =>
   return mergedData;
 };
 
-export const getRandomTracksBasedOnRank = (participations: IParticipations, amount: number) => {
+export const getRandomTracksWeightedByRank = (participations: IParticipations, amount: number) => {
   const mergedParticipations = mergeParticipationsData(participations);
 
   return shuffle(
     flatten(
       participations.map(({ user: { id } }) => {
         const tracksByParticipation = mergedParticipations.tracks.filter(({ occurrences }) => occurrences[id]);
-        const tracksOrderedByRank = orderBy(tracksByParticipation, ['totalRank'], ['desc']);
-        const tracksMultipliedByTotalRank = flatten(
-          tracksOrderedByRank.map((track) => {
-            return times(track.totalRank, () => track);
-          }),
-        ).map(({ id }) => id);
+        const tracksOrderedByRank = orderBy(tracksByParticipation, ['totalRank'], ['asc']);
 
-        const newTracks = [];
+        const tracksWithCumulativeTotalRank = tracksOrderedByRank.map(({ id, totalRank }, index) => ({
+          id,
+          totalRank: index ? tracksOrderedByRank[index - 1].totalRank + totalRank : totalRank,
+        }));
 
-        while (newTracks.length < amount) {
-          const possibleTrack = sample(tracksMultipliedByTotalRank);
+        const maxCumulativeTotalRank = last(tracksWithCumulativeTotalRank).totalRank;
 
-          if (!newTracks.includes(possibleTrack)) {
-            newTracks.push(possibleTrack);
+        const randomTracks = [];
+
+        while (randomTracks.length < amount) {
+          const randomNumber = random(0, maxCumulativeTotalRank);
+          const { id } = tracksWithCumulativeTotalRank.find(({ totalRank }) => totalRank >= randomNumber);
+
+          if (!randomTracks.includes(id)) {
+            randomTracks.push(id);
           }
         }
 
-        return newTracks;
+        return randomTracks;
       }),
     ),
   );
