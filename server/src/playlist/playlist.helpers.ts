@@ -196,11 +196,10 @@ export const getRandomTracksWeightedByRank = (participations: IParticipations, a
     flatten(
       participations.map(({ user: { id } }) => {
         const tracksByParticipation = mergedParticipations.tracks.filter(({ occurrences }) => occurrences[id]);
-        const tracksOrderedByRank = orderBy(tracksByParticipation, ['totalRank'], ['asc']);
-
-        const tracksWithCumulativeTotalRank = tracksOrderedByRank.map(({ id, totalRank }, index) => ({
+        const tracksOrderedByTotalRank = orderBy(tracksByParticipation, ['totalRank'], ['asc']);
+        const tracksWithCumulativeTotalRank = tracksOrderedByTotalRank.map(({ id, totalRank }, index) => ({
           id,
-          totalRank: index ? tracksOrderedByRank[index - 1].totalRank + totalRank : totalRank,
+          totalRank: index ? tracksOrderedByTotalRank[index - 1].totalRank + totalRank : totalRank,
         }));
 
         const maxCumulativeTotalRank = last(tracksWithCumulativeTotalRank).totalRank;
