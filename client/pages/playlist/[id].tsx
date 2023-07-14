@@ -66,7 +66,7 @@ export default function Playlist() {
         { !isLoading && hasParticipated && !isPublished && (
           <Button isBlock onClick={release}>Release</Button>
         ) }
-        { !isLoading && hasParticipated && isPublished && (
+        { !isLoading && isPublished && (
           <Button isBlock onClick={refresh}>Refresh</Button>
         ) }
         { !isLoading && !accessToken && (
