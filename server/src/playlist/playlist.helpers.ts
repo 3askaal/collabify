@@ -187,54 +187,69 @@ export const mergeParticipationsData = (participations: IParticipations): IMerge
   return mergedData;
 };
 
-export const getRandomTracksWeightedByRank = (participations: IParticipations, amount: number) => {
+export const getRandomTracksWeightedByRank = async (
+  spotifyApi: any,
+  participations: IParticipations,
+  amount: number,
+  amountRecommendations?: number,
+) => {
   const mergedParticipations = mergeParticipationsData(participations);
 
   return shuffle(
     flatten(
-      participations.map(({ user: { id } }) => {
-        const tracksByParticipation = mergedParticipations.tracks.filter(({ occurrences }) => occurrences[id]);
-        const tracksOrderedByTotalRank = orderBy(tracksByParticipation, ['totalRank'], ['asc']);
-        const tracksWithCumulativeTotalRank = tracksOrderedByTotalRank.map(({ id, totalRank }, index) => ({
-          id,
-          totalRank: index ? tracksOrderedByTotalRank[index - 1].totalRank + totalRank : totalRank,
-        }));
+      await Promise.all(
+        participations.map(async ({ user: { id } }): Promise<any> => {
+          const tracksByParticipation = mergedParticipations.tracks.filter(({ occurrences }) => occurrences[id]);
+          const tracksOrderedByTotalRank = orderBy(tracksByParticipation, ['totalRank'], ['asc']);
+          const tracksWithCumulativeTotalRank = tracksOrderedByTotalRank.map(({ id, totalRank }, index) => ({
+            id,
+            totalRank: index ? tracksOrderedByTotalRank[index - 1].totalRank + totalRank : totalRank,
+          }));
 
-        const maxCumulativeTotalRank = last(tracksWithCumulativeTotalRank).totalRank;
+          const maxCumulativeTotalRank = last(tracksWithCumulativeTotalRank).totalRank;
 
-        const randomTracks = [];
+          const randomTracks = [];
+          let recommendations = [];
 
-        while (randomTracks.length < amount) {
-          const randomNumber = random(0, maxCumulativeTotalRank);
-          const { id } = tracksWithCumulativeTotalRank.find(({ totalRank }) => totalRank >= randomNumber);
+          while (randomTracks.length < amount) {
+            const randomNumber = random(0, maxCumulativeTotalRank);
+            const { id } = tracksWithCumulativeTotalRank.find(({ totalRank }) => totalRank >= randomNumber);
 
-          if (!randomTracks.includes(id)) {
-            randomTracks.push(id);
+            if (!randomTracks.includes(id)) {
+              randomTracks.push(id);
+            }
           }
-        }
 
-        return randomTracks;
-      }),
+          if (amountRecommendations) {
+            const seedTracksForRecommendation = sampleSize(randomTracks).map((id) => id.split(':')[2]);
+            recommendations = await getRecommendations(spotifyApi, seedTracksForRecommendation, amountRecommendations);
+          }
+
+          return [...randomTracks, ...recommendations];
+        }),
+      ),
     ),
   );
 };
 
-export const getRecommendations = async (spotifyApi: any, participations: IParticipations, amount: number) => {
-  const seedTracksForRecommendation = getRandomTracksWeightedByRank(participations, 5).map((id) => id.split(':')[2]);
-
-  const body = await spotifyApi
-    .getRecommendations({
-      seed_tracks: seedTracksForRecommendation,
-      limit: 50,
-    })
-    .then(
-      ({ body }: { body: SpotifyResBody }) => body,
-      (err: Error) => {
-        throw err;
-      },
-    );
-
-  const items = body.tracks.map(({ name, uri, artists }: any, index: number) => ({
+const getRecommendations = async (
+  spotifyApi: any,
+  seedTracksForRecommendation: string[],
+  amountRecommendations: number,
+) => {
+  const items = (
+    await spotifyApi
+      .getRecommendations({
+        seed_tracks: seedTracksForRecommendation,
+        limit: 50,
+      })
+      .then(
+        ({ body }: { body: SpotifyResBody }) => body,
+        (err: Error) => {
+          throw err;
+        },
+      )
+  ).tracks.map(({ name, uri, artists }: any, index: number) => ({
     id: uri,
     index,
     name,
@@ -243,6 +258,6 @@ export const getRecommendations = async (spotifyApi: any, participations: IParti
 
   return sampleSize(
     items.map(({ id }) => id),
-    amount,
+    amountRecommendations,
   );
 };
