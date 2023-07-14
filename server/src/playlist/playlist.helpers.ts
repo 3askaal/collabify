@@ -218,3 +218,31 @@ export const getRandomTracksWeightedByRank = (participations: IParticipations, a
     ),
   );
 };
+
+export const getRecommendations = async (spotifyApi: any, participations: IParticipations, amount: number) => {
+  const seedTracksForRecommendation = getRandomTracksWeightedByRank(participations, 5).map((id) => id.split(':')[2]);
+
+  const body = await spotifyApi
+    .getRecommendations({
+      seed_tracks: seedTracksForRecommendation,
+      limit: 50,
+    })
+    .then(
+      ({ body }: { body: SpotifyResBody }) => body,
+      (err: Error) => {
+        throw err;
+      },
+    );
+
+  const items = body.tracks.map(({ name, uri, artists }: any, index: number) => ({
+    id: uri,
+    index,
+    name,
+    artist: artists.map(({ name }: any) => name).join(', '),
+  }));
+
+  return sampleSize(
+    items.map(({ id }) => id),
+    amount,
+  );
+};
