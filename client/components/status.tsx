@@ -1,4 +1,4 @@
-import { Spacer, Title, List, ListItem, Row, Col, Box, Label, Button, ElementGroup } from '3oilerplate'
+import { Spacer, List, ListItem, Link, Box, Label, Button, ElementGroup } from '3oilerplate'
 import { useContext, useEffect, useState } from 'react'
 import { IntelContext } from '../context/IntelContext'
 import { Copy, Clipboard } from 'react-feather';
@@ -46,6 +46,13 @@ export const Status = () => {
           <div><Label sRef="Label" isWaiting={getPlaylistRes?.status === 'waiting'} isCompleted={getPlaylistRes?.status === 'completed'}>{ getPlaylistRes?.status }</Label></div>
         </Spacer>
       </Spacer>
+      { getPlaylistRes?.status === 'published' && (
+        <Box df fdc aic>
+          <Link href={`https://open.spotify.com/playlist/${getPlaylistRes?.spotifyId}`} target='_blank'>
+            View playlist
+          </Link>
+        </Box>
+      ) }
       <Spacer>
         <List>
           { getPlaylistRes?.participations?.map(({ user }: any) => (
