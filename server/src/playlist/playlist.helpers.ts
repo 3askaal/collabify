@@ -1,66 +1,66 @@
 import { groupBy, sampleSize, uniq, shuffle, flatten, orderBy, last, random } from 'lodash';
 import slugify from 'slugify';
-import { IData, IMergedParticipation, IObject, IParticipations, ITerms } from '../../types/playlist';
+import {
+  IData,
+  IMergedParticipationsData,
+  IObject,
+  IParticipations,
+  ITermInstances,
+  ITerms,
+} from '../../types/playlist';
+import SpotifyWebApi from 'spotify-web-api-node';
 
-type SpotifyResBody =
-  | SpotifyApi.UsersTopArtistsResponse
-  | SpotifyApi.UsersTopTracksResponse
-  | SpotifyApi.RecommendationsObject;
+interface CollectDataRes {
+  body: SpotifyApi.UsersTopArtistsResponse | SpotifyApi.UsersTopTracksResponse | SpotifyApi.RecommendationsObject;
+}
 
-export const collectData = async (spotifyApi: any, debug?: boolean, seed_tracks?: string[]): Promise<IData> =>
-  await ['artists', 'tracks'].reduce(async (accumulatorPromise, instance): Promise<ITerms> => {
+export const collectData = async (spotifyApi: SpotifyWebApi, debug?: boolean, seed_tracks?: string[]): Promise<IData> =>
+  await ['artists', 'tracks'].reduce(async (accumulatorPromise, instance: 'artists' | 'tracks'): Promise<ITerms> => {
     const fetchers: { [key: string]: 'getMyTopArtists' | 'getMyTopTracks' } = {
       artists: 'getMyTopArtists',
       tracks: 'getMyTopTracks',
     };
 
-    const debugFetchers: { [key: string]: 'getRecommendations' } = {
-      artists: 'getRecommendations',
-      tracks: 'getRecommendations',
-    };
-
     const accumulator = await accumulatorPromise;
 
     const items = await ['short_term', 'medium_term', 'long_term'].reduce(
-      async (accumulatorPromise, term: any): Promise<any> => {
+      async (accumulatorPromise, term: ITermInstances): Promise<ITerms> => {
         const accumulator = await accumulatorPromise;
 
-        const body = await spotifyApi[(debug ? debugFetchers : fetchers)[instance]](
+        const { body }: CollectDataRes = await spotifyApi[(debug ? 'getRecommendations' : fetchers)[instance]](
           debug ? { seed_tracks, limit: 50 } : { time_range: term, limit: 50 },
-        ).then(
-          ({ body }: { body: SpotifyResBody }) => body,
-          (err: Error) => {
-            throw err;
-          },
         );
 
-        let items = [];
+        let results = 'items' in body ? body.items : body.tracks;
 
-        if (debug && instance === 'artists') {
+        if ('tracks' in body && instance === 'artists') {
           // mapping artists out of tracks because there is no recommendations endpoint for artists
-          items = sampleSize(body.tracks.map(({ artists }: any) => artists).flat(), 50).map(
-            ({ name, uri }: any, index: number) => ({ id: uri, index, name }),
-          );
-        } else {
-          items = (debug ? body[instance] : body?.items).map(({ name, uri, artists, genres }: any, index: number) => ({
-            id: uri,
-            index,
-            name,
-            ...(instance === 'tracks' && {
-              artist: artists.map(({ name }: any) => name).join(', '),
-            }),
-            ...(instance === 'artists' && {
-              genres,
-            }),
-          }));
+          results = sampleSize(body.tracks.map(({ artists }) => artists as SpotifyApi.ArtistObjectFull[]).flat(), 50);
         }
+
+        const items = results.map(
+          (
+            result: SpotifyApi.ArtistObjectFull | SpotifyApi.TrackObjectFull | SpotifyApi.RecommendationTrackObject,
+            index: number,
+          ): IObject => ({
+            id: result.uri,
+            index,
+            name: result.name,
+            ...('artists' in result && {
+              artist: result.artists.map(({ name }) => name).join(', '),
+            }),
+            ...('genres' in result && {
+              genres: result.genres,
+            }),
+          }),
+        );
 
         return {
           ...accumulator,
           [term]: items,
         };
       },
-      Promise.resolve({ short_term: [], medium_term: [], long_term: [] }) as Promise<IData>,
+      Promise.resolve({ short_term: [], medium_term: [], long_term: [] } as ITerms),
     );
 
     let genres = {};
@@ -92,7 +92,7 @@ export const collectData = async (spotifyApi: any, debug?: boolean, seed_tracks?
     };
   }, Promise.resolve({ tracks: {}, artists: {} }) as any);
 
-export const mergeParticipationsData = (participations: IParticipations): IMergedParticipation => {
+export const mergeParticipationsData = (participations: IParticipations): IMergedParticipationsData => {
   // merge data of all participants containing genres/artists/tracks
   // with inside containing data from short/medium/long time periods
   // into single collections based on category
@@ -188,7 +188,7 @@ export const mergeParticipationsData = (participations: IParticipations): IMerge
 };
 
 export const getRandomTracksWeightedByRank = async (
-  spotifyApi: any,
+  spotifyApi: SpotifyWebApi,
   participations: IParticipations,
   amount: number,
   amountRecommendations?: number,
@@ -198,8 +198,8 @@ export const getRandomTracksWeightedByRank = async (
   return shuffle(
     flatten(
       await Promise.all(
-        participations.map(async ({ user: { id } }): Promise<any> => {
-          const tracksByParticipation = mergedParticipations.tracks.filter(({ occurrences }) => occurrences[id]);
+        participations.map(async ({ user }): Promise<string[]> => {
+          const tracksByParticipation = mergedParticipations.tracks.filter(({ occurrences }) => occurrences[user.id]);
           const tracksOrderedByTotalRank = orderBy(tracksByParticipation, ['totalRank'], ['asc']);
           const tracksWithCumulativeTotalRank = tracksOrderedByTotalRank.map(({ id, totalRank }, index) => ({
             id,
@@ -233,31 +233,24 @@ export const getRandomTracksWeightedByRank = async (
 };
 
 const getRecommendations = async (
-  spotifyApi: any,
+  spotifyApi: SpotifyWebApi,
   seedTracksForRecommendation: string[],
   amountRecommendations: number,
 ) => {
-  const items = (
-    await spotifyApi
-      .getRecommendations({
-        seed_tracks: seedTracksForRecommendation,
-        limit: 50,
-      })
-      .then(
-        ({ body }: { body: SpotifyResBody }) => body,
-        (err: Error) => {
-          throw err;
-        },
-      )
-  ).tracks.map(({ name, uri, artists }: any, index: number) => ({
+  const { body }: { body: SpotifyApi.RecommendationsObject } = await spotifyApi.getRecommendations({
+    seed_tracks: seedTracksForRecommendation,
+    limit: 50,
+  });
+
+  const tracks = body.tracks.map(({ name, uri, artists }, index: number) => ({
     id: uri,
     index,
     name,
-    artist: artists.map(({ name }: any) => name).join(', '),
+    artist: artists.map(({ name }) => name).join(', '),
   }));
 
   return sampleSize(
-    items.map(({ id }) => id),
+    tracks.map(({ id }) => id),
     amountRecommendations,
   );
 };

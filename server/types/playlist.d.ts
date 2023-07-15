@@ -6,13 +6,14 @@ export interface IUser {
   bot?: boolean;
 }
 
+type IDataInstances = 'artists' | 'tracks' | 'genres';
+type ITermInstances = 'short_term' | 'medium_term' | 'long_term';
+
 export interface ITerms {
   short_term: IObject[];
   medium_term: IObject[];
   long_term: IObject[];
 }
-
-type IDataInstances = 'artists' | 'tracks' | 'genres';
 
 export interface IData {
   artists?: ITerms;
@@ -35,7 +36,7 @@ export interface IParticipation {
 
 export type IParticipations = IParticipation[];
 
-export type IMergedParticipation = {
+export type IMergedParticipationsData = {
   [Key in keyof IData]: {
     id: string;
     name: string;
