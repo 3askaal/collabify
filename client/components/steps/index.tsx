@@ -1,7 +1,7 @@
 import { Input, Spacer, Button, Box, Checkbox, Select } from '3oilerplate'
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
-import { ArrowLeft as ArrowLeftIcon, ArrowRight as ArrowRightIcon } from 'react-feather'
+import { ChevronLeft as ChevronLeftIcon, ChevronRight as ChevronRightIcon } from 'react-feather'
 import { IntelContext } from '../../context/IntelContext';
 import { FilterData, Invite } from '..';
 
@@ -85,12 +85,12 @@ export function Steps() {
       <Spacer s={{ justifyContent: 'center', flexDirection: 'row', justifySelf: 'flex-end' }}>
         { step !== 0 && (
           <Button isOutline onClick={onPrev} s={{ p: 's', borderRadius: '100%' }}>
-            <ArrowLeftIcon />
+            <ChevronLeftIcon />
           </Button>
         ) }
         { step !== steps.length - 1 && (
           <Button isOutline onClick={onNext} s={{ p: 's', borderRadius: '100%' }}>
-            <ArrowRightIcon />
+            <ChevronRightIcon />
           </Button>
         ) }
       </Spacer>
