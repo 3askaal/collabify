@@ -16,12 +16,12 @@ interface CollectDataRes {
 
 export const collectData = async (spotifyApi: SpotifyWebApi, debug?: boolean, seed_tracks?: string[]): Promise<IData> =>
   await ['artists', 'tracks'].reduce(async (accumulatorPromise, instance: 'artists' | 'tracks'): Promise<ITerms> => {
+    const accumulator = await accumulatorPromise;
+
     const fetchers: { [key: string]: 'getMyTopArtists' | 'getMyTopTracks' } = {
       artists: 'getMyTopArtists',
       tracks: 'getMyTopTracks',
     };
-
-    const accumulator = await accumulatorPromise;
 
     const items = await ['short_term', 'medium_term', 'long_term'].reduce(
       async (accumulatorPromise, term: ITermInstances): Promise<ITerms> => {
@@ -33,7 +33,7 @@ export const collectData = async (spotifyApi: SpotifyWebApi, debug?: boolean, se
 
         let results = 'items' in body ? body.items : body.tracks;
 
-        if ('tracks' in body && instance === 'artists') {
+        if (instance === 'artists' && 'tracks' in body) {
           // mapping artists out of tracks because there is no recommendations endpoint for artists
           results = sampleSize(body.tracks.map(({ artists }) => artists as SpotifyApi.ArtistObjectFull[]).flat(), 50);
         }
@@ -68,8 +68,8 @@ export const collectData = async (spotifyApi: SpotifyWebApi, debug?: boolean, se
     if (instance === 'artists') {
       genres = Object.entries(items).reduce((accumulator, [key, value]: any) => {
         const uniqueGenres: string[] = uniq(flatten(value.map(({ genres }: any) => genres)));
-        const filteredGenres = uniqueGenres
-          .filter((genre1) => uniqueGenres.some((genre2) => genre1 !== genre2 && genre2.includes(genre1)))
+        const genres = uniqueGenres
+          // .filter((genre1) => uniqueGenres.some((genre2) => genre1 !== genre2 && genre2.includes(genre1)))
           .map((genre, index) => ({
             id: slugify(genre),
             name: genre,
@@ -78,7 +78,7 @@ export const collectData = async (spotifyApi: SpotifyWebApi, debug?: boolean, se
 
         return {
           ...accumulator,
-          [key]: filteredGenres,
+          [key]: genres,
         };
       }, {});
     }
