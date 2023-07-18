@@ -78,14 +78,20 @@ export class PlaylistService {
   }
 
   async participate(playlistId: string, participation: IParticipation): Promise<Playlist> {
-    return this.playlistModel.findByIdAndUpdate(playlistId, {
-      $push: {
-        participations: {
-          ...participation,
-          submittedAt: new Date(),
+    return this.playlistModel.findByIdAndUpdate(
+      playlistId,
+      {
+        $push: {
+          participations: {
+            ...participation,
+            submittedAt: new Date(),
+          },
         },
       },
-    });
+      {
+        new: true,
+      },
+    );
   }
 
   // NOTE: tracks can currently only be added by the creator of the playlist
@@ -120,13 +126,19 @@ export class PlaylistService {
 
     await spotifyApiInstance.addTracksToPlaylist(spotifyId, tracklist).then(onSuccess, onError);
 
-    await this.playlistModel.findByIdAndUpdate(playlistId, {
-      status: 'published',
-      publishedAt: Date.now(),
-      spotifyId,
-    });
+    const updatedPlaylist = await this.playlistModel.findByIdAndUpdate(
+      playlistId,
+      {
+        status: 'published',
+        publishedAt: Date.now(),
+        spotifyId,
+      },
+      {
+        new: true,
+      },
+    );
 
-    return playlist;
+    return updatedPlaylist;
   }
 
   async refresh(playlistId: string): Promise<any> {
@@ -160,12 +172,18 @@ export class PlaylistService {
 
     await spotifyApiInstance.addTracksToPlaylist(playlist.spotifyId, tracklist).then(onSuccess, onError);
 
-    await this.playlistModel.findByIdAndUpdate(playlistId, {
-      participations: newParticipations,
-      refreshedAt: now(),
-    });
+    const updatedPlaylist = await this.playlistModel.findByIdAndUpdate(
+      playlistId,
+      {
+        participations: newParticipations,
+        refreshedAt: now(),
+      },
+      {
+        new: true,
+      },
+    );
 
-    return playlist;
+    return updatedPlaylist;
   }
 
   @Cron('0 0 * * *') // every day at 00:00

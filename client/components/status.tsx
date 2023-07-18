@@ -9,11 +9,11 @@ import { getDefaultPlaylistTitle } from '../helpers/transform';
 
 export const Status = () => {
   const { query: { id: playlistId } } = useRouter()
-  const { getPlaylistRes, me } = useContext(IntelContext)
+  const { playlist, me } = useContext(IntelContext)
   const [isCopied, setIsCopied] = useState(false)
 
-  const playlistName = getPlaylistRes?.name
-  const playlistDesc = getPlaylistRes?.description
+  const playlistName = playlist?.name || getDefaultPlaylistTitle(playlist)
+  const playlistDesc = playlist?.description || 'Generated with collabify.vercel.app'
 
   const shareUrl = `${window.location.host}/playlist/${playlistId}`
 
@@ -43,19 +43,19 @@ export const Status = () => {
         </Spacer>
         <Spacer size="s" s={{ alignItems: 'center' }}>
           <div><strong>Status</strong></div>
-          <div><Label sRef="Label" isWaiting={getPlaylistRes?.status === 'waiting'} isCompleted={getPlaylistRes?.status === 'completed'}>{ getPlaylistRes?.status }</Label></div>
+          <div><Label sRef="Label" isWaiting={playlist?.status === 'waiting'} isCompleted={playlist?.status === 'completed'}>{ playlist?.status }</Label></div>
         </Spacer>
       </Spacer>
-      { getPlaylistRes?.status === 'published' && (
+      { playlist?.status === 'published' && (
         <Box df fdc aic>
-          <Link href={`https://open.spotify.com/playlist/${getPlaylistRes?.spotifyId}`} target='_blank'>
+          <Link href={`https://open.spotify.com/playlist/${playlist?.spotifyId}`} target='_blank'>
             View playlist
           </Link>
         </Box>
       ) }
       <Spacer>
         <List>
-          { getPlaylistRes?.participations?.map(({ user }: any) => (
+          { playlist?.participations?.map(({ user }: any) => (
             <ListItem s={{ display: 'flex', justifyContent: 'space-between' }} key={user.id}>{user.name} <strong>{user.id === me?.id ? 'You' : ''}</strong></ListItem>
           )) || [] }
         </List>
