@@ -13,8 +13,8 @@ interface IDetails {
 }
 
 export interface IntelContextType {
-  data: IData;
-  setData: Dispatch<SetStateAction<IData>>;
+  data: IData | null;
+  setData: Dispatch<SetStateAction<IData | null>>;
   excludeData: IExcludeData;
   setExcludeData: Dispatch<SetStateAction<IExcludeData>>;
   details: IDetails;
@@ -23,7 +23,7 @@ export interface IntelContextType {
 }
 
 export const IntelContext = createContext<IntelContextType>({
-  data: {},
+  data: null,
   setData: () => null,
   excludeData: {},
   setExcludeData: () => null,
@@ -33,11 +33,11 @@ export const IntelContext = createContext<IntelContextType>({
 
 export const IntelProvider = ({ children }: any) => {
   const { push, query: { id: playlistId } } = useRouter()
-  const { spotifyApi, accessToken, refreshToken } = useSpotifyApi()
+  const { spotifyApi, refreshToken } = useSpotifyApi()
 
   const [me, setMe] = useState<IUser | null>(null)
   const [details, setDetails] = useState<IDetails>({})
-  const [data, setData] = useState<IData>({})
+  const [data, setData] = useState<IData | null>(null)
   const [excludeData, setExcludeData] = useState<IExcludeData>({})
   const [debugData, setDebugData] = useState<IData | null>(null)
   const [hasParticipated, setHasParticipated] = useState<boolean>(false)
@@ -96,6 +96,7 @@ export const IntelProvider = ({ children }: any) => {
 
   const submitData = () => {
     if (!me) return;
+    if (!data) return;
 
     const participations: IParticipations = [{
       user: {
