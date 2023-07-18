@@ -7,7 +7,7 @@ import useSpotifyApi from '../hooks/useSpotifyApi'
 
 export function Layout({ children }: any) {
   const { push, back, query: { id: playlistId } } = useRouter()
-  const { spotifyApi, logout } = useSpotifyApi()
+  const { accessToken, logout } = useSpotifyApi()
   const [menuOpen, setMenuOpen] = useState(false)
 
   const navigate = (route: string) => {
@@ -16,9 +16,9 @@ export function Layout({ children }: any) {
   }
 
   return (
-    <Wrapper s={{ display: 'grid', gridTemplateRows: spotifyApi ? 'auto minmax(0, 1fr)' : 'auto', gridTemplateColumns: '1fr', justifyItems: 'center', gap: 'm' }}>
+    <Wrapper s={{ display: 'grid', gridTemplateRows: accessToken ? 'auto minmax(0, 1fr)' : 'auto', gridTemplateColumns: '1fr', justifyItems: 'center', gap: 'm' }}>
       {
-        spotifyApi && (
+        accessToken && (
           <>
             <Box df w100p jcc>
               <Logo small />

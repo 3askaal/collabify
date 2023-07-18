@@ -6,19 +6,19 @@ import { IntelContext } from '../../context/IntelContext';
 import { FilterData, Invite } from '..';
 
 const Details = () => {
-  const { me, setDetails } = useContext(IntelContext)
+  const { currentUser, setConfig } = useContext(IntelContext)
   const [shouldRefresh, setShouldRefresh] = useState(false)
 
   useEffect(() => {
-    setDetails((details) => ({ ...details, refreshEvery: shouldRefresh ? 'week' : undefined }))
+    setConfig((details) => ({ ...details, refreshEvery: shouldRefresh ? 'week' : undefined }))
   }, [shouldRefresh])
 
   return (
     <Box df fdc s={{ flexGrow: 1, justifyContent: 'center' }}>
       <Spacer size="xl">
         <Spacer size="l">
-          <Input huge placeholder={`${me?.name} x ...`} onChange={(value: string) => setDetails((details) => ({ ...details, title: value}))} />
-          <Input huge placeholder="Generated with collabify.vercel.app" onChange={(value: string) => setDetails((details) => ({ ...details, description: value }))} />
+          <Input huge placeholder={`${currentUser?.name} x ...`} onChange={(value: string) => setConfig((details) => ({ ...details, title: value}))} />
+          <Input huge placeholder="Generated with collabify.vercel.app" onChange={(value: string) => setConfig((details) => ({ ...details, description: value }))} />
         </Spacer>
         <Spacer size="l" s={{ flexDirection: 'row' }}>
           <Checkbox label="Should refresh" onChange={(value: boolean) => setShouldRefresh(value)} />
@@ -36,7 +36,7 @@ const Details = () => {
                   value: 'month',
                 },
               ]}
-              onChange={(value: string) => setDetails((details) => ({ ...details, refreshEvery: value }))}
+              onChange={(value: string) => setConfig((details) => ({ ...details, refreshEvery: value }))}
             />
           ) }
         </Spacer>
@@ -46,11 +46,11 @@ const Details = () => {
 }
 
 const Submit = ({ id }: { id: string }) => {
-  const { submitData } = useContext(IntelContext)
+  const { submit } = useContext(IntelContext)
 
   return (
     <Spacer s={{ flexGrow: 1, justifyContent: 'center' }}>
-      <Button onClick={submitData}>{ id === 'new' ? 'Create' : 'Join' } playlist</Button>
+      <Button onClick={submit}>{ id === 'new' ? 'Create' : 'Join' } playlist</Button>
     </Spacer>
   )
 }

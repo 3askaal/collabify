@@ -1,12 +1,12 @@
-import React, { createContext, Dispatch, SetStateAction, useEffect, useState } from 'react'
-import useAxios from "axios-hooks";
+import React, { createContext, Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react'
+import useAxios, { RefetchFunction } from "axios-hooks";
 import { faker } from '@faker-js/faker';
 import { IData, IExcludeData, IParticipations, IPlaylist, IUser } from '../../server/types/playlist'
 import { API_URL } from '../config';
 import { useRouter } from 'next/router';
 import useSpotifyApi from '../hooks/useSpotifyApi';
 
-interface IDetails {
+interface IConfig {
   title?: string;
   description?: string;
   refreshEvery?: string;
@@ -14,36 +14,48 @@ interface IDetails {
 
 export interface IntelContextType {
   data: IData | null;
-  setData: Dispatch<SetStateAction<IData | null>>;
+  setData: Dispatch<SetStateAction<IData>>;
   excludeData: IExcludeData;
   setExcludeData: Dispatch<SetStateAction<IExcludeData>>;
-  details: IDetails;
-  setDetails: Dispatch<SetStateAction<IDetails>>;
-  [key: string]: any;
+  setDebugData: Dispatch<SetStateAction<IData | undefined>>;
+  setCurrentUser?: Dispatch<SetStateAction<IUser | undefined>>;
+  config: IConfig;
+  currentUser?: IUser;
+  setConfig: Dispatch<SetStateAction<IConfig>>;
+  invitations: string[];
+  setInvitations: Dispatch<SetStateAction<string[]>>;
+  collect?: RefetchFunction<any, IData>;
+  submit?: () => void;
+  release?: RefetchFunction<any, IPlaylist>;
+  refresh?: RefetchFunction<any, IPlaylist>;
+  playlist?: IPlaylist;
+  playlists?: IPlaylist[];
 }
 
 export const IntelContext = createContext<IntelContextType>({
   data: null,
-  setData: () => null,
+  setData: () => undefined,
   excludeData: {},
-  setExcludeData: () => null,
-  details: { title: '', description: '' },
-  setDetails: () => null,
+  setExcludeData: () => undefined,
+  setDebugData: () => undefined,
+  config: { title: '', description: '' },
+  setConfig: () => undefined,
+  invitations: [],
+  setInvitations: () => undefined,
 })
 
 export const IntelProvider = ({ children }: any) => {
-  const { push, query: { id: playlistId } } = useRouter()
-  const { spotifyApi, refreshToken } = useSpotifyApi()
-
-  const [me, setMe] = useState<IUser | null>(null)
-  const [details, setDetails] = useState<IDetails>({})
-  const [data, setData] = useState<IData | null>(null)
+  const [data, setData] = useState<IData>({})
   const [excludeData, setExcludeData] = useState<IExcludeData>({})
-  const [debugData, setDebugData] = useState<IData | null>(null)
-  const [hasParticipated, setHasParticipated] = useState<boolean>(false)
+  const [debugData, setDebugData] = useState<IData>()
+  const [config, setConfig] = useState<IConfig>({})
+  const [currentUser, setCurrentUser] = useState<IUser>()
   const [invitations, setInvitations] = useState<string[]>([])
 
-  const [{ data: submitDataRes }, submitDataCallback] = useAxios<IPlaylist>(
+  const { push, query: { id: playlistId } } = useRouter()
+  const { sdk, accessToken } = useSpotifyApi()
+
+  const [{ data: submitDataRes }, submitCallback] = useAxios<IPlaylist>(
     playlistId === 'new' ? {
       url: `${API_URL}/playlist`,
       method: 'POST'
@@ -62,7 +74,7 @@ export const IntelProvider = ({ children }: any) => {
     { manual: true }
   )
 
-  const [{ data: getPlaylistRes }, getPlaylistCallback] = useAxios<IPlaylist>(
+  const [{ data: playlist }, getPlaylistCallback] = useAxios<IPlaylist>(
     {
       url: `${API_URL}/playlist/${playlistId}`,
       method: 'GET'
@@ -70,7 +82,7 @@ export const IntelProvider = ({ children }: any) => {
     { manual: true }
   )
 
-  const [{ data: getPlaylistsRes }, getPlaylistsCallback] = useAxios<IPlaylist>(
+  const [{ data: playlists }, getPlaylistsCallback] = useAxios<IPlaylist[]>(
     {
       url: `${API_URL}/playlist/all`,
       method: 'POST'
@@ -94,13 +106,13 @@ export const IntelProvider = ({ children }: any) => {
     { manual: true }
   )
 
-  const submitData = () => {
-    if (!me) return;
+  const submit = () => {
+    if (!currentUser) return;
     if (!data) return;
 
     const participations: IParticipations = [{
       user: {
-        ...me,
+        ...currentUser,
       },
       data,
       excludeData
@@ -118,9 +130,9 @@ export const IntelProvider = ({ children }: any) => {
       })
     }
 
-    submitDataCallback({
+    submitCallback({
       data: {
-        ...details,
+        ...config,
         participations,
         invitations,
       }
@@ -128,16 +140,17 @@ export const IntelProvider = ({ children }: any) => {
   }
 
   useEffect(() => {
-    if (!refreshToken || !spotifyApi) return;
+    if (!accessToken) return;
 
-    spotifyApi.getMe()
+
+    sdk.currentUser.profile()
       .then(
-        (data) => {
-          setMe({
-            id: data.body.id,
-            email: data.body.email,
-            name: data.body.display_name || '',
-            refreshToken
+        (user) => {
+          setCurrentUser({
+            id: user.id,
+            email: user.email,
+            name: user.display_name || '',
+            accessToken
           })
         },
         (err: any) => {
@@ -145,35 +158,24 @@ export const IntelProvider = ({ children }: any) => {
           return;
         }
       )
-  }, [refreshToken, spotifyApi])
+  }, [accessToken])
 
   useEffect(() => {
-    console.log('getPlaylistRes: ', getPlaylistRes); // eslint-disable-line
-    if (me?.id && getPlaylistRes?.participations?.some(({ user }) => user.id === me?.id)) {
-      setHasParticipated(true)
-    }
-  }, [getPlaylistRes, submitDataRes, me])
+    if (!playlistId || playlistId === 'new') return;
 
-  useEffect(() => {
-    if (playlistId && playlistId !== 'new') {
-      getPlaylistCallback()
-    }
-  }, [playlistId])
+    getPlaylistCallback()
+  }, [submitDataRes, releaseRes, refreshRes, playlistId])
 
-  useEffect(() => {
-    if (me) {
-      getPlaylistsCallback({
-        data: {
-          id: me.id,
-          email: me.email
-        }
-      })
-    }
-  }, [me])
+  // useMemo(() => {
+  //   if (!currentUser) return;
 
-  useEffect(() => {
-    console.log('collectDataRes: ', collectDataRes);
-  }, [collectDataRes])
+  //   getPlaylistsCallback({
+  //     data: {
+  //       id: currentUser.id,
+  //       email: currentUser.email
+  //     }
+  //   })
+  // }, [currentUser])
 
   useEffect(() => {
     if (submitDataRes) {
@@ -181,9 +183,14 @@ export const IntelProvider = ({ children }: any) => {
     }
   }, [submitDataRes])
 
+  // debugging
   useEffect(() => {
-    console.log('getPlaylistsRes: ', getPlaylistsRes);
-  }, [getPlaylistsRes])
+    console.log('collectDataRes: ', collectDataRes);
+  }, [collectDataRes])
+
+  useEffect(() => {
+    console.log('playlists: ', playlists);
+  }, [playlists])
 
   useEffect(() => {
     console.log('releaseRes: ', releaseRes);
@@ -196,25 +203,22 @@ export const IntelProvider = ({ children }: any) => {
   return (
     <IntelContext.Provider
       value={{
-        details,
-        setDetails,
+        config,
+        setConfig,
         data,
         setData,
         excludeData,
         setExcludeData,
-        me,
-        setMe,
-        submitData,
+        currentUser,
         collect,
+        submit,
         release,
         refresh,
         setDebugData,
-        hasParticipated,
-        setHasParticipated,
         invitations,
         setInvitations,
-        playlist: releaseRes || getPlaylistRes,
-        playlists: getPlaylistsRes,
+        playlist,
+        playlists,
       }}
     >
       {children}

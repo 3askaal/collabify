@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useMemo, useState } from 'react'
 import { Box, Button, Link, Spacer } from '3oilerplate'
 import { useRouter } from 'next/router';
 import { sampleSize, map } from 'lodash';
@@ -9,19 +9,22 @@ import { Status } from '../../components/status';
 
 export default function Playlist() {
   const { query: { id: playlistId, debug }, asPath } = useRouter()
-  const { spotifyApi, accessToken, refreshToken, logout } = useSpotifyApi()
-  const { data, setData, hasParticipated, setDebugData, playlist, release, refresh, collect } = useContext(IntelContext)
+  const { accessToken } = useSpotifyApi()
+  const { data, setData, setDebugData, playlist, release, refresh, collect, currentUser } = useContext(IntelContext)
 
   const isPublished = playlist?.status === 'published'
+  const hasParticipated = playlist?.participations?.some(({ user }: any) => user.id === currentUser?.id)
 
   useEffect(() => {
-    if (!spotifyApi) return
-    if (!setData) return
+    if (!accessToken) return
+    if (!collect) return
     if (playlistId !== 'new') return
+
+    console.log('collect!');
 
     collect({
       data: {
-        refreshToken
+        accessToken: accessToken
       }
     })
       .then(({ data }: any) => {
@@ -34,38 +37,45 @@ export default function Playlist() {
 
         collect({
           data: {
-            refreshToken,
             debug: true,
-            seed_tracks
+            seed_tracks,
+            accessToken: accessToken
           }
         }).then(({ data }: any) => {
           setDebugData(data)
         })
+        .catch((error: any) => {
+          console.log('error1: ', error); // eslint-disable-line
+          // logout()
+        })
       })
-      .catch(() => {
-        logout()
+      .catch((error: any) => {
+        console.log('error2: ', error); // eslint-disable-line
+        // logout()
       })
-  }, [spotifyApi, accessToken, setData, setDebugData, playlistId])
+  }, [accessToken, playlistId])
 
   return (
     <Box s={{ display: 'grid', gridTemplateRows: 'minmax(0, 1fr) auto' }}>
-      { accessToken && playlistId === 'new'
+      { playlistId === 'new'
         ? <Steps />
         : <Status />
       }
-      <Spacer>
-        { !data && hasParticipated && !isPublished && (
-          <Button isBlock onClick={release}>Release</Button>
-        ) }
-        { !data && isPublished && (
-          <Button isBlock onClick={refresh}>Refresh</Button>
-        ) }
-        { !data && !accessToken && (
-          <Link href={`/api/login/participate?redirect_uri=http://${window.location.host + asPath}`}>
-            <Button isBlock>Authenticate with Spotify to join</Button>
-          </Link>
-        ) }
-      </Spacer>
+      {playlistId !== 'new' && (
+        <Spacer>
+          { data && hasParticipated && !isPublished && (
+            <Button isBlock onClick={release}>Release</Button>
+          ) }
+          { data && isPublished && (
+            <Button isBlock onClick={refresh}>Refresh</Button>
+          ) }
+          { data && !accessToken && (
+            <Link href={`/api/login/participate?redirect_uri=http://${window.location.host + asPath}`}>
+              <Button isBlock>Authenticate with Spotify to join</Button>
+            </Link>
+          ) }
+        </Spacer>
+      )}
     </Box>
   )
 }

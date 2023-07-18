@@ -6,10 +6,10 @@ import { getDefaultPlaylistTitle } from '../../helpers/transform';
 
 export default function Playlists() {
   const router = useRouter()
-  const { playlists, me } = useContext(IntelContext)
+  const { playlists, currentUser } = useContext(IntelContext)
 
-  const invitedPlaylists = playlists?.filter(({ invitations }: any) => invitations.includes(me.email))
-  const partipatedPlaylists = playlists?.filter(({ participations }: any) => participations.some(({ user }: any) => user.id === me.id))
+  const invitedPlaylists = playlists?.filter(({ invitations }: any) => invitations.includes(currentUser?.email))
+  const partipatedPlaylists = playlists?.filter(({ participations }: any) => participations.some(({ user }: any) => user.id === currentUser?.id))
 
   const PlaylistListItem = ({ _id, status, title, ...data }: any) => {
     return (
@@ -20,7 +20,7 @@ export default function Playlists() {
       >
         <Box df jcsb>
           <span>{ title || getDefaultPlaylistTitle(data) }</span>
-          <Label sRef="Label" isWaiting={status === 'waiting'} isCompleted={status === 'completed'}>{ status }</Label>
+          <Label sRef="Label" isWaiting={status === 'waiting'} isPublished={status === 'published'}>{ status }</Label>
         </Box>
       </ListItem>
     )

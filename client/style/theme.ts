@@ -73,7 +73,7 @@ export const THEME = {
           px: 'xs',
           py: 'xxs'
         },
-        isCompleted: {
+        isPublished: {
           borderColor: 'success',
           color: 'success',
           display: 'inline-flex',
