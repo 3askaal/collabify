@@ -4,9 +4,10 @@ import { ChevronLeft as ChevronLeftIcon, ChevronRight as ChevronRightIcon } from
 import { Input, Spacer, Button, Box, Checkbox, Select } from '3oilerplate'
 import { IntelContext } from '../../context/IntelContext';
 import { FilterData, Invite } from '..';
+import { IConfig } from '../../../server/types/playlist';
 
 const Details = () => {
-  const { currentUser, setConfig } = useContext(IntelContext)
+  const { currentUser, config, setConfig } = useContext(IntelContext)
   const [shouldRefresh, setShouldRefresh] = useState(false)
 
   useEffect(() => {
@@ -20,6 +21,25 @@ const Details = () => {
           <Input huge placeholder={`${currentUser?.name} x ...`} onChange={(value: string) => setConfig((details) => ({ ...details, title: value}))} />
           <Input huge placeholder="Generated with collabify.vercel.app" onChange={(value: string) => setConfig((details) => ({ ...details, description: value }))} />
         </Spacer>
+        <Select
+          s={{ flexGrow: '1' }}
+          options={[
+            {
+              label: 'Small',
+              value: 's',
+            },
+            {
+              label: 'Medium',
+              value: 'm',
+            },
+            {
+              label: 'Large',
+              value: 'l',
+            },
+          ]}
+          value={config.size}
+          onChange={(value: IConfig['size']) => setConfig((details) => ({ ...details, size: value }))}
+        />
         <Spacer size="l" s={{ flexDirection: 'row' }}>
           <Checkbox label="Should refresh" onChange={(value: boolean) => setShouldRefresh(value)} />
           { shouldRefresh && (
@@ -36,7 +56,7 @@ const Details = () => {
                   value: 'month',
                 },
               ]}
-              onChange={(value: string) => setConfig((details) => ({ ...details, refreshEvery: value }))}
+              onChange={(value: IConfig['refreshEvery']) => setConfig((details) => ({ ...details, refreshEvery: value }))}
             />
           ) }
         </Spacer>

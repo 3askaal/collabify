@@ -9,6 +9,7 @@ import { flatten, sampleSize } from 'lodash';
 import { Playlist, PlaylistDocument } from './playlist.schema';
 import { collectData, getRandomTracksWeightedByRank, getRecommendations } from './playlist.helpers';
 import { IPlaylist, IParticipation, IData } from '../../types/playlist';
+import { SIZES } from './playlist.constants';
 
 const getSpotifyInstance = async (accessToken: AccessToken): Promise<SpotifyApi> => {
   return SpotifyApi.withAccessToken(process.env.SPOTIFY_API_CLIENT_ID, accessToken);
@@ -96,12 +97,16 @@ export class PlaylistService {
       public: false,
     });
 
-    const tracksPerParticipant = await getRandomTracksWeightedByRank(playlist.participations, 20);
+    const tracksPerParticipant = await getRandomTracksWeightedByRank(
+      playlist.participations,
+      SIZES[playlist.size].tracks,
+    );
 
     const tracklist = flatten(
       await Promise.all(
         tracksPerParticipant.map(async (tracks) => {
-          const recommendations = await getRecommendations(sdk, sampleSize(tracks, 5), 10);
+          const seedTracks = sampleSize(tracks, 5);
+          const recommendations = await getRecommendations(sdk, seedTracks, SIZES[playlist.size].recommendations);
           return [...tracks, ...recommendations];
         }),
       ),
@@ -142,12 +147,13 @@ export class PlaylistService {
       })),
     );
 
-    const tracksPerParticipant = await getRandomTracksWeightedByRank(newParticipations, 20);
+    const tracksPerParticipant = await getRandomTracksWeightedByRank(newParticipations, SIZES[playlist.size].tracks);
 
     const tracklist = flatten(
       await Promise.all(
         tracksPerParticipant.map(async (tracks) => {
-          const recommendations = await getRecommendations(sdk, sampleSize(tracks, 5), 10);
+          const seedTracks = sampleSize(tracks, 5);
+          const recommendations = await getRecommendations(sdk, seedTracks, SIZES[playlist.size].recommendations);
           return [...tracks, ...recommendations];
         }),
       ),

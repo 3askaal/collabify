@@ -1,16 +1,10 @@
 import React, { createContext, Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react'
 import useAxios, { RefetchFunction } from "axios-hooks";
 import { faker } from '@faker-js/faker';
-import { IData, IExcludeData, IParticipations, IPlaylist, IUser } from '../../server/types/playlist'
+import { IConfig, IData, IExcludeData, IParticipations, IPlaylist, IUser } from '../../server/types/playlist'
 import { API_URL } from '../config';
 import { useRouter } from 'next/router';
 import useSpotifyApi from '../hooks/useSpotifyApi';
-
-interface IConfig {
-  title?: string;
-  description?: string;
-  refreshEvery?: string;
-}
 
 export interface IntelContextType {
   data: IData | null;
@@ -38,7 +32,7 @@ export const IntelContext = createContext<IntelContextType>({
   excludeData: {},
   setExcludeData: () => undefined,
   setDebugData: () => undefined,
-  config: { title: '', description: '' },
+  config: { size: 'm' },
   setConfig: () => undefined,
   invitations: [],
   setInvitations: () => undefined,
@@ -48,7 +42,7 @@ export const IntelProvider = ({ children }: any) => {
   const [data, setData] = useState<IData>({})
   const [excludeData, setExcludeData] = useState<IExcludeData>({})
   const [debugData, setDebugData] = useState<IData>()
-  const [config, setConfig] = useState<IConfig>({})
+  const [config, setConfig] = useState<IConfig>({ size: 'm' })
   const [currentUser, setCurrentUser] = useState<IUser>()
   const [invitations, setInvitations] = useState<string[]>([])
 

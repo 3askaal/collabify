@@ -1,5 +1,11 @@
 import { AccessToken } from '@spotify/web-api-ts-sdk';
 
+export interface IConfig {
+  name?: string;
+  description?: string;
+  refreshEvery?: 'week' | 'month';
+  size: 's' | 'm' | 'l';
+}
 export interface IUser {
   id: string;
   email: string;
@@ -54,19 +60,16 @@ export type IMergedParticipationsData = {
   }[];
 };
 
-export interface IPlaylist {
+export interface IPlaylist extends IConfig {
   _id?: string;
   spotifyId?: string;
-  name: string;
-  description: string;
   participations: IParticipations;
   invitations: string[];
   status: 'waiting' | 'published';
-  refreshEvery?: 'week' | 'month';
+  refreshedAt?: Date;
   publishedAt?: Date;
   createdAt?: Date;
   updatedAt?: Date;
-  refreshedAt?: Date;
 }
 
 export type IGenre = string;
