@@ -7,7 +7,8 @@ import SpotifyWebApi from 'spotify-web-api-node';
 
 import { Playlist, PlaylistDocument } from './playlist.schema';
 import { IPlaylist, IParticipation, IData } from '../../types/playlist';
-import { collectData, getRandomTracksWeightedByRank } from './playlist.helpers';
+import { collectData, getRandomTracksWeightedByRank, getRecommendations } from './playlist.helpers';
+import { flatten, sampleSize } from 'lodash';
 
 const getSpotifyInstance = async (refreshToken: string): Promise<SpotifyWebApi> => {
   const instance = new SpotifyWebApi({
@@ -106,9 +107,18 @@ export class PlaylistService {
       })
       .then(onSuccess, onError);
 
-    const tracks = await getRandomTracksWeightedByRank(spotifyApiInstance, playlist.participations, 20, 10);
+    const tracksPerParticipant = await getRandomTracksWeightedByRank(playlist.participations, 20);
 
-    await spotifyApiInstance.addTracksToPlaylist(spotifyId, tracks).then(onSuccess, onError);
+    const tracklist = flatten(
+      await Promise.all(
+        tracksPerParticipant.map(async (tracks) => {
+          const recommendations = await getRecommendations(spotifyApiInstance, sampleSize(tracks, 5), 10);
+          return [...tracks, ...recommendations];
+        }),
+      ),
+    );
+
+    await spotifyApiInstance.addTracksToPlaylist(spotifyId, tracklist).then(onSuccess, onError);
 
     await this.playlistModel.findByIdAndUpdate(playlistId, {
       status: 'published',
@@ -137,9 +147,18 @@ export class PlaylistService {
       })),
     );
 
-    const newTracks = await getRandomTracksWeightedByRank(spotifyApiInstance, newParticipations, 20, 10);
+    const tracksPerParticipant = await getRandomTracksWeightedByRank(newParticipations, 20);
 
-    await spotifyApiInstance.addTracksToPlaylist(playlist.spotifyId, newTracks).then(onSuccess, onError);
+    const tracklist = flatten(
+      await Promise.all(
+        tracksPerParticipant.map(async (tracks) => {
+          const recommendations = await getRecommendations(spotifyApiInstance, sampleSize(tracks, 5), 10);
+          return [...tracks, ...recommendations];
+        }),
+      ),
+    );
+
+    await spotifyApiInstance.addTracksToPlaylist(playlist.spotifyId, tracklist).then(onSuccess, onError);
 
     await this.playlistModel.findByIdAndUpdate(playlistId, {
       participations: newParticipations,

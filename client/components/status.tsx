@@ -12,8 +12,8 @@ export const Status = () => {
   const { getPlaylistRes, me } = useContext(IntelContext)
   const [isCopied, setIsCopied] = useState(false)
 
-  const playlistName = getPlaylistRes?.name || getDefaultPlaylistTitle(getPlaylistRes)
-  const playlistDesc = getPlaylistRes?.description || 'Generated with collabify.vercel.app'
+  const playlistName = getPlaylistRes?.name
+  const playlistDesc = getPlaylistRes?.description
 
   const shareUrl = `${window.location.host}/playlist/${playlistId}`
 
