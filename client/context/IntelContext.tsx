@@ -14,7 +14,7 @@ interface IDetails {
 
 export interface IntelContextType {
   data: IData | null;
-  setData: Dispatch<SetStateAction<IData>>;
+  setData: Dispatch<SetStateAction<IData | null>>;
   excludeData: IExcludeData;
   setExcludeData: Dispatch<SetStateAction<IExcludeData>>;
   details: IDetails;
