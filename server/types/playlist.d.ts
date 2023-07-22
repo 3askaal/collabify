@@ -64,6 +64,7 @@ export interface IPlaylist {
   publishedAt?: Date;
   createdAt?: Date;
   updatedAt?: Date;
+  refreshedAt?: Date;
 }
 
 export type IGenre = string;

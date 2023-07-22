@@ -1,10 +1,10 @@
 import { useContext, useEffect, useState } from 'react'
 import { Box, Button, Link, Spacer } from '3oilerplate'
+import { useRouter } from 'next/router';
+import { sampleSize, map } from 'lodash';
 import { Steps } from '../../components';
 import useSpotifyApi from '../../hooks/useSpotifyApi'
 import { IntelContext } from '../../context/IntelContext'
-import { useRouter } from 'next/router';
-import { sampleSize, map } from 'lodash';
 import { Status } from '../../components/status';
 
 export default function Playlist() {
@@ -18,6 +18,7 @@ export default function Playlist() {
   useEffect(() => {
     if (!spotifyApi) return
     if (!setData) return
+    if (playlistId !== 'new') return
 
     setIsLoading(true);
 
@@ -51,16 +52,13 @@ export default function Playlist() {
       .catch(() => {
         logout()
       })
-  }, [spotifyApi, accessToken, setData, setDebugData])
+  }, [spotifyApi, accessToken, setData, setDebugData, playlistId])
 
   return (
     <Box s={{ display: 'grid', gridTemplateRows: 'minmax(0, 1fr) auto' }}>
-      {
-        isLoading
-          ? <Box s={{ display: 'grid', gridTemplateRows: '1fr', alignItems: 'center', justifyContent: 'center' }}>Wait a second while we fetch your data...</Box>
-          : accessToken && playlistId === 'new'
-            ? <Steps />
-            : <Status />
+      { accessToken && playlistId === 'new'
+        ? <Steps />
+        : <Status />
       }
       <Spacer>
         { !isLoading && hasParticipated && !isPublished && (
