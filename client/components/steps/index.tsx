@@ -1,7 +1,7 @@
-import { Input, Spacer, Button, Box, Checkbox, Select } from '3oilerplate'
-import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 import { ChevronLeft as ChevronLeftIcon, ChevronRight as ChevronRightIcon } from 'react-feather'
+import { Input, Spacer, Button, Box, Checkbox, Select } from '3oilerplate'
 import { IntelContext } from '../../context/IntelContext';
 import { FilterData, Invite } from '..';
 

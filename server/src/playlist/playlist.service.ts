@@ -138,6 +138,10 @@ export class PlaylistService {
       },
     );
 
+    const { body } = await spotifyApiInstance.getPlaylist(spotifyId);
+
+    console.log('body: ', body); // eslint-disable-line
+
     return updatedPlaylist;
   }
 
@@ -183,6 +187,10 @@ export class PlaylistService {
       },
     );
 
+    const { body } = await spotifyApiInstance.getPlaylist(playlist.spotifyId);
+
+    console.log('body: ', body); // eslint-disable-line
+
     return updatedPlaylist;
   }
 
@@ -192,19 +200,25 @@ export class PlaylistService {
       refreshEvery: { $exists: true },
     });
 
-    playlists.forEach((playlist) => {
+    playlists.forEach(async (playlist) => {
       if (playlist.refreshEvery === 'week') {
-        const dayOfTheWeek = moment(playlist.publishedAt).day();
+        const todaysDay = moment().day();
+        const publishedDay = moment(playlist.publishedAt).day();
 
-        if (moment().day() === dayOfTheWeek) {
+        if (todaysDay === publishedDay) {
           this.refresh(playlist._id);
         }
       }
 
       if (playlist.refreshEvery === 'month') {
-        const dayOfTheMonth = moment(playlist.publishedAt).date();
+        const todaysDate = moment().date();
+        const publishedDate = moment(playlist.publishedAt).date();
+        const lastDateOfTheMonth = moment().endOf('month').date();
 
-        if (moment().date() === dayOfTheMonth) {
+        const todaysMonth = moment().month();
+        const refreshedMonth = moment(playlist.refreshedAt).month();
+
+        if (todaysDate === publishedDate || (publishedDate === lastDateOfTheMonth && refreshedMonth !== todaysMonth)) {
           this.refresh(playlist._id);
         }
       }
