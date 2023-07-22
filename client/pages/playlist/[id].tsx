@@ -10,10 +10,10 @@ import { Status } from '../../components/status';
 export default function Playlist() {
   const { query: { id: playlistId, debug }, asPath } = useRouter()
   const { spotifyApi, accessToken, refreshToken, logout } = useSpotifyApi()
-  const { setData, hasParticipated, setDebugData, getPlaylistRes, release, refresh, collect } = useContext(IntelContext)
+  const { setData, hasParticipated, setDebugData, playlist, release, refresh, collect } = useContext(IntelContext)
   const [isLoading, setIsLoading] = useState(false)
 
-  const isPublished = getPlaylistRes?.status === 'published'
+  const isPublished = playlist?.status === 'published'
 
   useEffect(() => {
     if (!spotifyApi) return
