@@ -6,10 +6,10 @@ import { getDefaultPlaylistTitle } from '../../helpers/transform';
 
 export default function Playlists() {
   const router = useRouter()
-  const { getPlaylistsRes, me } = useContext(IntelContext)
+  const { playlists, me } = useContext(IntelContext)
 
-  const invitedPlaylists = getPlaylistsRes?.filter(({ invitations }: any) => invitations.includes(me.email))
-  const partipatedPlaylists = getPlaylistsRes?.filter(({ participations }: any) => participations.some(({ user }: any) => user.id === me.id))
+  const invitedPlaylists = playlists?.filter(({ invitations }: any) => invitations.includes(me.email))
+  const partipatedPlaylists = playlists?.filter(({ participations }: any) => participations.some(({ user }: any) => user.id === me.id))
 
   const PlaylistListItem = ({ _id, status, title, ...data }: any) => {
     return (

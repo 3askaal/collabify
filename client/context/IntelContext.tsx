@@ -212,8 +212,8 @@ export const IntelProvider = ({ children }: any) => {
         setHasParticipated,
         invitations,
         setInvitations,
-        getPlaylistRes,
-        getPlaylistsRes,
+        playlist: releaseRes || getPlaylistRes,
+        playlists: getPlaylistsRes,
       }}
     >
       {children}
