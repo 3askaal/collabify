@@ -29,6 +29,7 @@
     "@nestjs/mongoose": "^9.2.1",
     "@nestjs/platform-express": "^9.0.0",
     "@nestjs/schedule": "^3.0.1",
+    "@spotify/web-api-ts-sdk": "^1.0.3",
     "@types/lodash": "^4.14.195",
     "@types/spotify-web-api-node": "5.0.2",
     "apollo-server-express": "^3.12.0",
@@ -45,8 +46,7 @@
     "promise-sequential": "^1.1.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0",
-    "slugify": "^1.6.6",
-    "spotify-web-api-node": "^5.0.2"
+    "slugify": "^1.6.6"
   },
   "devDependencies": {
     "@nestjs/schematics": "^9.0.0",

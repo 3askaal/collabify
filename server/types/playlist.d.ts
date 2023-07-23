@@ -1,8 +1,10 @@
+import { AccessToken } from '@spotify/web-api-ts-sdk';
+
 export interface IUser {
   id: string;
   email: string;
   name: string;
-  refreshToken?: string;
+  accessToken?: AccessToken;
   bot?: boolean;
 }
 
@@ -55,7 +57,7 @@ export type IMergedParticipationsData = {
 export interface IPlaylist {
   _id?: string;
   spotifyId?: string;
-  title: string;
+  name: string;
   description: string;
   participations: IParticipations;
   invitations: string[];
