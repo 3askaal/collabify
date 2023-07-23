@@ -1,3 +1,4 @@
+import { Artist, SpotifyApi } from '@spotify/web-api-ts-sdk';
 import { groupBy, sampleSize, uniq, flatten, orderBy, last, random } from 'lodash';
 import slugify from 'slugify';
 import {
@@ -9,57 +10,36 @@ import {
   ITermInstances,
   ITerms,
 } from '../../types/playlist';
-import SpotifyWebApi from 'spotify-web-api-node';
 
-interface CollectDataRes {
-  body: SpotifyApi.UsersTopArtistsResponse | SpotifyApi.UsersTopTracksResponse | SpotifyApi.RecommendationsObject;
-}
-
-export const collectData = async (spotifyApi: SpotifyWebApi, debug?: boolean, seed_tracks?: string[]): Promise<IData> =>
-  await ['artists', 'tracks'].reduce(async (accumulatorPromise, instance: 'artists' | 'tracks'): Promise<ITerms> => {
+export const collectData = async (sdk: SpotifyApi, debug?: boolean, seed_tracks?: string[]): Promise<IData> => {
+  return ['artists', 'tracks'].reduce(async (accumulatorPromise, instance: 'artists' | 'tracks'): Promise<ITerms> => {
     const accumulator = await accumulatorPromise;
-
-    const fetchers = {
-      artists: 'getMyTopArtists',
-      tracks: 'getMyTopTracks',
-    };
 
     const items = await ['short_term', 'medium_term', 'long_term'].reduce(
       async (accumulatorPromise, term: ITermInstances): Promise<ITerms> => {
         const accumulator = await accumulatorPromise;
 
-        const { body }: CollectDataRes = await spotifyApi[debug ? 'getRecommendations' : fetchers[instance]](
-          debug ? { seed_tracks, limit: 50 } : { time_range: term, limit: 50 },
-        );
+        const { items } = await sdk.currentUser.topItems(instance, term, 49);
 
-        let results = 'items' in body ? body.items : body.tracks;
-
-        if (instance === 'artists' && 'tracks' in body) {
-          // mapping artists out of tracks because there is no recommendations endpoint for artists
-          results = sampleSize(body.tracks.map(({ artists }) => artists as SpotifyApi.ArtistObjectFull[]).flat(), 50);
-        }
-
-        const items = results.map(
-          (
-            result: SpotifyApi.ArtistObjectFull | SpotifyApi.TrackObjectFull | SpotifyApi.RecommendationTrackObject,
-            index: number,
-          ): IObject => ({
-            id: result.uri,
+        const formattedItems = items.map(
+          // TODO: Tell spotify to fix return type of topItems (Track type missing)
+          (item: Artist & { artists: Artist[] }, index: number): IObject => ({
+            id: item.uri,
             index,
-            name: result.name,
-            ...('artists' in result && {
-              artist: result.artists.map(({ name }) => name).join(', '),
-              artists: result.artists.map(({ id }) => id),
+            name: item.name,
+            ...(item.artists && {
+              artist: item.artists.map(({ name }) => name).join(', '),
+              artists: item.artists.map(({ id }) => id),
             }),
-            ...('genres' in result && {
-              genres: result.genres,
+            ...(item.genres && {
+              genres: item.genres,
             }),
           }),
         );
 
         return {
           ...accumulator,
-          [term]: items,
+          [term]: formattedItems,
         };
       },
       Promise.resolve({ short_term: [], medium_term: [], long_term: [] } as ITerms),
@@ -91,6 +71,7 @@ export const collectData = async (spotifyApi: SpotifyWebApi, debug?: boolean, se
       }),
     };
   }, Promise.resolve({ tracks: {}, artists: {} }) as any);
+};
 
 const rankData = (participations: IParticipations): IMergedParticipationsData => {
   const mergedData = participations.reduce((acc1, { data, excludeData, user: { id: userId } }) => {
@@ -191,26 +172,19 @@ export const getRandomTracksWeightedByRank = async (participations: IParticipati
 };
 
 export const getRecommendations = async (
-  spotifyApi: SpotifyWebApi,
+  sdk: SpotifyApi,
   seedTracks: string[],
   amountRecommendations: number,
-) => {
+): Promise<string[]> => {
   const formattedSeedTracks = seedTracks.map((id) => id.split(':')[2]);
 
-  const { body }: { body: SpotifyApi.RecommendationsObject } = await spotifyApi.getRecommendations({
+  const { tracks } = await sdk.recommendations.get({
     seed_tracks: formattedSeedTracks,
     limit: 50,
   });
 
-  const tracks = body.tracks.map(({ name, uri, artists }, index: number) => ({
-    id: uri,
-    index,
-    name,
-    artist: artists.map(({ name }) => name).join(', '),
-  }));
-
   return sampleSize(
-    tracks.map(({ id }) => id),
+    tracks.map(({ uri }) => uri),
     amountRecommendations,
   );
 };

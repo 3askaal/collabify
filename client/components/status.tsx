@@ -9,7 +9,7 @@ import { getDefaultPlaylistTitle } from '../helpers/transform';
 
 export const Status = () => {
   const { query: { id: playlistId } } = useRouter()
-  const { playlist, me } = useContext(IntelContext)
+  const { playlist, currentUser } = useContext(IntelContext)
   const [isCopied, setIsCopied] = useState(false)
 
   const playlistName = playlist?.name || getDefaultPlaylistTitle(playlist)
@@ -43,7 +43,7 @@ export const Status = () => {
         </Spacer>
         <Spacer size="s" s={{ alignItems: 'center' }}>
           <div><strong>Status</strong></div>
-          <div><Label sRef="Label" isWaiting={playlist?.status === 'waiting'} isCompleted={playlist?.status === 'completed'}>{ playlist?.status }</Label></div>
+          <div><Label sRef="Label" isWaiting={playlist?.status === 'waiting'} isPublished={playlist?.status === 'published'}>{ playlist?.status }</Label></div>
         </Spacer>
       </Spacer>
       { playlist?.status === 'published' && (
@@ -56,7 +56,7 @@ export const Status = () => {
       <Spacer>
         <List>
           { playlist?.participations?.map(({ user }: any) => (
-            <ListItem s={{ display: 'flex', justifyContent: 'space-between' }} key={user.id}>{user.name} <strong>{user.id === me?.id ? 'You' : ''}</strong></ListItem>
+            <ListItem s={{ display: 'flex', justifyContent: 'space-between' }} key={user.id}>{user.name} <strong>{user.id === currentUser?.id ? 'You' : ''}</strong></ListItem>
           )) || [] }
         </List>
       </Spacer>
