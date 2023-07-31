@@ -1,4 +1,4 @@
-import React, { createContext, Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react'
+import React, { createContext, Dispatch, SetStateAction, useEffect, useState } from 'react'
 import useAxios, { RefetchFunction } from "axios-hooks";
 import { faker } from '@faker-js/faker';
 import { IConfig, IData, IExcludeData, IParticipations, IPlaylist, IUser } from '../../server/types/playlist'
@@ -136,7 +136,6 @@ export const IntelProvider = ({ children }: any) => {
   useEffect(() => {
     if (!accessToken) return;
 
-
     sdk.currentUser.profile()
       .then(
         (user) => {
@@ -146,10 +145,6 @@ export const IntelProvider = ({ children }: any) => {
             name: user.display_name || '',
             accessToken
           })
-        },
-        (err: any) => {
-          console.log('ERROR: ', err); // eslint-disable-line
-          return;
         }
       )
   }, [accessToken])
@@ -160,7 +155,7 @@ export const IntelProvider = ({ children }: any) => {
     getPlaylistCallback()
   }, [submitDataRes, releaseRes, refreshRes, playlistId])
 
-  // useMemo(() => {
+  // useEffect(() => {
   //   if (!currentUser) return;
 
   //   getPlaylistsCallback({
@@ -177,22 +172,21 @@ export const IntelProvider = ({ children }: any) => {
     }
   }, [submitDataRes])
 
-  // debugging
-  useEffect(() => {
-    console.log('collectDataRes: ', collectDataRes);
-  }, [collectDataRes])
+  // useEffect(() => {
+  //   console.log('collectDataRes: ', collectDataRes);
+  // }, [collectDataRes])
 
-  useEffect(() => {
-    console.log('playlists: ', playlists);
-  }, [playlists])
+  // useEffect(() => {
+  //   console.log('playlists: ', playlists);
+  // }, [playlists])
 
-  useEffect(() => {
-    console.log('releaseRes: ', releaseRes);
-  }, [releaseRes])
+  // useEffect(() => {
+  //   console.log('releaseRes: ', releaseRes);
+  // }, [releaseRes])
 
-  useEffect(() => {
-    console.log('refreshRes: ', refreshRes);
-  }, [refreshRes])
+  // useEffect(() => {
+  //   console.log('refreshRes: ', refreshRes);
+  // }, [refreshRes])
 
   return (
     <IntelContext.Provider
