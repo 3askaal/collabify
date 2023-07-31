@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo, useState } from 'react'
+import { useContext, useEffect } from 'react'
 import { Box, Button, Link, Spacer } from '3oilerplate'
 import { useRouter } from 'next/router';
 import { sampleSize, map } from 'lodash';
@@ -20,19 +20,16 @@ export default function Playlist() {
     if (!collect) return
     if (playlistId !== 'new') return
 
-    console.log('collect!');
-
     collect({
       data: {
         accessToken: accessToken
       }
     })
-      .then(({ data }: any) => {
+      .then(({ data }) => {
         setData(data)
 
         if (!debug) return
 
-        // get debug data based on own data
         const seed_tracks = map(sampleSize(data.tracks?.short_term, 3), 'id').map((id) => id.split(':')[2])
 
         collect({
@@ -41,17 +38,15 @@ export default function Playlist() {
             seed_tracks,
             accessToken: accessToken
           }
-        }).then(({ data }: any) => {
+        }).then(({ data }) => {
           setDebugData(data)
         })
-        .catch((error: any) => {
-          console.log('error1: ', error); // eslint-disable-line
-          // logout()
+        .catch((err: Error) => {
+          console.log('collect (debug) err: ', err.message);
         })
       })
-      .catch((error: any) => {
-        console.log('error2: ', error); // eslint-disable-line
-        // logout()
+      .catch((err: Error) => {
+        console.log('collect err: ', err.message);
       })
   }, [accessToken, playlistId])
 

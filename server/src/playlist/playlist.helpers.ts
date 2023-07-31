@@ -32,7 +32,6 @@ export const collectData = async (sdk: SpotifyApi, debug?: boolean, seedTracks?:
           // Get artists out of tracks data because there is no recommendations endpoint for artists
           if (instance === 'artists') {
             const debugArtists = sampleSize(tracks.map(({ artists }) => artists).flat(), 50);
-            console.log('debugArtists: ', debugArtists); // eslint-disable-line
             items = debugArtists as Artist[];
           }
 
