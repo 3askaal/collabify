@@ -1,4 +1,4 @@
-import { Spacer } from '3oilerplate'
+import { Spacer, Text } from '3oilerplate'
 import { Login, Logo } from '../components'
 
 export default function Home() {
@@ -6,7 +6,7 @@ export default function Home() {
     <Spacer size="xl" s={{ alignItems: 'center', justifyContent: 'center' }}>
       <Spacer s={{ alignItems: 'center', justifyContent: 'center' }}>
         <Logo />
-        <p>Generate Smart Collaborative Playlists</p>
+        <Text s={{ textAlign: 'center' }}>Generate Smart Collaborative Playlists</Text>
       </Spacer>
       <Login />
     </Spacer>
