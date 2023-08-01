@@ -1,4 +1,4 @@
-import { Artist, SpotifyApi } from '@spotify/web-api-ts-sdk';
+import { Artist, Page, SpotifyApi, Track } from '@spotify/web-api-ts-sdk';
 import { groupBy, sampleSize, uniq, flatten, orderBy, last, random } from 'lodash';
 import slugify from 'slugify';
 import {
@@ -11,7 +11,7 @@ import {
   ITerms,
 } from '../../types/playlist';
 
-export const collectData = async (sdk: SpotifyApi, debug?: boolean, seed_tracks?: string[]): Promise<IData> => {
+export const collectData = async (sdk: SpotifyApi, debug?: boolean, seedTracks?: string[]): Promise<IData> => {
   return ['artists', 'tracks'].reduce(async (accumulatorPromise, instance: 'artists' | 'tracks'): Promise<ITerms> => {
     const accumulator = await accumulatorPromise;
 
@@ -19,19 +19,35 @@ export const collectData = async (sdk: SpotifyApi, debug?: boolean, seed_tracks?
       async (accumulatorPromise, term: ITermInstances): Promise<ITerms> => {
         const accumulator = await accumulatorPromise;
 
-        const { items } = await sdk.currentUser.topItems(instance, term, 49);
+        let items: (Track | Artist)[] = [];
+
+        if (!debug) {
+          const { items: results } = await sdk.currentUser.topItems(instance, term, 49);
+          items = results;
+        } else {
+          // Simulate user activity with recommendations endpoint when debug argument is true
+          const { tracks } = await sdk.recommendations.get({ seed_tracks: seedTracks });
+          items = tracks;
+
+          // Get artists out of tracks data because there is no recommendations endpoint for artists
+          if (instance === 'artists') {
+            const debugArtists = sampleSize(tracks.map(({ artists }) => artists).flat(), 50);
+            items = debugArtists as Artist[];
+          }
+
+          // TODO: Find way to collect genre data
+        }
 
         const formattedItems = items.map(
-          // TODO: Tell spotify to fix return type of topItems (Track type missing)
-          (item: Artist & { artists: Artist[] }, index: number): IObject => ({
+          (item, index: number): IObject => ({
             id: item.uri,
             index,
             name: item.name,
-            ...(item.artists && {
+            ...('artists' in item && {
               artist: item.artists.map(({ name }) => name).join(', '),
               artists: item.artists.map(({ id }) => id),
             }),
-            ...(item.genres && {
+            ...('genres' in item && {
               genres: item.genres,
             }),
           }),
@@ -134,9 +150,9 @@ const rankData = (participations: IParticipations): IMergedParticipationsData =>
 const filterItem = (item: IObject, excludeData: IExcludeData) => {
   if (!excludeData) return true;
 
-  const trackExcluded = excludeData?.tracks.includes(item.id);
-  const artistExcluded = item.artists?.some((id) => excludeData?.artists.some((xid) => xid === id)) || false;
-  const genreExcluded = item.genres?.some((id) => excludeData?.genres.some((xid) => xid === id)) || false;
+  const trackExcluded = excludeData?.tracks?.includes(item.id) || false;
+  const artistExcluded = item.artists?.some((id) => excludeData?.artists?.some((xid) => xid === id)) || false;
+  const genreExcluded = item.genres?.some((id) => excludeData?.genres?.some((xid) => xid === id)) || false;
 
   return !(trackExcluded || artistExcluded || genreExcluded);
 };
