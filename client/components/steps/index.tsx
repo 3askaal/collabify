@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { ChevronLeft as ChevronLeftIcon, ChevronRight as ChevronRightIcon } from 'react-feather'
-import { Input, Spacer, Button, Box, Checkbox, Select } from '3oilerplate'
+import { Input, Spacer, Button, Box, Checkbox, Select, Text } from '3oilerplate'
 import { IntelContext } from '../../context/IntelContext';
 import { FilterData, Invite } from '..';
 import { IConfig } from '../../../server/types/playlist';
@@ -21,31 +21,39 @@ const Details = () => {
           <Input huge placeholder={`${currentUser?.name} x ...`} onChange={(value: string) => setConfig((details) => ({ ...details, title: value}))} />
           <Input huge placeholder="Generated with collabify.vercel.app" onChange={(value: string) => setConfig((details) => ({ ...details, description: value }))} />
         </Spacer>
-        <Select
-          s={{ flexGrow: '1' }}
-          options={[
-            {
-              label: 'Small',
-              value: 's',
-            },
-            {
-              label: 'Medium',
-              value: 'm',
-            },
-            {
-              label: 'Large',
-              value: 'l',
-            },
-          ]}
-          value={config.size}
-          onChange={(value: IConfig['size']) => setConfig((details) => ({ ...details, size: value }))}
-        />
-        <Spacer size="l" s={{ flexDirection: 'row' }}>
-          <Checkbox label="Should refresh" onChange={(value: boolean) => setShouldRefresh(value)} />
-          { shouldRefresh && (
+        <Spacer size="l">
+          <Spacer size="xs">
+            <Text isLabel>Size</Text>
             <Select
-              s={{ flexGrow: '1' }}
+              block
               options={[
+                {
+                  label: 'Small',
+                  value: 's',
+                },
+                {
+                  label: 'Medium',
+                  value: 'm',
+                },
+                {
+                  label: 'Large',
+                  value: 'l',
+                },
+              ]}
+              value={config.size}
+              onChange={(value: IConfig['size']) => setConfig((details) => ({ ...details, size: value }))}
+            />
+          </Spacer>
+          <Spacer size="xs">
+            <Text isLabel>Refresh</Text>
+            <Select
+              block
+              options={[
+                {
+                  label: 'Never',
+                  value: null,
+
+                },
                 {
                   label: 'Weekly',
                   value: 'week',
@@ -58,7 +66,8 @@ const Details = () => {
               ]}
               onChange={(value: IConfig['refreshEvery']) => setConfig((details) => ({ ...details, refreshEvery: value }))}
             />
-          ) }
+          </Spacer>
+          <Checkbox label="Add recommendations" onChange={(value: boolean) => setConfig((details) => ({ ...details, recommendations: value }))} />
         </Spacer>
       </Spacer>
     </Box>
