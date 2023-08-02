@@ -66,9 +66,9 @@ export interface IPlaylist extends IConfig {
   spotifyId?: string;
   participations: IParticipations;
   invitations: string[];
-  status: 'waiting' | 'published';
+  status: 'waiting' | 'released';
   refreshedAt?: Date;
-  publishedAt?: Date;
+  releasedAt?: Date;
   createdAt?: Date;
   updatedAt?: Date;
 }

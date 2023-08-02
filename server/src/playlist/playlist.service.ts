@@ -83,14 +83,14 @@ export class PlaylistService {
   // (https://community.spotify.com/t5/Your-Library/API-Playlists-Allow-users-to-add-tracks-to-collaborative/td-p/5334108)
   // when this changes this feature should make every user add their own tracks
 
-  async generate(playlistId: string, type: 'publish' | 'refresh'): Promise<any> {
+  async generate(playlistId: string, type: 'release' | 'refresh'): Promise<any> {
     const playlist: IPlaylist = await this.playlistModel.findById(playlistId);
     const hostParticipation: IParticipation = playlist.participations.find(({ user }): boolean => !!user.accessToken);
     const sdk = await getSpotifyInstance(hostParticipation.user.accessToken);
 
     let spotifyId: string;
 
-    if (type === 'publish') {
+    if (type === 'release') {
       const defaultTitle = playlist.participations.map(({ user: { name } }) => name).join(' x ');
       const defaultDescription = 'Generated with https://collabify.vercel.app';
 
@@ -145,9 +145,9 @@ export class PlaylistService {
     const updatedPlaylist = await this.playlistModel.findByIdAndUpdate(
       playlist._id,
       {
-        ...(type === 'publish' && {
-          status: 'published',
-          publishedAt: Date.now(),
+        ...(type === 'release' && {
+          status: 'released',
+          releasedAt: now(),
           spotifyId: spotifyId,
         }),
         ...(type === 'refresh' && {
@@ -164,7 +164,7 @@ export class PlaylistService {
   }
 
   async release(playlistId: string): Promise<any> {
-    return this.generate(playlistId, 'publish');
+    return this.generate(playlistId, 'release');
   }
 
   async refresh(playlistId: string): Promise<any> {
@@ -180,22 +180,22 @@ export class PlaylistService {
     playlists.forEach(async (playlist) => {
       if (playlist.refreshEvery === 'week') {
         const todaysDay = moment().day();
-        const publishedDay = moment(playlist.publishedAt).day();
+        const releasedDay = moment(playlist.releasedAt).day();
 
-        if (todaysDay === publishedDay) {
+        if (todaysDay === releasedDay) {
           this.refresh(playlist._id);
         }
       }
 
       if (playlist.refreshEvery === 'month') {
         const todaysDate = moment().date();
-        const publishedDate = moment(playlist.publishedAt).date();
+        const releasedDate = moment(playlist.releasedAt).date();
         const lastDateOfTheMonth = moment().endOf('month').date();
 
         const todaysMonth = moment().month();
         const refreshedMonth = moment(playlist.refreshedAt).month();
 
-        if (todaysDate === publishedDate || (publishedDate === lastDateOfTheMonth && refreshedMonth !== todaysMonth)) {
+        if (todaysDate === releasedDate || (releasedDate === lastDateOfTheMonth && refreshedMonth !== todaysMonth)) {
           this.refresh(playlist._id);
         }
       }

@@ -20,7 +20,7 @@ export default function Playlists() {
       >
         <Box df jcsb>
           <span>{ title || getDefaultPlaylistTitle(data) }</span>
-          <Label sRef="Label" isWaiting={status === 'waiting'} isPublished={status === 'published'}>{ status }</Label>
+          <Label sRef="Label" isWaiting={status === 'waiting'} isReleased={status === 'released'}>{ status }</Label>
         </Box>
       </ListItem>
     )

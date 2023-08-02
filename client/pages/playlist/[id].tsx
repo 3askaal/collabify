@@ -2,17 +2,16 @@ import { useContext, useEffect } from 'react'
 import { Box, Button, Link, Spacer } from '3oilerplate'
 import { useRouter } from 'next/router';
 import { sampleSize, map } from 'lodash';
-import { Steps } from '../../components';
+import { Steps, Status } from '../../components';
 import useSpotifyApi from '../../hooks/useSpotifyApi'
 import { IntelContext } from '../../context/IntelContext'
-import { Status } from '../../components/status';
 
 export default function Playlist() {
   const { query: { id: playlistId, debug }, asPath } = useRouter()
   const { accessToken } = useSpotifyApi()
   const { data, setData, setDebugData, playlist, release, refresh, collect, currentUser } = useContext(IntelContext)
 
-  const isPublished = playlist?.status === 'published'
+  const isReleased = playlist?.status === 'released'
   const hasParticipated = playlist?.participations?.some(({ user }: any) => user.id === currentUser?.id)
 
   useEffect(() => {
@@ -58,10 +57,10 @@ export default function Playlist() {
       }
       {playlistId !== 'new' && (
         <Spacer>
-          { data && hasParticipated && !isPublished && (
+          { data && hasParticipated && !isReleased && (
             <Button isBlock onClick={release}>Release</Button>
           ) }
-          { data && isPublished && (
+          { data && isReleased && (
             <Button isBlock onClick={refresh}>Refresh</Button>
           ) }
           { data && !accessToken && (
