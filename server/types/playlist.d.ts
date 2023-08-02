@@ -5,6 +5,7 @@ export interface IConfig {
   description?: string;
   refreshEvery?: 'week' | 'month';
   size: 's' | 'm' | 'l';
+  recommendations: boolean;
 }
 export interface IUser {
   id: string;

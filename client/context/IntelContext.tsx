@@ -32,7 +32,7 @@ export const IntelContext = createContext<IntelContextType>({
   excludeData: {},
   setExcludeData: () => undefined,
   setDebugData: () => undefined,
-  config: { size: 'm' },
+  config: { size: 'm', recommendations: false },
   setConfig: () => undefined,
   invitations: [],
   setInvitations: () => undefined,
@@ -42,7 +42,7 @@ export const IntelProvider = ({ children }: any) => {
   const [data, setData] = useState<IData>({})
   const [excludeData, setExcludeData] = useState<IExcludeData>({})
   const [debugData, setDebugData] = useState<IData>()
-  const [config, setConfig] = useState<IConfig>({ size: 'm' })
+  const [config, setConfig] = useState<IConfig>({ size: 'm', recommendations: false })
   const [currentUser, setCurrentUser] = useState<IUser>()
   const [invitations, setInvitations] = useState<string[]>([])
 
