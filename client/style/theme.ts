@@ -12,9 +12,8 @@ const SECONDARY = '#E90064'
 const SUCCESS = '#59CE8F'
 
 export const THEME = {
-  rootFontSizes: {
-    rootFontSizes: ['14px', '16px'],
-  },
+
+  rootFontSizes: ['12px', '14px', '16px'],
   colors: {
     primary: PRIMARY,
     primaryDark: darken(PRIMARY, .5),
