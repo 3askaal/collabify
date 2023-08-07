@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
-import { IParticipation, IConfig } from '../../types/playlist';
+import { IParticipation } from '../../types/playlist';
 
 export type PlaylistDocument = HydratedDocument<Playlist>;
 
@@ -14,6 +14,7 @@ export class Playlist {
   @Prop({ required: true }) size: 's' | 'm' | 'l';
   @Prop({ default: 'waiting' }) status: 'waiting' | 'published';
   @Prop() refreshEvery: 'week' | 'month';
+  @Prop() recommendations: boolean;
   @Prop() refreshedAt: Date;
   @Prop() publishedAt: Date;
 }

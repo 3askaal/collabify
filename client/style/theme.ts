@@ -81,6 +81,14 @@ export const THEME = {
         }
       }
     },
+    Text: {
+      variants: {
+        isLabel: {
+          fontWeight: 'bold',
+          color: 'grey80',
+        }
+      }
+    },
     Input: {
       default: {
         px: 0,

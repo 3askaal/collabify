@@ -10,10 +10,8 @@ export class PlaylistController {
 
   @Get(':id')
   async get(@Param() params: GetParams): Promise<Playlist> {
-    const { id: playlistId } = params;
-
     try {
-      return this.playlistService.getOne(playlistId);
+      return this.playlistService.getOne(params.id);
     } catch (err) {
       throw err;
     }
@@ -41,10 +39,8 @@ export class PlaylistController {
 
   @Put(':id')
   async participate(@Param() params, @Body() payload: IPlaylist): Promise<Playlist> {
-    const { id: playlistId } = params;
-
     try {
-      return this.playlistService.participate(playlistId, payload.participations[0]);
+      return this.playlistService.participate(params.id, payload.participations[0]);
     } catch (err) {
       throw err;
     }
@@ -52,8 +48,6 @@ export class PlaylistController {
 
   @Post('collect')
   async collect(@Body() payload: any): Promise<IData> {
-    // const { id: playlistId } = params;
-
     try {
       return this.playlistService.collect(payload);
     } catch (err) {
@@ -63,10 +57,8 @@ export class PlaylistController {
 
   @Get(':id/release')
   async release(@Param() params): Promise<void> {
-    const { id: playlistId } = params;
-
     try {
-      return this.playlistService.release(playlistId);
+      return this.playlistService.release(params.id);
     } catch (err) {
       throw err;
     }
@@ -74,10 +66,8 @@ export class PlaylistController {
 
   @Get(':id/refresh')
   async update(@Param() params): Promise<void> {
-    const { id: playlistId } = params;
-
     try {
-      return this.playlistService.refresh(playlistId);
+      return this.playlistService.refresh(params.id);
     } catch (err) {
       throw err;
     }
