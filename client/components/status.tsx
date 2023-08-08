@@ -43,10 +43,10 @@ export const Status = () => {
         </Spacer>
         <Spacer size="s" s={{ alignItems: 'center' }}>
           <div><strong>Status</strong></div>
-          <div><Label sRef="Label" isWaiting={playlist?.status === 'waiting'} isPublished={playlist?.status === 'published'}>{ playlist?.status }</Label></div>
+          <div><Label sRef="Label" isWaiting={playlist?.status === 'waiting'} isReleased={playlist?.status === 'released'}>{ playlist?.status }</Label></div>
         </Spacer>
       </Spacer>
-      { playlist?.status === 'published' && (
+      { playlist?.status === 'released' && (
         <Box df fdc aic>
           <Link href={`https://open.spotify.com/playlist/${playlist?.spotifyId}`} target='_blank'>
             View playlist
