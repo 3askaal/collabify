@@ -135,6 +135,7 @@ export const IntelProvider = ({ children }: any) => {
 
   useEffect(() => {
     if (!accessToken) return;
+    if (!sdk) return;
 
     sdk.currentUser.profile()
       .then(

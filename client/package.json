@@ -12,7 +12,7 @@
     "3oilerplate": "^0.2.53",
     "@faker-js/faker": "^7.6.0",
     "@next/font": "13.1.1",
-    "@spotify/web-api-ts-sdk": "^1.0.3",
+    "@spotify/web-api-ts-sdk": "^1.1.0",
     "@types/axios": "^0.14.0",
     "@types/node": "18.11.17",
     "@types/randomstring": "^1.1.8",
