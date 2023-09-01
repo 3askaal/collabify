@@ -3,6 +3,7 @@ import { SpotifyApi, AuthorizationCodeWithPKCEStrategy } from "@spotify/web-api-
 import { useRouter } from 'next/router';
 import { useLocalStorage } from 'usehooks-ts';
 import moment from 'moment';
+import to from 'await-to-js';
 
 const getExpiresAt = (expiresIn: number): string => moment().add(expiresIn, 'seconds').valueOf().toString()
 
@@ -31,20 +32,18 @@ export default function useSpotify() {
 
       const internalSdk = new SpotifyApi(auth, {});
 
-      try {
-        const { authenticated } = await internalSdk.authenticate();
+      const [authError, authSuccess] = await to(internalSdk.authenticate());
 
-        if (authenticated) {
-          setSdk(() => internalSdk);
-        }
-      } catch (e: Error | unknown) {
-        const error = e as Error;
-
-        if (error && error.message && error.message.includes("No verifier found in cache")) {
+      if (authError) {
+        if (authError && authError.message && authError.message.includes("No verifier found in cache")) {
           console.error("If you are seeing this error in a React Development Environment it's because React calls useEffect twice. Using the Spotify SDK performs a token exchange that is only valid once, so React re-rendering this component will result in a second, failed authentication. This will not impact your production applications (or anything running outside of Strict Mode - which is designed for debugging components).", error);
         } else {
-          console.error(e);
+          console.error(authError);
         }
+      }
+
+      if (authSuccess?.authenticated) {
+        setSdk(() => internalSdk);
       }
     })();
   }, [shouldAuthenticate, code]);
