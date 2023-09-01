@@ -1,9 +1,8 @@
 import { Button } from '3oilerplate'
-import Link from 'next/link'
-import useSpotifyApi from '../hooks/useSpotifyApi'
+import useSpotify from '../hooks/useSpotify'
 
 export function Login() {
-  const { login } = useSpotifyApi()
+  const { login } = useSpotify()
 
   return (
     <Button onClick={login}>Authenticate with Spotify</Button>

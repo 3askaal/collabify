@@ -3,11 +3,11 @@ import { useRouter } from 'next/router'
 import { Box, Wrapper, Container, Button, List, ListItem } from '3oilerplate'
 import { User as UserIcon, ArrowLeft as ArrowLeftIcon } from 'react-feather'
 import { Logo } from './logo'
-import useSpotifyApi from '../hooks/useSpotifyApi'
+import useSpotify from '../hooks/useSpotify'
 
 export function Layout({ children }: any) {
   const { push, back, query: { id: playlistId } } = useRouter()
-  const { accessToken, logout } = useSpotifyApi()
+  const { accessToken, logout } = useSpotify()
   const [menuOpen, setMenuOpen] = useState(false)
 
   const navigate = (route: string) => {

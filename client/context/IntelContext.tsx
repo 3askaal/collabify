@@ -4,7 +4,7 @@ import { faker } from '@faker-js/faker';
 import { IConfig, IData, IExcludeData, IParticipations, IPlaylist, IUser } from '../../server/types/playlist'
 import { API_URL } from '../config';
 import { useRouter } from 'next/router';
-import useSpotifyApi from '../hooks/useSpotifyApi';
+import useSpotify from '../hooks/useSpotify';
 
 export interface IntelContextType {
   data: IData | null;
@@ -47,7 +47,7 @@ export const IntelProvider = ({ children }: any) => {
   const [invitations, setInvitations] = useState<string[]>([])
 
   const { push, query: { id: playlistId } } = useRouter()
-  const { sdk, accessToken } = useSpotifyApi()
+  const { sdk, accessToken } = useSpotify()
 
   const [{ data: submitDataRes }, submitCallback] = useAxios<IPlaylist>(
     playlistId === 'new' ? {
