@@ -1,6 +1,7 @@
-import { Artist, Page, SpotifyApi, Track } from '@spotify/web-api-ts-sdk';
+import { Artist, SpotifyApi, Track } from '@spotify/web-api-ts-sdk';
 import { groupBy, sampleSize, uniq, flatten, orderBy, last, random } from 'lodash';
 import slugify from 'slugify';
+import to from 'await-to-js';
 import {
   IData,
   IExcludeData,
@@ -22,20 +23,30 @@ export const collectData = async (sdk: SpotifyApi, debug?: boolean, seedTracks?:
         let items: (Track | Artist)[] = [];
 
         if (!debug) {
-          const { items: results } = await sdk.currentUser.topItems(instance, term, 49);
-          items = results;
+          const [getTopItemsErr, getTopItemsSuccess] = await to(sdk.currentUser.topItems(instance, term, 49));
+
+          if (getTopItemsErr) {
+            throw getTopItemsErr;
+          }
+
+          items = getTopItemsSuccess.items;
         } else {
           // Simulate user activity with recommendations endpoint when debug argument is true
-          const { tracks } = await sdk.recommendations.get({ seed_tracks: seedTracks });
-          items = tracks;
+          const [getRecommendationsErr, getRecommendationsSuccess] = await to(
+            sdk.recommendations.get({ seed_tracks: seedTracks }),
+          );
+
+          if (getRecommendationsErr) {
+            throw getRecommendationsErr;
+          }
+
+          items = getRecommendationsSuccess.tracks;
 
           // Get artists out of tracks data because there is no recommendations endpoint for artists
           if (instance === 'artists') {
-            const debugArtists = sampleSize(tracks.map(({ artists }) => artists).flat(), 50);
+            const debugArtists = sampleSize(getRecommendationsSuccess.tracks.map(({ artists }) => artists).flat(), 50);
             items = debugArtists as Artist[];
           }
-
-          // TODO: Find way to collect genre data
         }
 
         const formattedItems = items.map(
@@ -67,7 +78,7 @@ export const collectData = async (sdk: SpotifyApi, debug?: boolean, seedTracks?:
       genres = Object.entries(items).reduce((accumulator, [key, value]: any) => {
         const uniqueGenres: string[] = uniq(flatten(value.map(({ genres }: any) => genres)));
         const genres = uniqueGenres.map((genre, index) => ({
-          id: slugify(genre || ''),
+          id: slugify(genre),
           name: genre,
           index,
         }));
@@ -125,13 +136,14 @@ const rankData = (participations: IParticipations): IMergedParticipationsData =>
       ...acc,
       [key]: Object.values(groupBy(value, 'id')).map((items: any[]) =>
         items.reduce(
-          (acc, { user, periods, rank, ...rest }) => ({
+          (acc, { user, period, rank, ...rest }) => ({
             ...acc,
             ...rest,
             occurrences: {
               ...acc.occurrences,
               [user]: {
-                periods,
+                // TODO: transform into array instead of overwriting last value in loop
+                period,
                 rank,
               },
             },
@@ -150,9 +162,9 @@ const rankData = (participations: IParticipations): IMergedParticipationsData =>
 const filterItem = (item: IObject, excludeData: IExcludeData) => {
   if (!excludeData) return true;
 
-  const trackExcluded = excludeData?.tracks?.includes(item.id) || false;
-  const artistExcluded = item.artists?.some((id) => excludeData?.artists?.some((xid) => xid === id)) || false;
-  const genreExcluded = item.genres?.some((id) => excludeData?.genres?.some((xid) => xid === id)) || false;
+  const trackExcluded = excludeData.tracks?.includes(item.id) || false;
+  const artistExcluded = item.artists?.some((id) => excludeData.artists?.some((xid) => xid === id)) || false;
+  const genreExcluded = item.genres?.some((id) => excludeData.genres?.some((xid) => xid === id)) || false;
 
   return !(trackExcluded || artistExcluded || genreExcluded);
 };
@@ -169,8 +181,11 @@ export const getRandomTracksWeightedByRank = async (participations: IParticipati
         totalRank: index ? tracksOrderedByTotalRank[index - 1].totalRank + totalRank : totalRank,
       }));
 
-      const maxCumulativeTotalRank = last(tracksWithCumulativeTotalRank).totalRank;
+      if (tracksWithCumulativeTotalRank.length <= amount) {
+        return tracksWithCumulativeTotalRank.map(({ id }) => id);
+      }
 
+      const maxCumulativeTotalRank = last(tracksWithCumulativeTotalRank).totalRank;
       const randomTracks = [];
 
       while (randomTracks.length < amount) {
@@ -194,13 +209,19 @@ export const getRecommendations = async (
 ): Promise<string[]> => {
   const formattedSeedTracks = seedTracks.map((id) => id.split(':')[2]);
 
-  const { tracks } = await sdk.recommendations.get({
-    seed_tracks: formattedSeedTracks,
-    limit: 50,
-  });
+  const [getRecommendationsErr, getRecommendationsSuccess] = await to(
+    sdk.recommendations.get({
+      seed_tracks: formattedSeedTracks,
+      limit: 50,
+    }),
+  );
+
+  if (getRecommendationsErr) {
+    throw getRecommendationsErr;
+  }
 
   return sampleSize(
-    tracks.map(({ uri }) => uri),
+    getRecommendationsSuccess.tracks.map(({ uri }) => uri),
     amountRecommendations,
   );
 };
