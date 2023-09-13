@@ -10,66 +10,38 @@ export class PlaylistController {
 
   @Get(':id')
   async get(@Param() params: GetParams): Promise<Playlist> {
-    try {
-      return this.playlistService.getOne(params.id);
-    } catch (err) {
-      throw err;
-    }
+    return this.playlistService.getOne(params.id);
   }
 
   @Post('all')
   async getAll(@Body() payload: GetAllParams): Promise<Playlist[]> {
     const { id: userId, email } = payload;
 
-    try {
-      return this.playlistService.getAll(userId, email);
-    } catch (err) {
-      throw err;
-    }
+    return this.playlistService.getAll(userId, email);
   }
 
   @Post()
   async create(@Body() payload: IPlaylist): Promise<Playlist> {
-    try {
-      return this.playlistService.create(payload);
-    } catch (err) {
-      throw err;
-    }
+    return this.playlistService.create(payload);
   }
 
   @Put(':id')
   async participate(@Param() params, @Body() payload: IPlaylist): Promise<Playlist> {
-    try {
-      return this.playlistService.participate(params.id, payload.participations[0]);
-    } catch (err) {
-      throw err;
-    }
+    return this.playlistService.participate(params.id, payload.participations[0]);
   }
 
   @Post('collect')
   async collect(@Body() payload: any): Promise<IData> {
-    try {
-      return this.playlistService.collect(payload);
-    } catch (err) {
-      throw err;
-    }
+    return this.playlistService.collect(payload);
   }
 
   @Get(':id/release')
-  async release(@Param() params): Promise<void> {
-    try {
-      return this.playlistService.release(params.id);
-    } catch (err) {
-      throw err;
-    }
+  async release(@Param() params): Promise<Playlist> {
+    return this.playlistService.generate(params.id, 'release');
   }
 
   @Get(':id/refresh')
-  async update(@Param() params): Promise<void> {
-    try {
-      return this.playlistService.refresh(params.id);
-    } catch (err) {
-      throw err;
-    }
+  async refresh(@Param() params): Promise<Playlist> {
+    return this.playlistService.generate(params.id, 'refresh');
   }
 }

@@ -4,8 +4,9 @@ export interface IConfig {
   name?: string;
   description?: string;
   refreshEvery?: 'week' | 'month';
-  size: 's' | 'm' | 'l';
-  recommendations: boolean;
+  size?: 's' | 'm' | 'l';
+  recommendations?: boolean;
+  invitations?: string[];
 }
 export interface IUser {
   id: string;
@@ -65,7 +66,6 @@ export interface IPlaylist extends IConfig {
   _id?: string;
   spotifyId?: string;
   participations: IParticipations;
-  invitations: string[];
   status: 'waiting' | 'released';
   refreshedAt?: Date;
   releasedAt?: Date;
