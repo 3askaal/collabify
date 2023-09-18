@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { SpotifyApi, AuthorizationCodeWithPKCEStrategy, AccessToken } from "@spotify/web-api-ts-sdk"
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useLocalStorage } from 'usehooks-ts';
 import to from 'await-to-js';
 
@@ -11,7 +11,7 @@ export default function useSpotify() {
 
   const [sdk, setSdk] = useState<SpotifyApi | null>(null);
 
-  const [accessToken, setAccessToken] = useLocalStorage<AccessToken | string | null>('accessToken', '')
+  const [accessToken, setAccessToken] = useLocalStorage<AccessToken | null>('accessToken', '')
   const [redirectPlaylistId, setRedirectPlaylistId] = useLocalStorage<string | null>('redirectPlaylistId', '')
   // const [expiresAt, setExpiresAt] = useLocalStorage<string | null>('expiresAt', '')
 

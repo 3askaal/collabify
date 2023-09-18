@@ -1,13 +1,13 @@
 import { useContext, useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { ChevronLeft as ChevronLeftIcon, ChevronRight as ChevronRightIcon } from 'react-feather'
 import { Input, Spacer, Button, Box, Checkbox, Select, Text } from '3oilerplate'
-import { IntelContext } from '../../context/IntelContext';
+import { DataContext } from '../../context/DataContext';
 import { FilterData, Invite } from '..';
 import { IConfig } from '../../../server/types/playlist';
 
 const Details = () => {
-  const { currentUser, config, setConfig } = useContext(IntelContext)
+  const { currentUser, config, setConfig } = useContext(DataContext)
   const [shouldRefresh, setShouldRefresh] = useState(false)
 
   useEffect(() => {
@@ -75,7 +75,7 @@ const Details = () => {
 }
 
 const Submit = ({ id }: { id: string }) => {
-  const { submit } = useContext(IntelContext)
+  const { submit } = useContext(DataContext)
 
   return (
     <Spacer s={{ flexGrow: 1, justifyContent: 'center' }}>

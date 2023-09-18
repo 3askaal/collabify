@@ -1,15 +1,15 @@
 import { useContext, useEffect } from 'react'
 import { Box, Button, Link, Spacer } from '3oilerplate'
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { sampleSize, map } from 'lodash';
 import { Steps, Status } from '../../components';
 import useSpotify from '../../hooks/useSpotify'
-import { IntelContext } from '../../context/IntelContext'
+import { DataContext } from '../../context/DataContext'
 
 export default function Playlist() {
   const { query: { id: playlistId, debug }, asPath } = useRouter()
   const { accessToken } = useSpotify()
-  const { data, setData, setDebugData, playlist, release, refresh, collect, currentUser } = useContext(IntelContext)
+  const { data, setData, setDebugData, playlist, release, refresh, collect, currentUser } = useContext(DataContext)
 
   const isReleased = playlist?.status === 'released'
   const hasParticipated = playlist?.participations?.some(({ user }: any) => user.id === currentUser?.id)

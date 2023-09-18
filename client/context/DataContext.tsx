@@ -3,10 +3,10 @@ import useAxios, { RefetchFunction } from "axios-hooks";
 import { faker } from '@faker-js/faker';
 import { IConfig, IData, IExcludeData, IParticipations, IPlaylist, IUser } from '../../server/types/playlist'
 import { API_URL } from '../config';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import useSpotify from '../hooks/useSpotify';
 
-export interface IntelContextType {
+export interface DataContextType {
   data: IData | null;
   setData: Dispatch<SetStateAction<IData>>;
   excludeData: IExcludeData;
@@ -26,7 +26,7 @@ export interface IntelContextType {
   playlists?: IPlaylist[];
 }
 
-export const IntelContext = createContext<IntelContextType>({
+export const DataContext = createContext<DataContextType>({
   data: null,
   setData: () => undefined,
   excludeData: {},
@@ -156,41 +156,14 @@ export const IntelProvider = ({ children }: any) => {
     getPlaylistCallback()
   }, [submitDataRes, releaseRes, refreshRes, playlistId])
 
-  // useEffect(() => {
-  //   if (!currentUser) return;
-
-  //   getPlaylistsCallback({
-  //     data: {
-  //       id: currentUser.id,
-  //       email: currentUser.email
-  //     }
-  //   })
-  // }, [currentUser])
-
   useEffect(() => {
     if (submitDataRes) {
       push(`${submitDataRes._id}`)
     }
   }, [submitDataRes])
 
-  // useEffect(() => {
-  //   console.log('collectDataRes: ', collectDataRes);
-  // }, [collectDataRes])
-
-  // useEffect(() => {
-  //   console.log('playlists: ', playlists);
-  // }, [playlists])
-
-  // useEffect(() => {
-  //   console.log('releaseRes: ', releaseRes);
-  // }, [releaseRes])
-
-  // useEffect(() => {
-  //   console.log('refreshRes: ', refreshRes);
-  // }, [refreshRes])
-
   return (
-    <IntelContext.Provider
+    <DataContext.Provider
       value={{
         config,
         setConfig,
@@ -211,6 +184,6 @@ export const IntelProvider = ({ children }: any) => {
       }}
     >
       {children}
-    </IntelContext.Provider>
+    </DataContext.Provider>
   )
 }

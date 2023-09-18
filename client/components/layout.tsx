@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 import { Box, Wrapper, Container, Button, List, ListItem } from '3oilerplate'
 import { User as UserIcon, ArrowLeft as ArrowLeftIcon } from 'react-feather'
 import { Logo } from './logo'

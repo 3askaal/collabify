@@ -1,15 +1,15 @@
 import { Spacer, List, ListItem, Link, Box, Label, Button, ElementGroup } from '3oilerplate'
 import { useContext, useEffect, useState } from 'react'
-import { IntelContext } from '../context/IntelContext'
+import { DataContext } from '../context/DataContext'
 import { Copy, Clipboard } from 'react-feather';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import copy from 'copy-to-clipboard';
 import { getDefaultPlaylistTitle } from '../helpers/transform';
 
 
 export const Status = () => {
   const { query: { id: playlistId } } = useRouter()
-  const { playlist, currentUser } = useContext(IntelContext)
+  const { playlist, currentUser } = useContext(DataContext)
   const [isCopied, setIsCopied] = useState(false)
 
   const playlistName = playlist?.name || getDefaultPlaylistTitle(playlist)
