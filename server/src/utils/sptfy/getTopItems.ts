@@ -3,7 +3,7 @@ import to from 'await-to-js';
 import slugify from 'slugify';
 import { flatten, sampleSize, uniq } from 'lodash';
 import { getSpotifyInstanceByAccessToken } from './getInstance';
-import { IData, IObject, ITermInstances, ITerms } from '../../../../types/playlist';
+import { IData, IObject, ITermInstances, ITerms } from '../../../types/playlist';
 
 export const getTopItems = async (accessToken: AccessToken, debug?: boolean, seedTracks?: string[]): Promise<IData> => {
   const sdk = await getSpotifyInstanceByAccessToken(accessToken);

@@ -25,11 +25,13 @@ const getLikesBy = async (userId: string, type: string) => {
   return likes;
 };
 
-export const getLikes = async (userId: string, amountLikes: number) => {
+export const getLikes = async (permalink: string) => {
+  const profile = await getUser(permalink);
+
   let likes: any = [];
 
-  const tracks = await getLikesBy(userId, 'tracks');
-  const playlists = await getLikesBy(userId, 'playlists');
+  const tracks = await getLikesBy(profile.id, 'tracks');
+  const playlists = await getLikesBy(profile.id, 'playlists');
 
   likes = [...likes, ...tracks];
   likes = [...likes, ...playlists];
@@ -42,9 +44,4 @@ export const getLikes = async (userId: string, amountLikes: number) => {
     }),
     user: user.username,
   }));
-};
-
-export const getAllLikes = async (permalink: string) => {
-  const profile = await getUser(permalink);
-  return await getLikes(profile.id, profile.public_favorites_count);
 };

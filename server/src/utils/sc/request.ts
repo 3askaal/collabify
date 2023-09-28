@@ -1,7 +1,7 @@
 import { to } from 'await-to-js';
 import fetch, { RequestInit } from 'node-fetch';
 import { getAccessToken } from './getAccessToken';
-import { CONFIG } from '../../../config';
+import { CONFIG } from '../../config';
 
 export const request = async (path: string, options?: RequestInit) => {
   const accessToken = await getAccessToken();

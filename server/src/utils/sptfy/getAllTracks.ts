@@ -2,7 +2,7 @@ import { Playlist, SpotifyApi } from '@spotify/web-api-ts-sdk';
 import { flatten, times } from 'lodash';
 import moment from 'moment';
 import sequential from 'promise-sequential';
-import { CONFIG } from '../../../config';
+import { CONFIG } from '../../config';
 
 const sdk = SpotifyApi.withClientCredentials(CONFIG.SPTFY.CLIENT_ID as string, CONFIG.SPTFY.CLIENT_SECRET as string);
 

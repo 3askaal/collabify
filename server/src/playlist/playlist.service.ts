@@ -11,7 +11,7 @@ import { Playlist, PlaylistDocument } from './playlist.schema';
 import { getRandomTracksWeightedByRank, getRecommendations } from './playlist.helpers';
 import { IPlaylist, IParticipation, IData } from '../../types/playlist';
 import { SIZES } from './playlist.constants';
-import { getTopItems } from 'src/utils/instances/sptfy/getTopItems';
+import { getTopItems } from 'src/utils/sptfy/getTopItems';
 
 @Injectable()
 export class PlaylistService {
