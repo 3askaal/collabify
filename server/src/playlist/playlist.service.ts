@@ -8,13 +8,10 @@ import { flatten, sampleSize, shuffle } from 'lodash';
 import to from 'await-to-js';
 
 import { Playlist, PlaylistDocument } from './playlist.schema';
-import { collectData, getRandomTracksWeightedByRank, getRecommendations } from './playlist.helpers';
+import { getRandomTracksWeightedByRank, getRecommendations } from './playlist.helpers';
 import { IPlaylist, IParticipation, IData } from '../../types/playlist';
 import { SIZES } from './playlist.constants';
-
-const getSpotifyInstance = async (accessToken: AccessToken): Promise<SpotifyApi> => {
-  return SpotifyApi.withAccessToken(process.env.SPOTIFY_API_CLIENT_ID, accessToken);
-};
+import { getTopItems } from 'src/utils/instances/sptfy/getTopItems';
 
 @Injectable()
 export class PlaylistService {
@@ -37,8 +34,7 @@ export class PlaylistService {
   }
 
   async collect({ debug, seed_tracks, accessToken }: any): Promise<IData> {
-    const sdk = await getSpotifyInstance(accessToken);
-    return collectData(sdk, debug, seed_tracks);
+    return getTopItems(accessToken, debug, seed_tracks);
   }
 
   async create(payload: IPlaylist): Promise<Playlist> {

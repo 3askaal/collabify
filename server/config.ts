@@ -2,12 +2,6 @@ import dotenvJSON from 'complex-dotenv-json';
 dotenvJSON({ path: './env.json' });
 
 export const CONFIG = {
-  PORT: process.env.PORT || 1337,
-  MONGODB_URI: process.env.MONGODB_URI || 'mongodb://localhost:27017/collabify',
   SC: JSON.parse(process.env.SC || ''),
   SPTFY: JSON.parse(process.env.SPTFY || ''),
 };
-
-export const NEST_CONFIG = () => ({
-  port: CONFIG.PORT,
-});

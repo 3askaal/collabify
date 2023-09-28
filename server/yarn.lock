@@ -3335,6 +3335,11 @@ commondir@^1.0.1:
   resolved "https://registry.yarnpkg.com/commondir/-/commondir-1.0.1.tgz#ddd800da0c66127393cca5950ea968a3aaf1253b"
   integrity sha512-W9pAhw0ja1Edb5GVdIF1mjZw/ASI0AlShXM83UUGe2DVr5TdAPEA1OA8m/g8zWp9x6On7gqufY+FatDbC3MDQg==
 
+complex-dotenv-json@^1.1.3:
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/complex-dotenv-json/-/complex-dotenv-json-1.1.3.tgz#38f0d8f9a160083f6665f8159972fc3e41c86f9b"
+  integrity sha512-7Q2GKMIOIx5vIkog3yuCl1P0a9PstoJpSg61kHS6Ewy/DHO8Mp46xkEkRmOe+vRkv06jkkt/at9wBZaSnPCqqQ==
+
 component-emitter@^1.2.1, component-emitter@^1.3.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/component-emitter/-/component-emitter-1.3.0.tgz#16e4070fba8ae29b679f2215853ee181ab2eabc0"

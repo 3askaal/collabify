@@ -1,6 +1,6 @@
 import { Test } from '@nestjs/testing';
 import { AppModule } from './app.module';
-import { closeMongoConnection, rootMongooseTestModule } from '../utils/test';
+import { closeMongoConnection, rootMongooseTestModule } from '../../test/utils/test';
 
 describe.skip('AppModule', () => {
   it('loads properly', async () => {
