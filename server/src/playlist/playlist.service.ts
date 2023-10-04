@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Cron } from '@nestjs/schedule';
 import { Model, now } from 'mongoose';
-import { AccessToken, SpotifyApi } from '@spotify/web-api-ts-sdk';
 import moment from 'moment';
 import { flatten, sampleSize, shuffle } from 'lodash';
 import to from 'await-to-js';
@@ -11,7 +10,8 @@ import { Playlist, PlaylistDocument } from './playlist.schema';
 import { getRandomTracksWeightedByRank, getRecommendations } from './playlist.helpers';
 import { IPlaylist, IParticipation, IData } from '../../types/playlist';
 import { SIZES } from './playlist.constants';
-import { getTopItems } from 'src/utils/sptfy/getTopItems';
+import { getTopItems } from '../utils/sptfy/getTopItems';
+import { getSpotifyInstanceByAccessToken } from 'src/utils/sptfy/getInstance';
 
 @Injectable()
 export class PlaylistService {
@@ -71,7 +71,7 @@ export class PlaylistService {
   async generate(playlistId: string, type: 'release' | 'refresh'): Promise<any> {
     const playlist: IPlaylist = await this.playlistModel.findById(playlistId);
     const hostParticipation: IParticipation = playlist.participations.find(({ user }): boolean => !!user.accessToken);
-    const sdk = await getSpotifyInstance(hostParticipation.user.accessToken);
+    const sdk = await getSpotifyInstanceByAccessToken(hostParticipation.user.accessToken);
 
     let spotifyId: string;
 

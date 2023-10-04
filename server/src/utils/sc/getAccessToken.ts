@@ -4,7 +4,7 @@ import fetch from 'node-fetch';
 import mongoose, { Schema } from 'mongoose';
 import { CONFIG } from '../../config';
 
-mongoose.connect('mongodb://127.0.0.1:27017/soundcloud');
+mongoose.connect('mongodb://127.0.0.1:27017/collabify');
 
 const keysSchema = new Schema(
   {
