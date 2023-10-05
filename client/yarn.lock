@@ -1327,10 +1327,10 @@
   resolved "https://registry.yarnpkg.com/@rushstack/eslint-patch/-/eslint-patch-1.2.0.tgz#8be36a1f66f3265389e90b5f9c9962146758f728"
   integrity sha512-sXo/qW2/pAcmT43VoRKOJbDOfV3cYpq3szSVfIThQXNt+E4DfKj361vaAt3c88U5tPUxzEswam7GW48PJqtKAg==
 
-"@spotify/web-api-ts-sdk@^1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@spotify/web-api-ts-sdk/-/web-api-ts-sdk-1.0.3.tgz#272826c014c2acb1411b04f4c56523f9fa6cf8fe"
-  integrity sha512-LGxbSb8/6OVDzYO8KlPFwQUEij7WKkzOEbbjopIP590R3YpAtr+iUb66m8yFF0BJnL/aXKf0RmZ3cvMFOw7BXw==
+"@spotify/web-api-ts-sdk@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@spotify/web-api-ts-sdk/-/web-api-ts-sdk-1.1.0.tgz#a7acd61f26ab8b2b3d1fe4769f608cf7b6337376"
+  integrity sha512-SDMduy1YOc86boPQQbjiTJVHhVDUOFTBKMovmBizEbURGVae1Cvswyd/gzSQQwE1FUDXTD4Y8nhn9XHDGvRENA==
 
 "@styled-system/background@^5.1.2":
   version "5.1.2"
