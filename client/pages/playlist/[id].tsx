@@ -3,12 +3,12 @@ import { Box, Button, Link, Spacer } from '3oilerplate'
 import { useRouter } from 'next/router';
 import { sampleSize, map } from 'lodash';
 import { Steps, Status } from '../../components';
-import useSpotifyApi from '../../hooks/useSpotifyApi'
+import useSpotify from '../../hooks/useSpotify'
 import { IntelContext } from '../../context/IntelContext'
 
 export default function Playlist() {
   const { query: { id: playlistId, debug }, asPath } = useRouter()
-  const { accessToken } = useSpotifyApi()
+  const { accessToken } = useSpotify()
   const { data, setData, setDebugData, playlist, release, refresh, collect, currentUser } = useContext(IntelContext)
 
   const isReleased = playlist?.status === 'released'
