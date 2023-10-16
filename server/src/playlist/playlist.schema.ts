@@ -11,10 +11,10 @@ export class Playlist {
   @Prop() spotifyId: string;
   @Prop() participations: IParticipation[];
   @Prop() invitations: string[];
-  @Prop({ required: true }) size: 's' | 'm' | 'l';
-  @Prop({ default: 'waiting' }) status: 'waiting' | 'released';
+  @Prop() size: 's' | 'm' | 'l';
   @Prop() refreshEvery: 'week' | 'month';
   @Prop() recommendations: boolean;
+  @Prop({ default: 'waiting' }) status: 'waiting' | 'released';
   @Prop() refreshedAt: Date;
   @Prop() releasedAt: Date;
 }

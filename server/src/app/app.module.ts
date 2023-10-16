@@ -2,9 +2,8 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ScheduleModule } from '@nestjs/schedule';
-import { AppController } from './app.controller';
-import { CONFIG, NEST_CONFIG } from 'src/config';
-import { PlaylistModule } from 'src/playlist/playlist.module';
+import { CONFIG, NEST_CONFIG } from '../config';
+import { PlaylistModule } from '../playlist/playlist.module';
 
 @Module({
   imports: [
@@ -15,6 +14,5 @@ import { PlaylistModule } from 'src/playlist/playlist.module';
     MongooseModule.forRoot(CONFIG.MONGODB_URI),
     PlaylistModule,
   ],
-  controllers: [AppController],
 })
 export class AppModule {}

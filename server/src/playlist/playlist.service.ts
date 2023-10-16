@@ -4,7 +4,8 @@ import { Cron } from '@nestjs/schedule';
 import { Model, now } from 'mongoose';
 import { AccessToken, SpotifyApi } from '@spotify/web-api-ts-sdk';
 import moment from 'moment';
-import { flatten, sampleSize, shuffle, update } from 'lodash';
+import { flatten, sampleSize, shuffle } from 'lodash';
+import to from 'await-to-js';
 
 import { Playlist, PlaylistDocument } from './playlist.schema';
 import { collectData, getRandomTracksWeightedByRank, getRecommendations } from './playlist.helpers';
@@ -13,15 +14,6 @@ import { SIZES } from './playlist.constants';
 
 const getSpotifyInstance = async (accessToken: AccessToken): Promise<SpotifyApi> => {
   return SpotifyApi.withAccessToken(process.env.SPOTIFY_API_CLIENT_ID, accessToken);
-};
-
-const onSuccess = (data) => {
-  return data;
-};
-
-const onError = (err) => {
-  console.log('ERROR: ', err);
-  throw err;
 };
 
 @Injectable()
@@ -50,16 +42,13 @@ export class PlaylistService {
   }
 
   async create(payload: IPlaylist): Promise<Playlist> {
-    const now = new Date();
-    const doc = await this.playlistModel.create({
+    return this.playlistModel.create({
       ...payload,
       participations: payload.participations.map((participation) => ({
         ...participation,
-        submittedAt: now,
+        submittedAt: new Date(),
       })),
     });
-
-    return doc;
   }
 
   async participate(playlistId: string, participation: IParticipation): Promise<Playlist> {
@@ -94,20 +83,39 @@ export class PlaylistService {
       const defaultTitle = playlist.participations.map(({ user: { name } }) => name).join(' x ');
       const defaultDescription = 'Generated with https://collabify.vercel.app';
 
-      const { id } = await sdk.playlists.createPlaylist(hostParticipation.user.id, {
-        name: playlist.name || defaultTitle,
-        description: playlist.description || defaultDescription,
-        public: false,
-      });
+      const [createPlaylistErr, createPlaylistSuccess] = await to(
+        sdk.playlists.createPlaylist(hostParticipation.user.id, {
+          name: playlist.name || defaultTitle,
+          description: playlist.description || defaultDescription,
+          public: false,
+        }),
+      );
 
-      spotifyId = id;
+      if (createPlaylistErr) {
+        throw createPlaylistErr;
+      }
+
+      spotifyId = createPlaylistSuccess.id;
     }
 
     if (type === 'refresh') {
-      const { items } = await sdk.playlists.getPlaylistItems(playlist.spotifyId).then(onSuccess, onError);
-      const tracks = items.map(({ track: { uri } }) => ({ uri }));
+      const [getPlaylistItemsErr, getPlaylistItemsSuccess] = await to(
+        sdk.playlists.getPlaylistItems(playlist.spotifyId),
+      );
 
-      await sdk.playlists.removeItemsFromPlaylist(playlist.spotifyId, { tracks }).then(onSuccess, onError);
+      if (getPlaylistItemsErr) {
+        throw getPlaylistItemsErr;
+      }
+
+      const tracks = getPlaylistItemsSuccess.items.map(({ track: { uri } }) => ({ uri }));
+
+      const [removeItemsFromPlaylistErr] = await to(
+        sdk.playlists.removeItemsFromPlaylist(playlist.spotifyId, { tracks }),
+      );
+
+      if (removeItemsFromPlaylistErr) {
+        throw removeItemsFromPlaylistErr;
+      }
 
       const newParticipations = await Promise.all(
         playlist.participations.map(async (participation) => ({
@@ -140,7 +148,13 @@ export class PlaylistService {
 
     const tracklist = shuffle(flatten([...tracksPerParticipant, recommendations]));
 
-    await sdk.playlists.addItemsToPlaylist(spotifyId || playlist.spotifyId, tracklist).then(onSuccess, onError);
+    const [addItemsToPlaylistErr] = await to(
+      sdk.playlists.addItemsToPlaylist(spotifyId || playlist.spotifyId, tracklist),
+    );
+
+    if (addItemsToPlaylistErr) {
+      throw addItemsToPlaylistErr;
+    }
 
     const updatedPlaylist = await this.playlistModel.findByIdAndUpdate(
       playlist._id,
@@ -163,14 +177,6 @@ export class PlaylistService {
     return updatedPlaylist;
   }
 
-  async release(playlistId: string): Promise<any> {
-    return this.generate(playlistId, 'release');
-  }
-
-  async refresh(playlistId: string): Promise<any> {
-    return this.generate(playlistId, 'refresh');
-  }
-
   @Cron('0 0 * * *') // every day at 00:00
   async refreshesAt(): Promise<void> {
     const playlists: IPlaylist[] = await this.playlistModel.find({
@@ -183,7 +189,7 @@ export class PlaylistService {
         const releasedDay = moment(playlist.releasedAt).day();
 
         if (todaysDay === releasedDay) {
-          this.refresh(playlist._id);
+          this.generate(playlist._id, 'refresh');
         }
       }
 
@@ -196,7 +202,7 @@ export class PlaylistService {
         const refreshedMonth = moment(playlist.refreshedAt).month();
 
         if (todaysDate === releasedDate || (releasedDate === lastDateOfTheMonth && refreshedMonth !== todaysMonth)) {
-          this.refresh(playlist._id);
+          this.generate(playlist._id, 'refresh');
         }
       }
     });
