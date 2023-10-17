@@ -1,4 +1,4 @@
-import { s, Box, Title } from '3oilerplate'
+import { s, Title } from '3oilerplate'
 
 const SLogo = s.div(({ theme, c1, c2 }: any) => ({
   display: 'inline-flex',

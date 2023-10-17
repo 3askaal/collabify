@@ -1,12 +1,10 @@
-import { useEffect } from 'react'
 import type { AppProps } from 'next/app'
-import { useRouter } from 'next/router'
 import dynamic from 'next/dynamic'
 import { s, ThemeProvider, GlobalStyle, theme as DEFAULT_THEME } from '3oilerplate'
 import ReactGA from 'react-ga4'
 import deepmerge from 'deepmerge'
 import { Layout } from '../components/layout'
-import { IntelProvider } from '../context/IntelContext'
+import { DataProvider } from '../context/DataContext'
 import { THEME, LocalGlobalStyle } from '../style'
 
 import 'reset-css/reset.css'
@@ -43,7 +41,7 @@ const DynamicWrapper = dynamic(() => Promise.resolve(NonSSRWrapper), {
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <ThemeProvider theme={mergeTheme(DEFAULT_THEME, THEME)}>
-      <IntelProvider>
+      <DataProvider>
         <DynamicWrapper>
           <SApp>
             <GlobalStyle />
@@ -53,7 +51,7 @@ export default function App({ Component, pageProps }: AppProps) {
             </Layout>
           </SApp>
         </DynamicWrapper>
-      </IntelProvider>
+      </DataProvider>
     </ThemeProvider>
   )
 }

@@ -1,10 +1,10 @@
 import { Spacer, Title, Box, Button, Input } from '3oilerplate'
 import { useContext, useState } from 'react'
 import { X as XIcon, Plus as PlusIcon } from 'react-feather'
-import { IntelContext } from '../../context/IntelContext'
+import { DataContext } from '../../context/DataContext'
 
 export const Invite = () => {
-  const { invitations, setInvitations } = useContext(IntelContext)
+  const { invitations, setInvitations } = useContext(DataContext)
   const [currentInvitation, setCurrentInvitation] = useState('')
 
   const updateInvitation = (newValue: string, index: number) => {

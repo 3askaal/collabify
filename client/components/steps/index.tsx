@@ -2,12 +2,14 @@ import { useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { ChevronLeft as ChevronLeftIcon, ChevronRight as ChevronRightIcon } from 'react-feather'
 import { Input, Spacer, Button, Box, Checkbox, Select, Text } from '3oilerplate'
-import { IntelContext } from '../../context/IntelContext';
+import { DataContext } from '../../context/DataContext';
 import { FilterData, Invite } from '..';
 import { IConfig } from '../../../server/types/playlist';
+import useApi from '../../hooks/useApi';
 
 const Details = () => {
-  const { currentUser, config, setConfig } = useContext(IntelContext)
+  const { config, setConfig } = useContext(DataContext)
+  const { currentUser } = useContext(DataContext);
   const [shouldRefresh, setShouldRefresh] = useState(false)
 
   useEffect(() => {
@@ -52,7 +54,6 @@ const Details = () => {
                 {
                   label: 'Never',
                   value: null,
-
                 },
                 {
                   label: 'Weekly',
@@ -75,7 +76,7 @@ const Details = () => {
 }
 
 const Submit = ({ id }: { id: string }) => {
-  const { submit } = useContext(IntelContext)
+  const { submit } = useApi()
 
   return (
     <Spacer s={{ flexGrow: 1, justifyContent: 'center' }}>
@@ -84,19 +85,16 @@ const Submit = ({ id }: { id: string }) => {
   )
 }
 
-export function Steps() {
-  const router = useRouter()
+export const Steps = () => {
+  const { query: { id }} = useRouter()
   const [step, setStep] = useState(0);
 
-  const steps = router.query.id === 'new' ? [
+  const steps = [
     <Details key="Details" />,
     <FilterData key="FilterData" />,
     <Invite key="Invite" />,
-    <Submit key="Submit" id={(router?.query?.id || '') as string} />
-  ] : [
-    <FilterData key="FilterData" />,
-    <Submit key="Submit" id={(router?.query?.id || '') as string} />
-  ]
+    <Submit key="Submit" id={id as string} />
+  ];
 
   const onPrev = () => {
     if (step === 0) return

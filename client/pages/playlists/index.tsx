@@ -1,12 +1,12 @@
 import { useContext } from 'react'
 import { useRouter } from 'next/router';
 import { Spacer, List, ListItem, Label, Box, Title } from '3oilerplate'
-import { IntelContext } from '../../context/IntelContext';
+import { DataContext } from '../../context/DataContext';
 import { getDefaultPlaylistTitle } from '../../helpers/transform';
 
 export default function Playlists() {
   const router = useRouter()
-  const { playlists, currentUser } = useContext(IntelContext)
+  const { currentUser, playlists } = useContext(DataContext)
 
   const invitedPlaylists = playlists?.filter(({ invitations }: any) => invitations.includes(currentUser?.email))
   const partipatedPlaylists = playlists?.filter(({ participations }: any) => participations.some(({ user }: any) => user.id === currentUser?.id))

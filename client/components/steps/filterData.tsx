@@ -1,8 +1,8 @@
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { Box, ElementGroup, Button, Select, Title } from '3oilerplate'
 import { orderBy, pull, startCase } from 'lodash'
 import { SelectionLabel } from '..'
-import { IntelContext } from '../../context/IntelContext'
+import { DataContext } from '../../context/DataContext'
 import { IObject } from '../../../server/types/playlist'
 import { ScrollContainer } from '../scrollContainer'
 
@@ -10,7 +10,7 @@ type DataTypes = 'artists' | 'tracks' | 'genres';
 type TermTypes = 'short_term' | 'medium_term' | 'long_term';
 
 export function FilterData() {
-  const { data, excludeData, setExcludeData } = useContext(IntelContext)
+  const { data, excludeData, setExcludeData } = useContext(DataContext)
 
   const [activeTab, setActiveTabState] = useState<DataTypes>('genres')
   const [activeTerm, setActiveTerm] = useState<{ artists: TermTypes, tracks: TermTypes, genres: TermTypes }>({ artists: 'short_term', tracks: 'short_term', genres: 'short_term' })
