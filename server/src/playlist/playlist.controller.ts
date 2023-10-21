@@ -10,7 +10,11 @@ export class PlaylistController {
 
   @Get(':id')
   async get(@Param() params: GetParams): Promise<Playlist> {
-    return this.playlistService.getOne(params.id);
+    const data = await this.playlistService.getOne(params.id);
+
+    console.log('data: ', data);
+
+    return data;
   }
 
   @Post('all')
@@ -32,6 +36,7 @@ export class PlaylistController {
 
   @Post('collect')
   async collect(@Body() payload: any): Promise<IData> {
+    console.log('COLLECTING');
     return this.playlistService.collect(payload);
   }
 

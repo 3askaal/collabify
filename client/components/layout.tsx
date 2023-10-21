@@ -1,19 +1,34 @@
-import { useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import { Box, Wrapper, Container, Button, List, ListItem } from '3oilerplate'
 import { User as UserIcon, ArrowLeft as ArrowLeftIcon } from 'react-feather'
 import { Logo } from './logo'
+import { DataContext } from '../context/DataContext'
 import useSpotify from '../hooks/useSpotify'
 
 export function Layout({ children }: any) {
-  const { push, back, query: { id: playlistId } } = useRouter()
-  const { accessToken, logout } = useSpotify()
-  const [menuOpen, setMenuOpen] = useState(false)
+  const { push, back, query: { id: playlistId, code } } = useRouter();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const { accessToken, login, logout } = useSpotify();
+  const { sdk } = useContext(DataContext);
 
   const navigate = (route: string) => {
-    setMenuOpen(false)
-    push(route)
+    setMenuOpen(false);
+    push(route);
   }
+
+  useEffect(() => {
+    if (sdk) return;
+    if (!code && !accessToken) return;
+
+    login();
+  }, []);
+
+  // useEffect(() => {
+  //   if (!accessToken && playlistId && playlistId !== 'new') {
+  //     setRedirectPlaylistId(playlistId as string)
+  //   }
+  // }, [playlistId, accessToken])
 
   return (
     <Wrapper s={{ display: 'grid', gridTemplateRows: accessToken ? 'auto minmax(0, 1fr)' : 'auto', gridTemplateColumns: '1fr', justifyItems: 'center', gap: 'm' }}>

@@ -1,16 +1,17 @@
-import { Spacer, List, ListItem, Link, Box, Label, Button, ElementGroup } from '3oilerplate'
 import { useContext, useEffect, useState } from 'react'
-import { IntelContext } from '../context/IntelContext'
-import { Copy, Clipboard } from 'react-feather';
 import { useRouter } from 'next/router';
+import { Spacer, List, ListItem, Link, Box, Label, Button, ElementGroup } from '3oilerplate'
+import { Copy, Clipboard } from 'react-feather';
 import copy from 'copy-to-clipboard';
 import { getDefaultPlaylistTitle } from '../helpers/transform';
-
+import { DataContext } from '../context/DataContext';
+import useApi from '../hooks/useApi';
 
 export const Status = () => {
   const { query: { id: playlistId } } = useRouter()
-  const { playlist, currentUser } = useContext(IntelContext)
+  const { playlist } = useApi()
   const [isCopied, setIsCopied] = useState(false)
+  const { currentUser } = useContext(DataContext);
 
   const playlistName = playlist?.name || getDefaultPlaylistTitle(playlist)
   const playlistDesc = playlist?.description || 'Generated with collabify.vercel.app'
