@@ -1,64 +1,15 @@
-import { useEffect, useState } from 'react'
-import { SpotifyApi, AuthorizationCodeWithPKCEStrategy, AccessToken } from "@spotify/web-api-ts-sdk"
+import { useContext } from "react";
 import { useRouter } from 'next/router';
-import { useLocalStorage } from 'usehooks-ts';
+import { SpotifyApi, AuthorizationCodeWithPKCEStrategy, AccessToken } from "@spotify/web-api-ts-sdk"
+import { useLocalstorageState } from 'rooks';
 import to from 'await-to-js';
-
-// const getExpiresAt = (expiresIn: number): string => moment().add(expiresIn, 'seconds').valueOf().toString()
+import { DataContext } from "../context/DataContext";
 
 export default function useSpotify() {
-  const { query: { id: playlistId, code }, replace } = useRouter();
-
-  const [sdk, setSdk] = useState<SpotifyApi | null>(null);
-
-  const [accessToken, setAccessToken] = useLocalStorage<AccessToken | string | null>('accessToken', '')
-  const [redirectPlaylistId, setRedirectPlaylistId] = useLocalStorage<string | null>('redirectPlaylistId', '')
-  // const [expiresAt, setExpiresAt] = useLocalStorage<string | null>('expiresAt', '')
-
-  useEffect(() => {
-    if (!code) return
-
-    login();
-  }, [code]);
-
-  useEffect(() => {
-    if (!sdk) return;
-
-    (async () => {
-      const accessToken = await sdk.getAccessToken();
-
-
-      if (accessToken) {
-        setAccessToken(accessToken)
-        // setExpiresAt(getExpiresAt(accessToken.expires_in))
-        replace(`/playlist/${redirectPlaylistId || 'new'}`);
-      }
-    })()
-  }, [sdk])
-
-  useEffect(() => {
-    if (!accessToken && playlistId && playlistId !== 'new') {
-      setRedirectPlaylistId(playlistId as string)
-    }
-  }, [playlistId, accessToken])
-
-  // useEffect(() => {
-  //   if (!expiresAt) return
-
-  //   let interval: ReturnType<typeof setInterval>
-
-  //   const isExpired = moment() > moment(Number(expiresAt))
-
-  //   if (isExpired) {
-  //     // getRefreshToken()
-  //     console.log('isExpired!'); // eslint-disable-line
-  //   } else {
-  //     const expiresIn = moment(Number(expiresAt)).valueOf() - moment().valueOf()
-  //     interval = setInterval(() => console.log('isExpired cb!'), expiresIn)
-  //   }
-
-  //   return () => clearInterval(interval)
-  // }, [expiresAt])
+  const { replace } = useRouter();
+  const [accessToken, setAccessToken] = useLocalstorageState<AccessToken | null>('spotify-sdk:AuthorizationCodeWithPKCEStrategy:token', null)
+  const [redirectPlaylistId] = useLocalstorageState<string | null>('redirectPlaylistId', '')
+  const { sdk, setSdk, setCurrentUser } = useContext(DataContext);
 
   const login = async () => {
     const auth = new AuthorizationCodeWithPKCEStrategy(
@@ -85,7 +36,21 @@ export default function useSpotify() {
     }
 
     if (authSuccess?.authenticated) {
-      setSdk(() => internalSdk);
+      setSdk(internalSdk);
+
+      const [getProfileErr, getProfileSuccess] = await to(internalSdk.currentUser.profile())
+
+      if (getProfileErr || !getProfileSuccess) {
+        throw (getProfileErr || new Error('Something went wrong while fetching current user profile.'));
+      }
+
+      setCurrentUser({
+        id: getProfileSuccess.id,
+        email: getProfileSuccess.email,
+        name: getProfileSuccess.display_name || ''
+      })
+
+      replace(`/playlist/${redirectPlaylistId || 'new'}`);
     }
   }
 
@@ -97,7 +62,6 @@ export default function useSpotify() {
   }
 
   return {
-    sdk,
     accessToken,
     login,
     logout
