@@ -70,10 +70,7 @@ export default function useApi() {
   const collect = async (debug?: boolean) => {
     const [collectErr, collectSuccess] = await to(collectCallback({ data: { accessToken } }));
 
-    if (collectErr) {
-      console.log('collectErr: ', collectErr);
-      return
-    }
+    if (collectErr) throw collectErr;
 
     setData(collectSuccess.data);
 
